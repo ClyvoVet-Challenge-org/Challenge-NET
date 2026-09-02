@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+
+
+  <PropertyGroup>
+
+    <TargetFramework>net10.0</TargetFramework>
+
+    <Nullable>enable</Nullable>
+
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <InvariantGlobalization>true</InvariantGlobalization>
+
+    <PublishAot>false</PublishAot>
+
+	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+	  <NoWarn>$(NoWarn);1591</NoWarn>
+
+  </PropertyGroup>
+
+
+
+  <ItemGroup>
+    <None Remove="Controllers\AnimalsController.cs~RF15c70dd.TMP" />
+    <None Remove="Controllers\ConsultasController.cs~RF2f10d5f.TMP" />
+    <None Remove="Controllers\scfsuwar.u4l~" />
+    <None Remove="src\Data\AppDbContext.cs~RFcb716b.TMP" />
+  </ItemGroup>
+
+
+
+  <ItemGroup>
+
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.8" />
+
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8">
+
+      <PrivateAssets>all</PrivateAssets>
+
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+
+    </PackageReference>
+
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+
+
+
+    <PackageReference Include="Oracle.EntityFrameworkCore" Version="10.23.26200" />
+
+    <PackageReference Include="Scalar.AspNetCore" Version="2.14.14" />
+
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
+
+  </ItemGroup>
+
+  
+
+</Project>
+

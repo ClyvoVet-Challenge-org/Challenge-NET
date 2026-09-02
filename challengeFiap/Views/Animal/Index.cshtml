@@ -1,0 +1,83 @@
+@model IEnumerable<challengeFiap.src.Models.Animal>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Rg_animal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nr_microchip_animal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nm_animal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Dt_nascimento_animal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Peso_animal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Especie_animal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Raca_animal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Id_responsavel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Responsavel)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.Rg_animal)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Nr_microchip_animal)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Nm_animal)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Dt_nascimento_animal)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Peso_animal)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Especie_animal)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Raca_animal)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Id_responsavel)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Responsavel)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id_animal">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id_animal">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id_animal">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

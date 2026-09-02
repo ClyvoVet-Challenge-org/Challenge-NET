@@ -1,0 +1,11 @@
+@challengeFiap_HostAddress = http://localhost:5135
+
+GET {{challengeFiap_HostAddress}}/todos/
+Accept: application/json
+
+###
+
+GET {{challengeFiap_HostAddress}}/todos/1
+Accept: application/json
+
+###

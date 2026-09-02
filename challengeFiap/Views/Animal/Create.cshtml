@@ -1,0 +1,78 @@
+@model challengeFiap.src.Models.Animal
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Animal</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Rg_animal" class="control-label"></label>
+                <input asp-for="Rg_animal" class="form-control" />
+                <span asp-validation-for="Rg_animal" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Nr_microchip_animal" class="control-label"></label>
+                <input asp-for="Nr_microchip_animal" class="form-control" />
+                <span asp-validation-for="Nr_microchip_animal" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Nm_animal" class="control-label"></label>
+                <input asp-for="Nm_animal" class="form-control" />
+                <span asp-validation-for="Nm_animal" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Dt_nascimento_animal" class="control-label"></label>
+                <input asp-for="Dt_nascimento_animal" class="form-control" />
+                <span asp-validation-for="Dt_nascimento_animal" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Peso_animal" class="control-label"></label>
+                <input asp-for="Peso_animal" class="form-control" />
+                <span asp-validation-for="Peso_animal" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Especie_animal" class="control-label"></label>
+                <input asp-for="Especie_animal" class="form-control" />
+                <span asp-validation-for="Especie_animal" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Raca_animal" class="control-label"></label>
+                <input asp-for="Raca_animal" class="form-control" />
+                <span asp-validation-for="Raca_animal" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Id_responsavel" class="control-label"></label>
+                <input asp-for="Id_responsavel" class="form-control" />
+                <span asp-validation-for="Id_responsavel" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Responsavel" class="control-label"></label>
+                <input asp-for="Responsavel" class="form-control" />
+                <span asp-validation-for="Responsavel" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
