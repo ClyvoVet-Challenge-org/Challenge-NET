@@ -10,4 +10,10 @@
     <ProjectReference Include="..\challengeFiap.Application\challengeFiap.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Enums\" />
+    <Folder Include="DTO\" />
+    <Folder Include="Interface\" />
+  </ItemGroup>
+
 </Project>

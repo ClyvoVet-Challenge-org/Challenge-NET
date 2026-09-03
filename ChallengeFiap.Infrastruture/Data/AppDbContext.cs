@@ -2,12 +2,14 @@
 using challengeFiap.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace ChallengeFiap.Infrastruture.Data
+namespace challengeFiap.Infrastruture.Data
 {
     public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
+
+        }
         public DbSet<Veterinario> Veterinarios { get; set; }
         public DbSet<Clinica> Clinicas { get; set; }
         public DbSet<EnderecoClinica> EnderecoClinicas { get; set; }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace challengeFiap.Migrations
+namespace challengeFiap.infrastruture.Migrations
 {
     /// <inheritdoc />
     public partial class CriacaoInicial : Migration

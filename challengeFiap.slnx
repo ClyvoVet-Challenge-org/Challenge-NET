@@ -1,6 +1,6 @@
 <Solution>
   <Project Path="challengeFiap.Application/challengeFiap.Application.csproj" Id="a068b2f1-3df1-47e5-9319-65a86cc1b518" />
   <Project Path="challengeFiap.Domain/challengeFiap.Domain.csproj" Id="8e389c52-c9fc-4fd7-8ce8-576ff9126599" />
-  <Project Path="ChallengeFiap.Infrastruture/ChallengeFiap.Infrastruture.csproj" Id="47bc0475-59f8-4436-93bc-5d26ac1d335c" />
+  <Project Path="ChallengeFiap.Infrastruture/ChallengeFiap.Infrastruture.csproj" DisplayName="challengeFiap.Infrastruture" Id="47bc0475-59f8-4436-93bc-5d26ac1d335c" />
   <Project Path="challengeFiap/challengeFiap.csproj" />
 </Solution>
