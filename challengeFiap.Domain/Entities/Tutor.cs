@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace challengeFiap.src.Models
+namespace challengeFiap.Domain.Entities
 {
     [Table("T_CLYVO_TUTOR")]
     public class Tutor

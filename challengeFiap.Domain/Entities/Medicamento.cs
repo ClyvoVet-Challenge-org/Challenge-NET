@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace challengeFiap.src.Models
+namespace challengeFiap.Domain.Entities
 {
     [Table("T_CLYVO_MEDICAMENTO")]
     public class Medicamento

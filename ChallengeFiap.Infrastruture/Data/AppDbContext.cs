@@ -1,13 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using challengeFiap.Domain;
 using challengeFiap.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
-namespace challengeFiap.src.Data
+namespace ChallengeFiap.Infrastruture.Data
 {
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) :base(options)
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-
         public DbSet<Veterinario> Veterinarios { get; set; }
         public DbSet<Clinica> Clinicas { get; set; }
         public DbSet<EnderecoClinica> EnderecoClinicas { get; set; }
@@ -51,14 +51,14 @@ namespace challengeFiap.src.Data
             modelBuilder.Entity<EnderecoClinica>().Property(g => g.Nr_rua).HasColumnName("nr_rua").IsRequired();
             modelBuilder.Entity<EnderecoClinica>().Property(g => g.Complemento).HasColumnName("complemento").IsRequired();
             modelBuilder.Entity<EnderecoClinica>().Property(g => g.Cep).HasColumnName("cep").IsRequired();
-            modelBuilder.Entity<EnderecoClinica>().HasOne(g => g.Clinica).WithMany().HasForeignKey(g=> g.Id_clinica);
+            modelBuilder.Entity<EnderecoClinica>().HasOne(g => g.Clinica).WithMany().HasForeignKey(g => g.Id_clinica);
 
 
             modelBuilder.Entity<VetClinica>().ToTable("T_CLYVO_VET_CLINICA");
             modelBuilder.Entity<VetClinica>().HasKey(g => g.Id_clinica_vet);
             modelBuilder.Entity<VetClinica>().Property(g => g.Id_clinica_vet).HasColumnName("id_clinica_vet").IsRequired();
-            modelBuilder.Entity<VetClinica>().HasOne(g => g.Veterinario).WithMany().HasForeignKey(g=>g.Id_vet).IsRequired();
-            modelBuilder.Entity<VetClinica>().HasOne(g => g.Clinica).WithMany().HasForeignKey(g=>g.Id_clinica).IsRequired();
+            modelBuilder.Entity<VetClinica>().HasOne(g => g.Veterinario).WithMany().HasForeignKey(g => g.Id_vet).IsRequired();
+            modelBuilder.Entity<VetClinica>().HasOne(g => g.Clinica).WithMany().HasForeignKey(g => g.Id_clinica).IsRequired();
 
             modelBuilder.Entity<Tutor>().ToTable("T_CLYVO_TUTOR");
             modelBuilder.Entity<Tutor>().HasKey(g => g.Id_tutor);
@@ -88,14 +88,14 @@ namespace challengeFiap.src.Data
             modelBuilder.Entity<Animal>().Property(g => g.Nr_microchip_animal).HasColumnName("nr_microchip_animal").IsRequired();
             modelBuilder.Entity<Animal>().Property(g => g.Nm_animal).HasColumnName("nm_animal").IsRequired();
             modelBuilder.Entity<Animal>().Property(g => g.Dt_nascimento_animal).HasColumnName("dt_nascimento_animal").IsRequired();
-            modelBuilder.Entity<Animal>().Property(g => g.Peso_animal).HasPrecision(18,2).HasColumnName("peso_animal").IsRequired();
+            modelBuilder.Entity<Animal>().Property(g => g.Peso_animal).HasPrecision(18, 2).HasColumnName("peso_animal").IsRequired();
             modelBuilder.Entity<Animal>().Property(g => g.Especie_animal).HasColumnName("especie_animal").IsRequired();
             modelBuilder.Entity<Animal>().Property(g => g.Raca_animal).HasColumnName("raca_animal").IsRequired();
             modelBuilder.Entity<Animal>().HasOne(g => g.Tutor).WithMany().HasForeignKey(g => g.Id_tutor).IsRequired();
 
             modelBuilder.Entity<EnderecoAnimal>().ToTable("T_CLYVO_ENDERECO_ANIMAL");
             modelBuilder.Entity<EnderecoAnimal>().HasKey(g => g.Id_endereco_animal);
-            modelBuilder.Entity<EnderecoAnimal>().Property(g=> g.Id_endereco_animal).HasColumnName("id_endereco_animal").IsRequired();
+            modelBuilder.Entity<EnderecoAnimal>().Property(g => g.Id_endereco_animal).HasColumnName("id_endereco_animal").IsRequired();
             modelBuilder.Entity<EnderecoAnimal>().Property(g => g.Pais).HasColumnName("pais").IsRequired();
             modelBuilder.Entity<EnderecoAnimal>().Property(g => g.Estado).HasColumnName("estado").IsRequired();
             modelBuilder.Entity<EnderecoAnimal>().Property(g => g.Cidade).HasColumnName("cidade").IsRequired();
@@ -129,23 +129,25 @@ namespace challengeFiap.src.Data
             modelBuilder.Entity<Prescricao>().Property(g => g.Id_prescricao).HasColumnName("id_prescricao").IsRequired();
             modelBuilder.Entity<Prescricao>().Property(g => g.Dt_emissao).HasColumnName("dt_emissao").IsRequired();
             modelBuilder.Entity<Prescricao>().Property(g => g.Dt_expiracao).HasColumnName("dt_expiracao").IsRequired();
-            modelBuilder.Entity<Prescricao>().HasOne(g => g.Consulta).WithOne().HasForeignKey<Prescricao>(g =>g.Id_consulta).IsRequired();
+            modelBuilder.Entity<Prescricao>().HasOne(g => g.Consulta).WithOne().HasForeignKey<Prescricao>(g => g.Id_consulta).IsRequired();
             modelBuilder.Entity<Prescricao>().Property(g => g.Observacoes_gerais).HasColumnName("observacoes_gerais").IsRequired();
 
             modelBuilder.Entity<Medicamento>().ToTable("T_CLYVO_MEDICAMENTO");
             modelBuilder.Entity<Medicamento>().HasKey(g => g.Id_medicamento);
-            modelBuilder.Entity<Medicamento>().Property(g=>g.Id_medicamento).HasColumnName("id_medicamento").IsRequired();
-            
+            modelBuilder.Entity<Medicamento>().Property(g => g.Id_medicamento).HasColumnName("id_medicamento").IsRequired();
+
             modelBuilder.Entity<Medicamento>().Property(g => g.Id_prescricao).HasColumnName("id_prescricao").IsRequired();
             modelBuilder.Entity<Medicamento>().HasOne(g => g.Prescricao).WithMany().HasForeignKey(g => g.Id_prescricao).IsRequired();
-            
+
             modelBuilder.Entity<Medicamento>().Property(g => g.Dosagem_medicamento).HasColumnName("dosagem_medicamento").IsRequired();
             modelBuilder.Entity<Medicamento>().Property(g => g.Frequencia).HasColumnName("frequencia").IsRequired();
             modelBuilder.Entity<Medicamento>().Property(g => g.Qtd_dias).HasColumnName("qtd_dias").IsRequired();
 
 
             base.OnModelCreating(modelBuilder);
+
         }
+
 
 
     }

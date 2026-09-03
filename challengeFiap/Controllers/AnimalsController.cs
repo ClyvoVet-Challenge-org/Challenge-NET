@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using challengeFiap.src.Models;
+using challengeFiap.Domain.Entities;
 using challengeFiap.src.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
 
