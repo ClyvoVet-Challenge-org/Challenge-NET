@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using challengeFiap.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -16,7 +17,7 @@ namespace challengeFiap.Domain.Entities
         public string? Historico_consulta { get; set; }
         [Required]
         [Column("st_consulta")]
-        public string? St_consulta { get; set; }
+        public StatusConsulta St_consulta { get; set; }
         [Required]
         [Column("dt_consulta")]
         public DateTime Dt_consulta { get; set; }
@@ -35,10 +36,10 @@ namespace challengeFiap.Domain.Entities
 
         [JsonIgnore]
         [ForeignKey("Id_animal")]
-        public AnimalDTO? Animal { get; set; }
+        public Animal? Animal { get; set; }
 
         protected Consulta() { }
-        public Consulta(int id_consulta, string historico_consulta, string st_consulta, DateTime dt_consulta, int id_vet, int id_animal)
+        public Consulta(int id_consulta, string historico_consulta, StatusConsulta st_consulta, DateTime dt_consulta, int id_vet, int id_animal)
         {
             Id_consulta = id_consulta;
             Historico_consulta = historico_consulta;

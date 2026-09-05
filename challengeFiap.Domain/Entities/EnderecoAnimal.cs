@@ -39,7 +39,7 @@ namespace challengeFiap.Domain.Entities
         public int Id_animal { get; set; }
         [JsonIgnore]
         [ForeignKey("Id_animal")]
-        public AnimalDTO? Animal{ get; set; }
+        public Animal? Animal{ get; set; }
 
 
         protected EnderecoAnimal() { }

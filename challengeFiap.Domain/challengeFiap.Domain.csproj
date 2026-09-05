@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\challengeFiap.Application\challengeFiap.Application.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DTO\" />
-    <Folder Include="Interface\" />
+    <Compile Remove="DTO\**" />
+    <Compile Remove="Interface\**" />
+    <EmbeddedResource Remove="DTO\**" />
+    <EmbeddedResource Remove="Interface\**" />
+    <None Remove="DTO\**" />
+    <None Remove="Interface\**" />
   </ItemGroup>
 
 </Project>

@@ -22,6 +22,15 @@
 
 
   <ItemGroup>
+    <Compile Remove="src\**" />
+    <Content Remove="src\**" />
+    <EmbeddedResource Remove="src\**" />
+    <None Remove="src\**" />
+  </ItemGroup>
+
+
+
+  <ItemGroup>
     <None Remove="Controllers\AnimalsController.cs~RF15c70dd.TMP" />
     <None Remove="Controllers\ConsultasController.cs~RF2f10d5f.TMP" />
     <None Remove="Controllers\scfsuwar.u4l~" />
@@ -56,12 +65,6 @@
     <ProjectReference Include="..\challengeFiap.Application\challengeFiap.Application.csproj" />
     <ProjectReference Include="..\challengeFiap.Domain\challengeFiap.Domain.csproj" />
     <ProjectReference Include="..\ChallengeFiap.Infrastruture\challengeFiap.Infrastruture.csproj" />
-  </ItemGroup>
-
-
-
-  <ItemGroup>
-    <Folder Include="src\" />
   </ItemGroup>
 
   

@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using challengeFiap.src.Models;
-using challengeFiap.src.Data;
-using Microsoft.Extensions.Configuration.EnvironmentVariables;
+using challengeFiap.Domain.Entities;
+using challengeFiap.Infrastruture.Data;
 
 [Route("api/[controller]")]
 [ApiController]

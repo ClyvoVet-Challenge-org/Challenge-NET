@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using challengeFiap.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -21,7 +22,7 @@ namespace challengeFiap.Domain.Entities
         public DateTime Dt_vacina_efetuada { get;  set; }
         [Required]
         [Column("st_vacina")]
-        public string? St_vacina { get;  set; }
+        public StatusVacinacao St_vacina { get;  set; }
         [Required]
         [Column("id_animal")]
         public int Id_animal { get;  set; }
@@ -32,7 +33,7 @@ namespace challengeFiap.Domain.Entities
 
         protected CarteiraVacinal() { }
 
-        public CarteiraVacinal(int id_carteiraVacinal, string nm_vacina, DateTime dt_vacina_prevista, DateTime dt_vacina_efetuada, string st_vacina, int id_animal)
+        public CarteiraVacinal(int id_carteiraVacinal, string nm_vacina, DateTime dt_vacina_prevista, DateTime dt_vacina_efetuada, StatusVacinacao st_vacina, int id_animal)
         {
             Id_carteiraVacinal = id_carteiraVacinal;
             Nm_vacina = nm_vacina;

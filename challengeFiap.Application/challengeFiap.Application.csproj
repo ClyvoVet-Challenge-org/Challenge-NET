@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Service\" />
+    <ProjectReference Include="..\ChallengeFiap.Infrastruture\ChallengeFiap.Infrastruture.csproj" />
   </ItemGroup>
 
 </Project>

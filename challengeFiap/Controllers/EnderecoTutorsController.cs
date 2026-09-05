@@ -1,14 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using challengeFiap.src.Models;
-using challengeFiap.src.Data;
+using challengeFiap.Domain.Entities;
+using challengeFiap.Infrastruture.Data;
 
 [Route("api/[controller]")]
 [ApiController]
-public class EnderecoResponsavelsController : ControllerBase
+public class EnderecoTutorsController : ControllerBase
 {
     private readonly AppDbContext _context;
-    public EnderecoResponsavelsController(AppDbContext context)
+    public EnderecoTutorsController(AppDbContext context)
     {
         _context = context;
     }

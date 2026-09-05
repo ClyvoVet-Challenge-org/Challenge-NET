@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using challengeFiap.Domain.Entities;
-using challengeFiap.src.Data;
-using Microsoft.AspNetCore.Http.HttpResults;
+using challengeFiap.Infrastruture.Data;
+
 
 [Route("api/[controller]")]
 [ApiController]
@@ -24,7 +24,7 @@ public class AnimalsController : ControllerBase
     /// <returns>Lista de animal</returns>
     [HttpGet]
     [Route("relatorio/animal")]
-    public async Task<ActionResult<IEnumerable<AnimalDTO>>> GetAllAnimal()
+    public async Task<ActionResult<IEnumerable<Animal>>> GetAllAnimal()
     { 
         var relatorioAnimal = await _context.Animals.ToListAsync();
         return Ok(relatorioAnimal);
@@ -41,7 +41,7 @@ public class AnimalsController : ControllerBase
     /// <returns>Id encontrado</returns>
     [HttpGet]
     [Route("relatorio/animal/{id_animal:int}")]
-    public async Task<ActionResult<AnimalDTO>> GetAnimal(int id_animal)
+    public async Task<ActionResult<Animal>> GetAnimal(int id_animal)
     {
         try
         {
@@ -72,7 +72,7 @@ public class AnimalsController : ControllerBase
     /// <returns>Atualizado</returns>
     [HttpPut]
     [Route("atualizar/animal/{id_animal:int}")]
-    public async Task<IActionResult> PutAnimal(int id_animal, AnimalDTO animal)
+    public async Task<IActionResult> PutAnimal(int id_animal, Animal animal)
     { 
         if(id_animal != animal.Id_animal)
         {
@@ -117,7 +117,7 @@ public class AnimalsController : ControllerBase
     /// <returns>Criação feita</returns>
     [HttpPost]
     [Route("criar/animal")]
-    public async Task<ActionResult<AnimalDTO>> PostAnimal(AnimalDTO animal)
+    public async Task<ActionResult<Animal>> PostAnimal(Animal animal)
     {
         try
         {
