@@ -7,7 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ChallengeFiap.Infrastruture\ChallengeFiap.Infrastruture.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\challengeFiap.Domain\challengeFiap.Domain.csproj" />
   </ItemGroup>
 
 </Project>

@@ -25,7 +25,7 @@ namespace challengeFiap.Domain.Entities
         [Column("senha")]
         public string? Senha_vet { get; set; }
 
-        protected Veterinario() { }
+        public Veterinario() { }
 
         public Veterinario(int id_vet, string nm_vet, string cpf_vet, string crmv_vet, string email_vet, string senha_vet)
         {

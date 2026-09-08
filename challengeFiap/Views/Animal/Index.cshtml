@@ -1,4 +1,4 @@
-@model IEnumerable<challengeFiap.src.Models.Animal>
+@model IEnumerable<challengeFiap.Domain.Entities.Animal>
 
 @{
     ViewData["Title"] = "Index";
@@ -34,10 +34,10 @@
                 @Html.DisplayNameFor(model => model.Raca_animal)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Id_responsavel)
+                @Html.DisplayNameFor(model => model.Id_tutor)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Responsavel)
+                @Html.DisplayNameFor(model => model.Tutor)
             </th>
             <th></th>
         </tr>
@@ -67,10 +67,10 @@
                 @Html.DisplayFor(model => item.Raca_animal)
             </td>
             <td>
-                @Html.DisplayFor(model => item.Id_responsavel)
+                @Html.DisplayFor(model => item.Id_tutor)
             </td>
             <td>
-                @Html.DisplayFor(model => item.Responsavel)
+                @Html.DisplayFor(model => item.Tutor)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id_animal">Edit</a> |

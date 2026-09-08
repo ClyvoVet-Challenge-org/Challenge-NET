@@ -1,19 +1,27 @@
+using challengeFiap.Application.Service;
+using challengeFiap.Domain.Entities;
+using challengeFiap.Domain.Interfaces;
+using challengeFiap.Infrastruture.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using challengeFiap.Domain.Entities;
-using challengeFiap.Infrastruture.Data;
-
 
 [Route("api/[controller]")]
 [ApiController]
 public class AnimalsController : ControllerBase
 {
     private readonly AppDbContext _context;
-    public AnimalsController(AppDbContext context)
+    private readonly IAnimalService _animalService;
+    private readonly ILogger<AnimalsController> _logger;
+
+    public AnimalsController(
+        AppDbContext context,
+        ILogger<AnimalsController> logger,
+        IAnimalService animalService)
     {
         _context = context;
+        _logger = logger;
+        _animalService = animalService;
     }
-
 
     // GET: api/Animal
 
@@ -25,9 +33,22 @@ public class AnimalsController : ControllerBase
     [HttpGet]
     [Route("relatorio/animal")]
     public async Task<ActionResult<IEnumerable<Animal>>> GetAllAnimal()
-    { 
-        var relatorioAnimal = await _context.Animals.ToListAsync();
-        return Ok(relatorioAnimal);
+    {
+        _logger.LogInformation("Iniciando a busca de todos os animais");
+        try
+        {
+            var relatorioAnimal = await _context.Animals.ToListAsync();
+
+            _logger.LogInformation("Busca de todos os animais concluída com sucesso. Total de animais encontrados: {Count}", relatorioAnimal.Count);
+
+            return Ok(relatorioAnimal);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao buscar todos os animais");
+
+            return StatusCode(500, "Erro interno do servidor");
+        }
     }
 
     // GET: api/Animal/5
@@ -43,20 +64,28 @@ public class AnimalsController : ControllerBase
     [Route("relatorio/animal/{id_animal:int}")]
     public async Task<ActionResult<Animal>> GetAnimal(int id_animal)
     {
+        _logger.LogInformation("Iniciando a busca do animal com ID: {IdAnimal}", id_animal);
         try
         {
             var animal = await _context.Animals.FindAsync(id_animal);
+
             if (animal == null)
             {
+                _logger.LogWarning("Animal com ID: {IdAnimal} não encontrado", id_animal);
+
                 return NotFound("Id Animal não encontrada");
             }
+
+            _logger.LogInformation("Busca do animal com ID: {IdAnimal} concluída com sucesso", id_animal);
+
             return Ok(animal);
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Erro ao buscar o animal com ID: {IdAnimal}", id_animal);
+
             return BadRequest($"Erro em processar a buscar: {ex.Message}");
         }
-        
     }
 
     // PUT: api/Animal/5
@@ -73,30 +102,43 @@ public class AnimalsController : ControllerBase
     [HttpPut]
     [Route("atualizar/animal/{id_animal:int}")]
     public async Task<IActionResult> PutAnimal(int id_animal, Animal animal)
-    { 
-        if(id_animal != animal.Id_animal)
+    {
+        _logger.LogInformation("Iniciando a atualização do animal com ID: {IdAnimal}", id_animal);
+
+        if (id_animal != animal.Id_animal)
         {
+            _logger.LogWarning("ID da URL {IdAnimal} diferente do ID informado no animal {AnimalId}", id_animal, animal.Id_animal);
+
             return BadRequest("O id de animal esta incorreto");
         }
 
         try
         {
-            _context.Entry(animal).State = EntityState.Modified;
+            var animalAtualizado = await _animalService.UpdateAnimalAsync(id_animal, animal);
+            _context.Entry(animalAtualizado).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-            return NoContent();
+
+            _logger.LogInformation("Atualização do animal com ID: {IdAnimal} concluída com sucesso", id_animal);
+
+            return Ok(animalAtualizado);
+
         }
-        catch (DbUpdateConcurrencyException)
+        catch (DbUpdateConcurrencyException ex)
         {
+            _logger.LogWarning(ex, "Erro de concorrência ao atualizar o animal com ID: {IdAnimal}", id_animal);
+
             if (!AnimalExists(id_animal))
             {
+                _logger.LogWarning("Animal com ID: {IdAnimal} não encontrado para atualização", id_animal);
+
                 return NotFound("O animal não encontrado");
             }
-            else
-            {
                 throw;
-            }
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao atualizar o animal com ID: {IdAnimal}", id_animal);
+
             return BadRequest($"Erro em atualizar animal: {ex.Message}");
         }
     }
@@ -119,28 +161,35 @@ public class AnimalsController : ControllerBase
     [Route("criar/animal")]
     public async Task<ActionResult<Animal>> PostAnimal(Animal animal)
     {
+        _logger.LogInformation("Iniciando a criação do animal com ID: {IdAnimal}", animal.Id_animal);
         try
         {
-            var responsavelExistente = await _context.Tutor
-                .FirstOrDefaultAsync(a => a.Id_tutor== animal.Id_tutor);
-            
-            if(responsavelExistente != null)
+            var responsavelExistente = await _context.Tutor.FirstOrDefaultAsync(a => a.Id_tutor == animal.Id_tutor);
+
+            if (responsavelExistente != null)
             {
-                _context.Animals.Add(animal);
+                var animalCriado = await _animalService.CreateAnimalAsync(animal);
+
+                _context.Animals.Add(animalCriado);
                 await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetAnimal), new { id_animal = animal.Id_animal}, animal);
+
+                _logger.LogInformation("Criação do animal com ID: {IdAnimal} concluída com sucesso", animal.Id_animal);
+
+                return Ok(animalCriado);
             }
             else
             {
+                _logger.LogWarning("Id do tutor: {IdTutor} não encontrado para criação do animal", animal.Id_tutor);
                 return BadRequest("Id responsavel não encontrado");
             }
         }
-        catch (Exception e) {
-            return BadRequest($"Erro ao salvar os dados: {e.Message}"); 
-        }
-            
-    }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao criar o animal com ID: {IdAnimal}", animal.Id_animal);
 
+            return BadRequest($"Erro ao salvar os dados: {ex.Message}");
+        }
+    }
 
     // DELETE: api/Animal/5
 
@@ -156,24 +205,29 @@ public class AnimalsController : ControllerBase
     [Route("deleta/animal/{id_animal:int}")]
     public async Task<IActionResult> DeleteAnimal(int id_animal)
     {
+        _logger.LogInformation("Iniciando a remoção do animal com ID: {IdAnimal}", id_animal);
         try
         {
-            var animalExistente = await _context.Animals
-                .FirstOrDefaultAsync(e => e.Id_animal == id_animal);
+            var animalExistente = await _context.Animals.FirstOrDefaultAsync(e => e.Id_animal == id_animal);
             if (animalExistente == null)
             {
+                _logger.LogWarning("Animal com ID: {IdAnimal} não encontrado para remoção", id_animal);
+
                 return NotFound("Animal não encontrado.");
             }
 
             _context.Animals.Remove(animalExistente);
             await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Remoção do animal com ID: {IdAnimal} concluída com sucesso", id_animal);
+
             return NoContent();
         }
         catch (Exception e)
         {
+            _logger.LogError(e, "Erro ao remover o animal com ID: {IdAnimal}", id_animal);
+
             return BadRequest($"Erro em deletar: {e.Message}");
         }
     }
-
-    
 }

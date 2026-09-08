@@ -43,7 +43,7 @@ namespace challengeFiap.Domain.Entities
         [ForeignKey("Id_clinica")]
         public Clinica? Clinica { get; set; }
         
-        protected EnderecoClinica() { }
+        public EnderecoClinica() { }
 
         public EnderecoClinica(int id_endereco_clinica, string pais, string estado, string cidade, string bairro, string logradouro_rua, string nr_rua, string complemento, string cep, int id_clinica)
         {

@@ -1,4 +1,4 @@
-@model challengeFiap.src.Models.Animal
+@model challengeFiap.Domain.Entities.Animal
 
 @{
     ViewData["Title"] = "Details";
@@ -60,17 +60,17 @@
         </dd>
     </dl>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Id_responsavel)
+            @Html.DisplayNameFor(model => model.Id_tutor)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Id_responsavel)
+            @Html.DisplayFor(model => model.Id_tutor)
         </dd>
     </dl>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Responsavel)
+            @Html.DisplayNameFor(model => model.Tutor)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Responsavel)
+            @Html.DisplayFor(model => model.Tutor)
         </dd>
     </dl>
 </div>

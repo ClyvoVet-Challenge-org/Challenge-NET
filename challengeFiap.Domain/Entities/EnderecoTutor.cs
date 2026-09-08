@@ -43,7 +43,7 @@ namespace challengeFiap.Domain.Entities
         [ForeignKey("Id_tutor")]
         public Tutor? Tutor{ get; set; }
 
-        protected EnderecoTutor() { }
+        public EnderecoTutor() { }
 
         public EnderecoTutor(int id_endereco_tutor, string pais, string estado, string cidade, string bairro, string logradouro_rua, string nr_rua, string complemento, string cep, int id_tutor)
         {

@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
-using challengeFiap.src.Data;
+using challengeFiap.Infrastruture.Data;
 
 #nullable disable
 
-namespace challengeFiap.Migrations
+namespace ChallengeFiap.Infrastruture.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260523135955_CriacaoInicial")]
+    [Migration("20260908000016_CriacaoInicial")]
     partial class CriacaoInicial
     {
         /// <inheritdoc />
@@ -20,12 +20,12 @@ namespace challengeFiap.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.8")
+                .HasAnnotation("ProductVersion", "10.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("challengeFiap.src.Models.Animal", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.Animal", b =>
                 {
                     b.Property<int>("Id_animal")
                         .ValueGeneratedOnAdd()
@@ -43,9 +43,9 @@ namespace challengeFiap.Migrations
                         .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnName("especie_animal");
 
-                    b.Property<int>("Id_responsavel")
+                    b.Property<int>("Id_tutor")
                         .HasColumnType("NUMBER(10)")
-                        .HasColumnName("id_responsavel");
+                        .HasColumnName("id_tutor");
 
                     b.Property<string>("Nm_animal")
                         .IsRequired()
@@ -58,7 +58,8 @@ namespace challengeFiap.Migrations
                         .HasColumnName("nr_microchip_animal");
 
                     b.Property<decimal>("Peso_animal")
-                        .HasColumnType("DECIMAL(18, 2)")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("DECIMAL(18,2)")
                         .HasColumnName("peso_animal");
 
                     b.Property<string>("Raca_animal")
@@ -73,12 +74,12 @@ namespace challengeFiap.Migrations
 
                     b.HasKey("Id_animal");
 
-                    b.HasIndex("Id_responsavel");
+                    b.HasIndex("Id_tutor");
 
                     b.ToTable("T_CLYVO_ANIMAL", (string)null);
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.CarteiraVacinal", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.CarteiraVacinal", b =>
                 {
                     b.Property<int>("Id_carteiraVacinal")
                         .ValueGeneratedOnAdd()
@@ -104,9 +105,8 @@ namespace challengeFiap.Migrations
                         .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnName("nm_vacina");
 
-                    b.Property<string>("St_vacina")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
+                    b.Property<int>("St_vacina")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnName("st_vacinacao");
 
                     b.HasKey("Id_carteiraVacinal");
@@ -116,7 +116,7 @@ namespace challengeFiap.Migrations
                     b.ToTable("T_CLYVO_CARTEIRAVACINAL", (string)null);
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.Clinica", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.Clinica", b =>
                 {
                     b.Property<int>("Id_clinica")
                         .ValueGeneratedOnAdd()
@@ -140,7 +140,7 @@ namespace challengeFiap.Migrations
                     b.ToTable("T_CLYVO_CLINICA", (string)null);
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.Consulta", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.Consulta", b =>
                 {
                     b.Property<int>("Id_consulta")
                         .ValueGeneratedOnAdd()
@@ -166,9 +166,8 @@ namespace challengeFiap.Migrations
                         .HasColumnType("NUMBER(10)")
                         .HasColumnName("id_vet");
 
-                    b.Property<string>("St_consulta")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
+                    b.Property<int>("St_consulta")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnName("st_consulta");
 
                     b.HasKey("Id_consulta");
@@ -180,7 +179,7 @@ namespace challengeFiap.Migrations
                     b.ToTable("T_CLYVO_CONSULTA", (string)null);
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.EnderecoAnimal", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.EnderecoAnimal", b =>
                 {
                     b.Property<int>("Id_endereco_animal")
                         .ValueGeneratedOnAdd()
@@ -235,12 +234,13 @@ namespace challengeFiap.Migrations
 
                     b.HasKey("Id_endereco_animal");
 
-                    b.HasIndex("Id_animal");
+                    b.HasIndex("Id_animal")
+                        .IsUnique();
 
                     b.ToTable("T_CLYVO_ENDERECO_ANIMAL", (string)null);
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.EnderecoClinica", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.EnderecoClinica", b =>
                 {
                     b.Property<int>("Id_endereco_clinica")
                         .ValueGeneratedOnAdd()
@@ -295,19 +295,20 @@ namespace challengeFiap.Migrations
 
                     b.HasKey("Id_endereco_clinica");
 
-                    b.HasIndex("Id_clinica");
+                    b.HasIndex("Id_clinica")
+                        .IsUnique();
 
                     b.ToTable("T_CLYVO_ENDERECO_CLINICA", (string)null);
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.EnderecoResponsavel", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.EnderecoTutor", b =>
                 {
-                    b.Property<int>("Id_endereco_responsavel")
+                    b.Property<int>("Id_endereco_tutor")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("NUMBER(10)")
-                        .HasColumnName("id_endereco_responsavel");
+                        .HasColumnName("id_endereco_tutor");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id_endereco_responsavel"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id_endereco_tutor"));
 
                     b.Property<string>("Bairro")
                         .IsRequired()
@@ -334,9 +335,9 @@ namespace challengeFiap.Migrations
                         .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnName("estado");
 
-                    b.Property<int>("Id_responsavel")
+                    b.Property<int>("Id_tutor")
                         .HasColumnType("NUMBER(10)")
-                        .HasColumnName("id_responsavel");
+                        .HasColumnName("id_tutor");
 
                     b.Property<string>("Logradouro_rua")
                         .IsRequired()
@@ -353,14 +354,15 @@ namespace challengeFiap.Migrations
                         .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnName("pais");
 
-                    b.HasKey("Id_endereco_responsavel");
+                    b.HasKey("Id_endereco_tutor");
 
-                    b.HasIndex("Id_responsavel");
+                    b.HasIndex("Id_tutor")
+                        .IsUnique();
 
-                    b.ToTable("T_CLYVO_ENDERECO_RESPONSAVEL", (string)null);
+                    b.ToTable("T_CLYVO_ENDERECO_TUTOR", (string)null);
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.Medicamento", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.Medicamento", b =>
                 {
                     b.Property<int>("Id_medicamento")
                         .ValueGeneratedOnAdd()
@@ -399,7 +401,7 @@ namespace challengeFiap.Migrations
                     b.ToTable("T_CLYVO_MEDICAMENTO", (string)null);
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.Prescricao", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.Prescricao", b =>
                 {
                     b.Property<int>("Id_prescricao")
                         .ValueGeneratedOnAdd()
@@ -433,40 +435,40 @@ namespace challengeFiap.Migrations
                     b.ToTable("T_CLYVO_PRESCRICAO", (string)null);
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.Responsavel", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.Tutor", b =>
                 {
-                    b.Property<int>("Id_responsavel")
+                    b.Property<int>("Id_tutor")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("NUMBER(10)")
-                        .HasColumnName("id_responsavel");
+                        .HasColumnName("id_tutor");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id_responsavel"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id_tutor"));
 
-                    b.Property<string>("Cpf_responsavel")
+                    b.Property<string>("Cpf_tutor")
                         .IsRequired()
                         .HasColumnType("NVARCHAR2(450)")
-                        .HasColumnName("cpf_responsavel");
+                        .HasColumnName("cpf_tutor");
 
-                    b.Property<string>("Nm_responsavel")
+                    b.Property<string>("Nm_tutor")
                         .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("nm_responsavel");
+                        .HasColumnName("nm_tutor");
 
-                    b.Property<string>("Nr_telefone_responsavel")
+                    b.Property<string>("Nr_telefone_tutor")
                         .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("nr_telefone_responsavel");
+                        .HasColumnName("nr_telefone_tutor");
 
-                    b.HasKey("Id_responsavel");
+                    b.HasKey("Id_tutor");
 
-                    b.HasIndex("Cpf_responsavel")
+                    b.HasIndex("Cpf_tutor")
                         .IsUnique()
-                        .HasDatabaseName("cpf_responsavel");
+                        .HasDatabaseName("cpf_tutor");
 
-                    b.ToTable("T_CLYVO_RESPONSAVEL", (string)null);
+                    b.ToTable("T_CLYVO_TUTOR", (string)null);
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.VetClinica", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.VetClinica", b =>
                 {
                     b.Property<int>("Id_clinica_vet")
                         .ValueGeneratedOnAdd()
@@ -492,7 +494,7 @@ namespace challengeFiap.Migrations
                     b.ToTable("T_CLYVO_VET_CLINICA", (string)null);
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.Veterinario", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.Veterinario", b =>
                 {
                     b.Property<int>("Id_vet")
                         .ValueGeneratedOnAdd()
@@ -539,20 +541,20 @@ namespace challengeFiap.Migrations
                     b.ToTable("T_CLYVO_VET", (string)null);
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.Animal", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.Animal", b =>
                 {
-                    b.HasOne("challengeFiap.src.Models.Responsavel", "Responsavel")
+                    b.HasOne("challengeFiap.Domain.Entities.Tutor", "Tutor")
                         .WithMany()
-                        .HasForeignKey("Id_responsavel")
+                        .HasForeignKey("Id_tutor")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Responsavel");
+                    b.Navigation("Tutor");
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.CarteiraVacinal", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.CarteiraVacinal", b =>
                 {
-                    b.HasOne("challengeFiap.src.Models.Animal", "Animal")
+                    b.HasOne("challengeFiap.Domain.Entities.Animal", "Animal")
                         .WithMany()
                         .HasForeignKey("Id_animal")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -561,15 +563,15 @@ namespace challengeFiap.Migrations
                     b.Navigation("Animal");
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.Consulta", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.Consulta", b =>
                 {
-                    b.HasOne("challengeFiap.src.Models.Animal", "Animal")
+                    b.HasOne("challengeFiap.Domain.Entities.Animal", "Animal")
                         .WithMany()
                         .HasForeignKey("Id_animal")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("challengeFiap.src.Models.Veterinario", "Veterinario")
+                    b.HasOne("challengeFiap.Domain.Entities.Veterinario", "Veterinario")
                         .WithMany()
                         .HasForeignKey("Id_vet")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -580,42 +582,42 @@ namespace challengeFiap.Migrations
                     b.Navigation("Veterinario");
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.EnderecoAnimal", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.EnderecoAnimal", b =>
                 {
-                    b.HasOne("challengeFiap.src.Models.Animal", "Animal")
-                        .WithMany()
-                        .HasForeignKey("Id_animal")
+                    b.HasOne("challengeFiap.Domain.Entities.Animal", "Animal")
+                        .WithOne()
+                        .HasForeignKey("challengeFiap.Domain.Entities.EnderecoAnimal", "Id_animal")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Animal");
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.EnderecoClinica", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.EnderecoClinica", b =>
                 {
-                    b.HasOne("challengeFiap.src.Models.Clinica", "Clinica")
-                        .WithMany()
-                        .HasForeignKey("Id_clinica")
+                    b.HasOne("challengeFiap.Domain.Entities.Clinica", "Clinica")
+                        .WithOne()
+                        .HasForeignKey("challengeFiap.Domain.Entities.EnderecoClinica", "Id_clinica")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Clinica");
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.EnderecoResponsavel", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.EnderecoTutor", b =>
                 {
-                    b.HasOne("challengeFiap.src.Models.Responsavel", "Responsavel")
-                        .WithMany()
-                        .HasForeignKey("Id_responsavel")
+                    b.HasOne("challengeFiap.Domain.Entities.Tutor", "Tutor")
+                        .WithOne()
+                        .HasForeignKey("challengeFiap.Domain.Entities.EnderecoTutor", "Id_tutor")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Responsavel");
+                    b.Navigation("Tutor");
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.Medicamento", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.Medicamento", b =>
                 {
-                    b.HasOne("challengeFiap.src.Models.Prescricao", "Prescricao")
+                    b.HasOne("challengeFiap.Domain.Entities.Prescricao", "Prescricao")
                         .WithMany()
                         .HasForeignKey("Id_prescricao")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -624,26 +626,26 @@ namespace challengeFiap.Migrations
                     b.Navigation("Prescricao");
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.Prescricao", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.Prescricao", b =>
                 {
-                    b.HasOne("challengeFiap.src.Models.Consulta", "Consulta")
+                    b.HasOne("challengeFiap.Domain.Entities.Consulta", "Consulta")
                         .WithOne()
-                        .HasForeignKey("challengeFiap.src.Models.Prescricao", "Id_consulta")
+                        .HasForeignKey("challengeFiap.Domain.Entities.Prescricao", "Id_consulta")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Consulta");
                 });
 
-            modelBuilder.Entity("challengeFiap.src.Models.VetClinica", b =>
+            modelBuilder.Entity("challengeFiap.Domain.Entities.VetClinica", b =>
                 {
-                    b.HasOne("challengeFiap.src.Models.Clinica", "Clinica")
+                    b.HasOne("challengeFiap.Domain.Entities.Clinica", "Clinica")
                         .WithMany()
                         .HasForeignKey("Id_clinica")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("challengeFiap.src.Models.Veterinario", "Veterinario")
+                    b.HasOne("challengeFiap.Domain.Entities.Veterinario", "Veterinario")
                         .WithMany()
                         .HasForeignKey("Id_vet")
                         .OnDelete(DeleteBehavior.Cascade)

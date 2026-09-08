@@ -2,15 +2,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using challengeFiap.Domain.Entities;
 using challengeFiap.Infrastruture.Data;
+using challengeFiap.Domain.Interfaces;
 
 [Route("api/[controller]")]
 [ApiController]
 public class PrescricaosController : ControllerBase
 {
     private readonly AppDbContext _context;
-    public PrescricaosController(AppDbContext context)
+    private readonly ILogger<PrescricaosController> _logger;
+    private readonly IprescricaoService _prescricaoService;
+    public PrescricaosController(AppDbContext context, ILogger<PrescricaosController> logger, IprescricaoService prescricaoService)
     {
         _context = context;
+        _logger = logger;
+        _prescricaoService = prescricaoService;
     }
 
     // GET: api/Prescricao
@@ -24,8 +29,20 @@ public class PrescricaosController : ControllerBase
     [Route("relatorio/prescricao")]
     public async Task<ActionResult<IEnumerable<Prescricao>>> GetAllPrescricao()
     {
-        var prescricaoRelatorio = await _context.Prescricaos.ToListAsync();
-        return Ok(prescricaoRelatorio);
+        _logger.LogInformation("Iniciando a busca de prescrições");
+
+        try
+        {
+            var prescricaoRelatorio = await _context.Prescricaos.ToListAsync();
+
+            _logger.LogInformation("Busca de prescrições concluída com sucesso");
+            return Ok(prescricaoRelatorio);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao processar a busca de prescrições");
+            return BadRequest($"Erro em buscar: {ex.Message}");
+        }
     }
 
     // GET: api/Prescricao/5
@@ -41,22 +58,27 @@ public class PrescricaosController : ControllerBase
     [Route("relatorio/prescricao/{id_prescricao:int}")]
     public async Task<ActionResult<Prescricao>> GetPrescricao(int id_prescricao)
     {
+        _logger.LogInformation("Iniciando a busca da prescrição pelo ID {IdPrescricao}", id_prescricao);
+
         try
         {
             var prescricao = await _context.Prescricaos.FindAsync(id_prescricao);
 
             if (prescricao == null)
             {
+                _logger.LogWarning("Prescrição não encontrada para o ID {IdPrescricao}", id_prescricao);
                 return NotFound("Id de prescrição não encontrado");
             }
 
+            _logger.LogInformation("Prescrição encontrada com sucesso para o ID {IdPrescricao}", id_prescricao);
             return Ok(prescricao);
         }
-        catch (Exception ex) 
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Erro ao buscar prescrição pelo ID {IdPrescricao}", id_prescricao);
             return BadRequest($"Erro em buscar: {ex.Message}");
         }
-        
+
     }
 
     // PUT: api/Prescricao/5
@@ -74,33 +96,42 @@ public class PrescricaosController : ControllerBase
     [Route("atualizar/prescricao/{id_prescricao:int}")]
     public async Task<IActionResult> PutPrescricao(int id_prescricao, Prescricao prescricao)
     {
+        _logger.LogInformation("Iniciando a atualização da prescrição com ID {IdPrescricao}", id_prescricao);
+
         if (id_prescricao != prescricao.Id_prescricao)
         {
+            _logger.LogWarning("ID da prescrição informado na rota é diferente do ID enviado no objeto. ID: {IdPrescricao}", id_prescricao);
             return BadRequest("Id da prescrição está errado.");
         }
 
         try
         {
-            _context.Entry(prescricao).State = EntityState.Modified;
+            var prescricaoAtualizada = await _prescricaoService.UpdatePrescricaoAsync(id_prescricao, prescricao);
+
+            _context.Entry(prescricaoAtualizada).State = EntityState.Modified;
+
             await _context.SaveChangesAsync();
-            return NoContent();
+
+            _logger.LogInformation("Prescrição com ID {IdPrescricao} atualizada com sucesso", id_prescricao);
+            return Ok(prescricaoAtualizada);
         }
         catch (DbUpdateConcurrencyException)
         {
             if (!PrescricaoExists(id_prescricao))
             {
+                _logger.LogWarning("Prescrição não encontrada durante a atualização. ID: {IdPrescricao}", id_prescricao);
                 return NotFound("Id prescrição não encontrado");
             }
-            else
-            {
-                throw;
-            }
+            throw;
+
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Erro ao atualizar prescrição com ID {IdPrescricao}", id_prescricao);
             return BadRequest($"Erro em atualizar: {ex.Message}");
         }
     }
+
     private bool PrescricaoExists(int id_prescricao)
     {
         return _context.Prescricaos.FirstOrDefault(e => e.Id_prescricao == id_prescricao) != null;
@@ -119,27 +150,36 @@ public class PrescricaosController : ControllerBase
     [Route("criar/prescricao")]
     public async Task<ActionResult<Prescricao>> PostPrescricao(Prescricao prescricao)
     {
+        _logger.LogInformation("Iniciando a criação de prescrição para a consulta ID {IdConsulta}", prescricao.Id_consulta);
+
         try
         {
             var consultaExiste = await _context.Consultas
                 .FirstOrDefaultAsync(c => c.Id_consulta == prescricao.Id_consulta);
+
             if (consultaExiste != null)
             {
-                _context.Prescricaos.Add(prescricao);
+                var prescricaoCriada = await _prescricaoService.CreatePrescricaoAsync(prescricao);
+
+                _context.Prescricaos.Add(prescricaoCriada);
+
                 await _context.SaveChangesAsync();
 
-                return CreatedAtAction("GetPrescricao", new { id_prescricao = prescricao.Id_prescricao }, prescricao);
+                _logger.LogInformation("Prescrição criada com sucesso. ID: {IdPrescricao}", prescricao.Id_prescricao);
+                return Ok(prescricaoCriada);
             }
-            else 
+            else
             {
+                _logger.LogWarning("Consulta não encontrada para criação da prescrição. ID: {IdConsulta}", prescricao.Id_consulta);
                 return BadRequest($"Id consulta não encontrado");
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Erro ao salvar prescrição para a consulta ID {IdConsulta}", prescricao.Id_consulta);
             return BadRequest($"Erro ao salvar os dados: {ex.Message}");
         }
-        
+
     }
 
     // DELETE: api/Prescricao/5
@@ -156,23 +196,29 @@ public class PrescricaosController : ControllerBase
     [Route("deleta/prescricao/{id_prescricao:int}")]
     public async Task<IActionResult> DeletePrescricao(int id_prescricao)
     {
+        _logger.LogInformation("Iniciando a exclusão da prescrição com ID {IdPrescricao}", id_prescricao);
+
         try
         {
             var prescricao = await _context.Prescricaos.FindAsync(id_prescricao);
+
             if (prescricao == null)
             {
+                _logger.LogWarning("Prescrição não encontrada para exclusão. ID: {IdPrescricao}", id_prescricao);
                 return NotFound("Id prescrição não encontrado");
             }
 
             _context.Prescricaos.Remove(prescricao);
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("Prescrição com ID {IdPrescricao} excluída com sucesso", id_prescricao);
             return NoContent();
         }
-        catch (Exception ex) 
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Erro ao deletar prescrição com ID {IdPrescricao}", id_prescricao);
             return BadRequest($"Erro em deletar: {ex.Message}");
         }
-        
+
     }
 }

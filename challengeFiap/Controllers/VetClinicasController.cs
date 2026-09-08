@@ -2,15 +2,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using challengeFiap.Domain.Entities;
 using challengeFiap.Infrastruture.Data;
+using challengeFiap.Domain.Interfaces;
 
 [Route("api/[controller]")]
 [ApiController]
 public class VetClinicasController : ControllerBase
 {
     private readonly AppDbContext _context;
-    public VetClinicasController(AppDbContext context)
+    private readonly ILogger<VetClinicasController> _logger;
+    private readonly IVetClinica _vetClinica;
+
+    public VetClinicasController(AppDbContext context, ILogger<VetClinicasController> logger, IVetClinica vetClinica)
     {
         _context = context;
+        _logger = logger;
+        _vetClinica = vetClinica;
     }
 
     // GET: api/VetClinica
@@ -24,8 +30,20 @@ public class VetClinicasController : ControllerBase
     [Route("relatorio/vetclinica")]
     public async Task<ActionResult<IEnumerable<VetClinica>>> GetAllVetClinica()
     {
-        var clinicaVet = await _context.VetClinicas.ToListAsync();
-        return Ok(clinicaVet);
+        _logger.LogInformation("Iniciando a busca de veterinários e clínicas");
+
+        try
+        {
+            var clinicaVet = await _context.VetClinicas.ToListAsync();
+
+            _logger.LogInformation("Busca de veterinários e clínicas concluída com sucesso");
+            return Ok(clinicaVet);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao processar a busca de veterinários e clínicas");
+            return BadRequest($"Erro em buscar: {ex.Message}");
+        }
     }
 
     // GET: api/VetClinica/5
@@ -41,22 +59,27 @@ public class VetClinicasController : ControllerBase
     [Route("relatorio/vetclinica/{id_clinica_vet:int}")]
     public async Task<ActionResult<VetClinica>> GetVetClinica(int id_clinica_vet)
     {
+        _logger.LogInformation("Iniciando a busca de vet clínica pelo ID {IdClinicaVet}", id_clinica_vet);
+
         try
         {
             var vetclinica = await _context.VetClinicas.FindAsync(id_clinica_vet);
 
             if (vetclinica == null)
             {
+                _logger.LogWarning("Vet clínica não encontrada para o ID {IdClinicaVet}", id_clinica_vet);
                 return NotFound("Id vet clinica não encontrado");
             }
 
+            _logger.LogInformation("Vet clínica encontrada com sucesso para o ID {IdClinicaVet}", id_clinica_vet);
             return Ok(vetclinica);
         }
-        catch (Exception ex) 
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Erro ao buscar vet clínica pelo ID {IdClinicaVet}", id_clinica_vet);
             return BadRequest($"Erro em buscar: {ex.Message}");
         }
-        
+
     }
 
     // PUT: api/VetClinica/5
@@ -74,8 +97,11 @@ public class VetClinicasController : ControllerBase
     [Route("atualizar/vetclinica/{id_clinica_vet:int}")]
     public async Task<IActionResult> PutVetClinica(int id_clinica_vet, VetClinica vetclinica)
     {
+        _logger.LogInformation("Iniciando a atualização de vet clínica com ID {IdClinicaVet}", id_clinica_vet);
+
         if (id_clinica_vet != vetclinica.Id_clinica_vet)
         {
+            _logger.LogWarning("ID da vet clínica informado na rota é diferente do ID enviado no objeto. ID: {IdClinicaVet}", id_clinica_vet);
             return BadRequest("Id clinica e vet está incorretor");
         }
 
@@ -85,15 +111,21 @@ public class VetClinicasController : ControllerBase
                 .FirstOrDefaultAsync(c => c.Id_clinica == vetclinica.Id_clinica);
             var existeVet = await _context.Veterinarios
                 .FirstOrDefaultAsync(c => c.Id_vet == vetclinica.Id_vet);
+
             if (existeClinica != null && existeVet != null)
             {
-                _context.Entry(vetclinica).State = EntityState.Modified;
+                var vetClinicaAtualizado = await _vetClinica.UpdateVetClinicaAsync(id_clinica_vet, vetclinica);
+
+                _context.Entry(vetClinicaAtualizado).State = EntityState.Modified;
+
                 await _context.SaveChangesAsync();
 
-                return NoContent();
+                _logger.LogInformation("Vet clínica com ID {IdClinicaVet} atualizada com sucesso", id_clinica_vet);
+                return Ok(vetClinicaAtualizado);
             }
             else
             {
+                _logger.LogWarning("Não foi possível encontrar a clínica ou o veterinário para atualização da vet clínica. ID: {IdClinicaVet}", id_clinica_vet);
                 return NotFound("Não foi possivel encontrar os id clinica ou vet.");
             }
 
@@ -102,14 +134,14 @@ public class VetClinicasController : ControllerBase
         {
             if (!VetClinicaExists(id_clinica_vet))
             {
+                _logger.LogWarning("Vet clínica não encontrada durante a atualização. ID: {IdClinicaVet}", id_clinica_vet);
                 return NotFound("Id clinica vet não existe");
             }
-            else
-            {
-                throw;
-            }
-        }catch (Exception ex)
+            throw;
+        }
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Erro ao atualizar vet clínica com ID {IdClinicaVet}", id_clinica_vet);
             return BadRequest($"Erro em atualizar: {ex.Message}");
         }
     }
@@ -130,27 +162,36 @@ public class VetClinicasController : ControllerBase
     [Route("criar/vetclinica")]
     public async Task<ActionResult<VetClinica>> PostVetClinica(VetClinica vetclinica)
     {
+        _logger.LogInformation("Iniciando a criação de vet clínica para a clínica ID {IdClinica} e veterinário ID {IdVet}", vetclinica.Id_clinica, vetclinica.Id_vet);
+
         try
         {
             var exiteClinica = await _context.Clinicas.FirstOrDefaultAsync(c => c.Id_clinica == vetclinica.Id_clinica);
             var existeVet = await _context.Veterinarios.FirstOrDefaultAsync(v => v.Id_vet == vetclinica.Id_vet);
+
             if (exiteClinica != null && existeVet != null)
             {
-                _context.VetClinicas.Add(vetclinica);
+                var vetClinicaCriada = await _vetClinica.CreateVetClinicaAsync(vetclinica);
+
+                _context.VetClinicas.Add(vetClinicaCriada);
+
                 await _context.SaveChangesAsync();
 
-                return CreatedAtAction("GetVetClinica", new { id_clinica_vet = vetclinica.Id_clinica_vet }, vetclinica);
+                _logger.LogInformation("Vet clínica criada com sucesso. ID: {IdClinicaVet}", vetclinica.Id_clinica_vet);
+                return Ok(vetClinicaCriada);
             }
             else
             {
+                _logger.LogWarning("Clínica ou veterinário não encontrado para criação da vet clínica. Clínica ID: {IdClinica}, Veterinário ID: {IdVet}", vetclinica.Id_clinica, vetclinica.Id_vet);
                 return BadRequest("Id clinica e vet não encontrado");
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Erro ao salvar vet clínica para a clínica ID {IdClinica} e veterinário ID {IdVet}", vetclinica.Id_clinica, vetclinica.Id_vet);
             return BadRequest($"Erro ao salvar os dados: {ex.Message}");
         }
-       
+
     }
 
     // DELETE: api/VetClinica/5
@@ -167,20 +208,27 @@ public class VetClinicasController : ControllerBase
     [Route("deleta/vetclinica/{id_clinica_vet:int}")]
     public async Task<IActionResult> DeleteVetClinica(int id_clinica_vet)
     {
+        _logger.LogInformation("Iniciando a exclusão da vet clínica com ID {IdClinicaVet}", id_clinica_vet);
+
         try
         {
             var vetclinica = await _context.VetClinicas.FindAsync(id_clinica_vet);
+
             if (vetclinica == null)
             {
+                _logger.LogWarning("Vet clínica não encontrada para exclusão. ID: {IdClinicaVet}", id_clinica_vet);
                 return NotFound("Id vet clinica não encontrado");
             }
+
             _context.VetClinicas.Remove(vetclinica);
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("Vet clínica com ID {IdClinicaVet} excluída com sucesso", id_clinica_vet);
             return NoContent();
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Erro ao deletar vet clínica com ID {IdClinicaVet}", id_clinica_vet);
             return BadRequest($"Erro em deletar: {ex.Message}");
         }
     }

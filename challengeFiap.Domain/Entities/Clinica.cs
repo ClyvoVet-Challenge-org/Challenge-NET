@@ -19,7 +19,7 @@ namespace challengeFiap.Domain.Entities
         [Column("nm_clinica")]
         public string? Nm_clinica { get; set; }
 
-        protected Clinica() { }
+        public Clinica() { }
 
         public Clinica(int id_clinica, string cnpj_clinica, string nm_clinica)
         {

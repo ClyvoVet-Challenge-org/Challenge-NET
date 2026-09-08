@@ -10,6 +10,7 @@ namespace challengeFiap.Infrastruture.Data
         {
 
         }
+
         public DbSet<Veterinario> Veterinarios { get; set; }
         public DbSet<Clinica> Clinicas { get; set; }
         public DbSet<EnderecoClinica> EnderecoClinicas { get; set; }

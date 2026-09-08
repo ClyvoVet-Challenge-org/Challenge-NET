@@ -31,7 +31,7 @@ namespace challengeFiap.Domain.Entities
         [Column("observacoes_gerais")]
         public string? Observacoes_gerais { get; set; }
 
-        protected Prescricao() { }
+        public Prescricao() { }
 
         public Prescricao(int id_prescricao, DateTime dt_emissao, DateTime dt_expiracao, int id_consulta, string observacoes_gerais)
         {

@@ -40,7 +40,7 @@ namespace challengeFiap.Domain.Entities
         [ForeignKey("Id_tutor")]
         public Tutor? Tutor{ get; set; }
 
-        protected Animal() { }
+        public Animal() { }
 
         public Animal(int id_animal, string rg_animal, string nr_microchip_animal, string nm_animal, DateTime dt_nascimento_animal, decimal peso_animal, string especie_animal, string raca_animal, int id_tutor)
         {

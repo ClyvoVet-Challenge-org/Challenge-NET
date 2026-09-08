@@ -25,7 +25,7 @@ namespace challengeFiap.Domain.Entities
         [ForeignKey("Id_clinica")]
         public Clinica? Clinica { get; set; }
 
-        protected VetClinica() { }
+        public VetClinica() { }
 
         public VetClinica(int id_clinica_vet, int id_vet, int id_clinica)
         {

@@ -1,16 +1,25 @@
+using challengeFiap.Domain.Entities;
+using challengeFiap.Domain.Interfaces;
+using challengeFiap.Infrastruture.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using challengeFiap.Domain.Entities;
-using challengeFiap.Infrastruture.Data;
 
 [Route("api/[controller]")]
 [ApiController]
 public class EnderecoAnimalsController : ControllerBase
 {
     private readonly AppDbContext _context;
-    public EnderecoAnimalsController(AppDbContext context)
+    private readonly ILogger<EnderecoAnimalsController> _logger;
+    private readonly IenderecoAnimalService _enderecoAnimalService;
+
+    public EnderecoAnimalsController(
+        AppDbContext context,
+        ILogger<EnderecoAnimalsController> logger,
+        IenderecoAnimalService enderecoAnimalService)
     {
         _context = context;
+        _logger = logger;
+        _enderecoAnimalService = enderecoAnimalService;
     }
 
     // GET: api/EnderecoAnimal
@@ -24,8 +33,22 @@ public class EnderecoAnimalsController : ControllerBase
     [Route("relatorio/enderecoanimal")]
     public async Task<ActionResult<IEnumerable<EnderecoAnimal>>> GetAllEnderecoAnimal()
     {
-        var relatorioEnAnimal = await _context.EnderecoAnimals.ToListAsync();
-        return Ok(relatorioEnAnimal);
+        _logger.LogInformation("Iniciando a busca de endereço animal");
+
+        try
+        {
+            var relatorioEnAnimal = await _context.EnderecoAnimals.ToListAsync();
+
+            _logger.LogInformation("Busca de endereço animal concluída com sucesso");
+
+            return Ok(relatorioEnAnimal);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao processar a busca a endereço animal");
+
+            return BadRequest($"Erro em processar a busca: {ex.Message}");
+        }
     }
 
     // GET: api/EnderecoAnimal/5
@@ -41,19 +64,27 @@ public class EnderecoAnimalsController : ControllerBase
     [Route("relatorio/enderecoanimal/{id_endereco_animal:int}")]
     public async Task<ActionResult<EnderecoAnimal>> GetEnderecoAnimal(int id_endereco_animal)
     {
+        _logger.LogInformation("Iniciando a busca de endereço animal com ID: {IdEnderecoAnimal}",id_endereco_animal);
+
         try
         {
             var enderecoanimal = await _context.EnderecoAnimals.FindAsync(id_endereco_animal);
 
             if (enderecoanimal == null)
             {
+                _logger.LogWarning("Endereço animal não encontrado. ID: {IdEnderecoAnimal}",id_endereco_animal);
+
                 return NotFound("Endereço animal não encontrado.");
             }
+
+            _logger.LogInformation("Endereço animal encontrado com sucesso. ID: {IdEnderecoAnimal}",id_endereco_animal);
 
             return Ok(enderecoanimal);
         }
         catch(Exception ex)
         {
+            _logger.LogError(ex,"Erro em buscar endereço animal. ID: {IdEnderecoAnimal}",id_endereco_animal);
+
             return BadRequest($"Erro em buscar: {ex.Message}");
         }
     }
@@ -71,33 +102,47 @@ public class EnderecoAnimalsController : ControllerBase
     /// <returns>Atualizar: </returns>
     [HttpPut]
     [Route("atualizar/enderecoanimal/{id_endereco_animal:int}")]
-    public async Task<IActionResult> PutEnderecoAnimal(int id_endereco_animal, EnderecoAnimal enderecoanimal)
+    public async Task<IActionResult> PutEnderecoAnimal(int id_endereco_animal,EnderecoAnimal enderecoanimal)
     {
+        _logger.LogInformation("Iniciando atualização de endereço animal com ID: {IdEnderecoAnimal}",id_endereco_animal);
+
         if (id_endereco_animal != enderecoanimal.Id_endereco_animal)
         {
+            _logger.LogWarning("Id endereco animal está incorreto. ID informado: {IdInformado}, ID do endereço: {IdEnderecoAnimal}",id_endereco_animal,enderecoanimal.Id_endereco_animal);
+
             return BadRequest("Id endereco animal está incorreto");
         }
         try
         {
-            _context.Entry(enderecoanimal).State = EntityState.Modified;
+            var enderecoAnimalAtualizado =await _enderecoAnimalService.UpdateEnderecoAnimalAsync(id_endereco_animal,enderecoanimal);
+
+            _context.Entry(enderecoAnimalAtualizado).State = EntityState.Modified;
+
             await _context.SaveChangesAsync();
-            return NoContent();
+
+            _logger.LogInformation("Atualização de endereço animal concluída com sucesso. ID: {IdEnderecoAnimal}",id_endereco_animal);
+
+            return Ok(enderecoAnimalAtualizado);
         }
         catch (DbUpdateConcurrencyException)
         {
             if (!EnderecoAnimalExists(id_endereco_animal))
             {
+                _logger.LogWarning("Id endereço animal não encontrado. ID: {IdEnderecoAnimal}",id_endereco_animal);
+
                 return NotFound("Id endereço animal não encontrado");
             }
-            else
-            {
-                throw;
-            }
+            throw;
         }
-        catch (Exception ex) {
-            return BadRequest($"Erro em atualizar endereço animal: {ex.Message} ");
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,"Erro em atualizar endereço animal. ID: {IdEnderecoAnimal}",id_endereco_animal);
+
+            return BadRequest(
+                $"Erro em atualizar endereço animal: {ex.Message} ");
         }
     }
+
     private bool EnderecoAnimalExists(int id_endereco_animal)
     {
         return _context.EnderecoAnimals.FirstOrDefault(e => e.Id_endereco_animal == id_endereco_animal) != null;
@@ -109,31 +154,43 @@ public class EnderecoAnimalsController : ControllerBase
     /// Criar endereço animal
     /// </summary>
     /// <param name="enderecoanimal">Criação de dados de endereço animal</param>
-    /// <response code="201">Endereço animal criado com sucesso.</response>
+    /// <response code="200">Endereço animal criado com sucesso.</response>
     /// <response code="400">Erro na validação.</response>
     /// <returns>Criar endereço animal</returns>
     [HttpPost]
     [Route("criar/enderecoanimal")]
-    public async Task<ActionResult<EnderecoAnimal>> PostEnderecoAnimal(EnderecoAnimal enderecoanimal)
+    public async Task<ActionResult<EnderecoAnimal>> PostEnderecoAnimal(
+        EnderecoAnimal enderecoanimal)
     {
+        _logger.LogInformation("Iniciando criação de endereço animal. ID Animal: {IdAnimal}",enderecoanimal.Id_animal);
+
         try
         {
-            var animalExiste = await _context.Animals
-                .FirstOrDefaultAsync(a => a.Id_animal == enderecoanimal.Id_animal);
+            var animalExiste = await _context.Animals.FirstOrDefaultAsync(a => a.Id_animal == enderecoanimal.Id_animal);
 
             if (animalExiste != null)
             {
-                _context.EnderecoAnimals.Add(enderecoanimal);
+                var enderecoAnimalCriado = await _enderecoAnimalService.CreateEnderecoAnimalAsync(enderecoanimal);
+
+                _context.EnderecoAnimals.Add(enderecoAnimalCriado);
+
                 await _context.SaveChangesAsync();
-                return CreatedAtAction("GetEnderecoAnimal", new { id_endereco_animal = enderecoanimal.Id_endereco_animal }, enderecoanimal);
+
+                _logger.LogInformation("Endereço animal criado com sucesso. ID: {IdEnderecoAnimal}",enderecoanimal.Id_endereco_animal);
+
+                return Ok(enderecoAnimalCriado);
             }
             else
             {
-                return BadRequest($"Id animal não existe");
+                _logger.LogWarning("Id animal não existe. ID Animal: {IdAnimal}",enderecoanimal.Id_animal);
+
+                return BadRequest("Id animal não existe");
             }
         }
         catch(Exception ex)
         {
+            _logger.LogError(ex,"Erro ao salvar os dados do endereço animal. ID Animal: {IdAnimal}",enderecoanimal.Id_animal);
+
             return BadRequest($"Erro ao salvar os dados: {ex.Message}");
         }
     }
@@ -152,23 +209,33 @@ public class EnderecoAnimalsController : ControllerBase
     [Route("deleta/enderecoanimal/{id_endereco_animal:int}")]
     public async Task<IActionResult> DeleteEnderecoAnimal(int id_endereco_animal)
     {
+        _logger.LogInformation("Iniciando remoção de endereço animal. ID: {IdEnderecoAnimal}",id_endereco_animal);
+
         try
         {
             var enderecoanimal = await _context.EnderecoAnimals.FindAsync(id_endereco_animal);
+
             if (enderecoanimal == null)
             {
+                _logger.LogWarning("Id não encontrado. ID: {IdEnderecoAnimal}", id_endereco_animal);
+
                 return NotFound("Id não encontrado");
             }
 
             _context.EnderecoAnimals.Remove(enderecoanimal);
+
             await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Endereço animal removido com sucesso. ID: {IdEnderecoAnimal}",id_endereco_animal);
 
             return NoContent();
         }catch(Exception ex)
         {
+            _logger.LogError(ex,"Erro em deletar endereço animal. ID: {IdEnderecoAnimal}",id_endereco_animal);
+
             return BadRequest($"Erro em deletar: {ex.Message}");
         }
-        
+
     }
 
 }

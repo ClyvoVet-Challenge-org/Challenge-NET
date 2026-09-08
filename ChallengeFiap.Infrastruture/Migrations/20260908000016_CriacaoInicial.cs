@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace challengeFiap.infrastruture.Migrations
+namespace ChallengeFiap.Infrastruture.Migrations
 {
     /// <inheritdoc />
     public partial class CriacaoInicial : Migration
@@ -26,18 +26,18 @@ namespace challengeFiap.infrastruture.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "T_CLYVO_RESPONSAVEL",
+                name: "T_CLYVO_TUTOR",
                 columns: table => new
                 {
-                    id_responsavel = table.Column<int>(type: "NUMBER(10)", nullable: false)
+                    id_tutor = table.Column<int>(type: "NUMBER(10)", nullable: false)
                         .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
-                    cpf_responsavel = table.Column<string>(type: "NVARCHAR2(450)", nullable: false),
-                    nm_responsavel = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    nr_telefone_responsavel = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false)
+                    cpf_tutor = table.Column<string>(type: "NVARCHAR2(450)", nullable: false),
+                    nm_tutor = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    nr_telefone_tutor = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_T_CLYVO_RESPONSAVEL", x => x.id_responsavel);
+                    table.PrimaryKey("PK_T_CLYVO_TUTOR", x => x.id_tutor);
                 });
 
             migrationBuilder.CreateTable(
@@ -94,27 +94,27 @@ namespace challengeFiap.infrastruture.Migrations
                     nr_microchip_animal = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     nm_animal = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     dt_nascimento_animal = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: false),
-                    peso_animal = table.Column<decimal>(type: "DECIMAL(18, 2)", nullable: false),
+                    peso_animal = table.Column<decimal>(type: "DECIMAL(18,2)", precision: 18, scale: 2, nullable: false),
                     especie_animal = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     raca_animal = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    id_responsavel = table.Column<int>(type: "NUMBER(10)", nullable: false)
+                    id_tutor = table.Column<int>(type: "NUMBER(10)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_T_CLYVO_ANIMAL", x => x.id_animal);
                     table.ForeignKey(
-                        name: "FK_T_CLYVO_ANIMAL_T_CLYVO_RESPONSAVEL_id_responsavel",
-                        column: x => x.id_responsavel,
-                        principalTable: "T_CLYVO_RESPONSAVEL",
-                        principalColumn: "id_responsavel",
+                        name: "FK_T_CLYVO_ANIMAL_T_CLYVO_TUTOR_id_tutor",
+                        column: x => x.id_tutor,
+                        principalTable: "T_CLYVO_TUTOR",
+                        principalColumn: "id_tutor",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "T_CLYVO_ENDERECO_RESPONSAVEL",
+                name: "T_CLYVO_ENDERECO_TUTOR",
                 columns: table => new
                 {
-                    id_endereco_responsavel = table.Column<int>(type: "NUMBER(10)", nullable: false)
+                    id_endereco_tutor = table.Column<int>(type: "NUMBER(10)", nullable: false)
                         .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
                     pais = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     estado = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
@@ -124,16 +124,16 @@ namespace challengeFiap.infrastruture.Migrations
                     nr_rua = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     complemento = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     cep = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    id_responsavel = table.Column<int>(type: "NUMBER(10)", nullable: false)
+                    id_tutor = table.Column<int>(type: "NUMBER(10)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_T_CLYVO_ENDERECO_RESPONSAVEL", x => x.id_endereco_responsavel);
+                    table.PrimaryKey("PK_T_CLYVO_ENDERECO_TUTOR", x => x.id_endereco_tutor);
                     table.ForeignKey(
-                        name: "FK_T_CLYVO_ENDERECO_RESPONSAVEL_T_CLYVO_RESPONSAVEL_id_responsavel",
-                        column: x => x.id_responsavel,
-                        principalTable: "T_CLYVO_RESPONSAVEL",
-                        principalColumn: "id_responsavel",
+                        name: "FK_T_CLYVO_ENDERECO_TUTOR_T_CLYVO_TUTOR_id_tutor",
+                        column: x => x.id_tutor,
+                        principalTable: "T_CLYVO_TUTOR",
+                        principalColumn: "id_tutor",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -172,7 +172,7 @@ namespace challengeFiap.infrastruture.Migrations
                     nm_vacina = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     dt_vacinacao_prevista = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: false),
                     dt_vacinacao_efetuada = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: false),
-                    st_vacinacao = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    st_vacinacao = table.Column<int>(type: "NUMBER(10)", nullable: false),
                     id_animal = table.Column<int>(type: "NUMBER(10)", nullable: false)
                 },
                 constraints: table =>
@@ -193,7 +193,7 @@ namespace challengeFiap.infrastruture.Migrations
                     id_consulta = table.Column<int>(type: "NUMBER(10)", nullable: false)
                         .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
                     historico_consulta = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    st_consulta = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    st_consulta = table.Column<int>(type: "NUMBER(10)", nullable: false),
                     dt_consulta = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: false),
                     id_vet = table.Column<int>(type: "NUMBER(10)", nullable: false),
                     id_animal = table.Column<int>(type: "NUMBER(10)", nullable: false)
@@ -288,9 +288,9 @@ namespace challengeFiap.infrastruture.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_T_CLYVO_ANIMAL_id_responsavel",
+                name: "IX_T_CLYVO_ANIMAL_id_tutor",
                 table: "T_CLYVO_ANIMAL",
-                column: "id_responsavel");
+                column: "id_tutor");
 
             migrationBuilder.CreateIndex(
                 name: "IX_T_CLYVO_CARTEIRAVACINAL_id_animal",
@@ -310,17 +310,20 @@ namespace challengeFiap.infrastruture.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_T_CLYVO_ENDERECO_ANIMAL_id_animal",
                 table: "T_CLYVO_ENDERECO_ANIMAL",
-                column: "id_animal");
+                column: "id_animal",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_T_CLYVO_ENDERECO_CLINICA_id_clinica",
                 table: "T_CLYVO_ENDERECO_CLINICA",
-                column: "id_clinica");
+                column: "id_clinica",
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_T_CLYVO_ENDERECO_RESPONSAVEL_id_responsavel",
-                table: "T_CLYVO_ENDERECO_RESPONSAVEL",
-                column: "id_responsavel");
+                name: "IX_T_CLYVO_ENDERECO_TUTOR_id_tutor",
+                table: "T_CLYVO_ENDERECO_TUTOR",
+                column: "id_tutor",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_T_CLYVO_MEDICAMENTO_id_prescricao",
@@ -334,9 +337,9 @@ namespace challengeFiap.infrastruture.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "cpf_responsavel",
-                table: "T_CLYVO_RESPONSAVEL",
-                column: "cpf_responsavel",
+                name: "cpf_tutor",
+                table: "T_CLYVO_TUTOR",
+                column: "cpf_tutor",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -375,7 +378,7 @@ namespace challengeFiap.infrastruture.Migrations
                 name: "T_CLYVO_ENDERECO_CLINICA");
 
             migrationBuilder.DropTable(
-                name: "T_CLYVO_ENDERECO_RESPONSAVEL");
+                name: "T_CLYVO_ENDERECO_TUTOR");
 
             migrationBuilder.DropTable(
                 name: "T_CLYVO_MEDICAMENTO");
@@ -399,7 +402,7 @@ namespace challengeFiap.infrastruture.Migrations
                 name: "T_CLYVO_VET");
 
             migrationBuilder.DropTable(
-                name: "T_CLYVO_RESPONSAVEL");
+                name: "T_CLYVO_TUTOR");
         }
     }
 }

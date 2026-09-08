@@ -38,7 +38,7 @@ namespace challengeFiap.Domain.Entities
         [ForeignKey("Id_animal")]
         public Animal? Animal { get; set; }
 
-        protected Consulta() { }
+        public Consulta() { }
         public Consulta(int id_consulta, string historico_consulta, StatusConsulta st_consulta, DateTime dt_consulta, int id_vet, int id_animal)
         {
             Id_consulta = id_consulta;

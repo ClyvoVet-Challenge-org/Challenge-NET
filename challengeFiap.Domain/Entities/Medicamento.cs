@@ -31,7 +31,7 @@ namespace challengeFiap.Domain.Entities
         [Column("qtd_dias")]
         public int Qtd_dias { get; set; }
 
-        protected Medicamento() { }
+        public Medicamento() { }
 
         public Medicamento(int id_medicamento, int id_prescricao, string nm_medicamento, string dosagem_medicamento, string frequencia, int qtd_dias)
         {

@@ -1,4 +1,4 @@
-@model challengeFiap.src.Models.Animal
+@model challengeFiap.Domain.Entities.Animal
 
 @{
     ViewData["Title"] = "Edit";
@@ -49,14 +49,14 @@
                 <span asp-validation-for="Raca_animal" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Id_responsavel" class="control-label"></label>
-                <input asp-for="Id_responsavel" class="form-control" />
-                <span asp-validation-for="Id_responsavel" class="text-danger"></span>
+                <label asp-for="Id_tutor" class="control-label"></label>
+                <input asp-for="Id_tutor" class="form-control" />
+                <span asp-validation-for="Id_tutor" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Responsavel" class="control-label"></label>
-                <input asp-for="Responsavel" class="form-control" />
-                <span asp-validation-for="Responsavel" class="text-danger"></span>
+                <label asp-for="Tutor" class="control-label"></label>
+                <input asp-for="Tutor" class="form-control" />
+                <span asp-validation-for="Tutor" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

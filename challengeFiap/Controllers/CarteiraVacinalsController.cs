@@ -2,15 +2,26 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using challengeFiap.Domain.Entities;
 using challengeFiap.Infrastruture.Data;
+using challengeFiap.Application.Service;
+using challengeFiap.Domain.Interfaces;
 
 [Route("api/[controller]")]
 [ApiController]
 public class CarteiraVacinalsController : ControllerBase
 {
     private readonly AppDbContext _context;
-    public CarteiraVacinalsController(AppDbContext context)
+
+    private readonly ICarteiraVacinalService _carteiraVacinalService;
+    private readonly ILogger<CarteiraVacinalsController> _logger;
+
+    public CarteiraVacinalsController(
+        AppDbContext context,
+        ILogger<CarteiraVacinalsController> logger,
+        ICarteiraVacinalService carteiraVacinalService)
     {
         _context = context;
+        _logger = logger;
+        _carteiraVacinalService = carteiraVacinalService;
     }
 
     // GET: api/CarteiraVacinal
@@ -24,8 +35,20 @@ public class CarteiraVacinalsController : ControllerBase
     [Route("relatorio/carteiravacinal")]
     public async Task<ActionResult<IEnumerable<CarteiraVacinal>>> GetAllCarteiraVacinal()
     {
-        var relatorioCarteiraVacinal = await _context.CarteiraVacinals.ToArrayAsync();
-        return Ok(relatorioCarteiraVacinal);
+        _logger.LogInformation("Iniciando a busca de carteira vacinal");
+
+        try
+        {
+            var relatorioCarteiraVacinal = await _context.CarteiraVacinals.ToArrayAsync();
+
+            _logger.LogInformation("Busca de carteira vacinal concluída com sucesso.");
+            return Ok(relatorioCarteiraVacinal);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao processar a busca de carteira vacinal");
+            return BadRequest($"Erro em processar a busca: {ex.Message}");
+        }
     }
 
     // GET: api/CarteiraVacinal/5
@@ -41,21 +64,27 @@ public class CarteiraVacinalsController : ControllerBase
     [Route("relatorio/carteiravacinal/{id_carteiravacinal:int}")]
     public async Task<ActionResult<CarteiraVacinal>> GetCarteiraVacinal(int id_carteiravacinal)
     {
+        _logger.LogInformation("Iniciando a busca de carteira vacinal com ID: {IdCarteiraVacinal}",id_carteiravacinal);
         try
         {
             var carteiravacinal = await _context.CarteiraVacinals.FindAsync(id_carteiravacinal);
 
             if (carteiravacinal == null)
             {
+                _logger.LogWarning("Carteira vacinal não encontrada. ID: {IdCarteiraVacinal}",id_carteiravacinal);
                 return NotFound($"Id carteira vacinal não encontrada");
             }
+
+            _logger.LogInformation("Carteira Vacinal encontrada,");
+
             return Ok(carteiravacinal);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Erro em processamento");
             return BadRequest($"Erro em processar a buscar: {ex.Message}");
         }
-        
+
     }
 
     // PUT: api/CarteiraVacinal/5
@@ -73,33 +102,47 @@ public class CarteiraVacinalsController : ControllerBase
     [Route("atualizar/carteiravacinal/{id_carteiravacinal:int}")]
     public async Task<IActionResult> PutCarteiraVacinal(int id_carteiravacinal, CarteiraVacinal carteiravacinal)
     {
+        _logger.LogInformation("Iniciando atualizacao de carteira vacinal com ID: {IdCarteiraVacinal}",
+            id_carteiravacinal);
+
         if (id_carteiravacinal != carteiravacinal.Id_carteiraVacinal)
         {
+            _logger.LogWarning("O id de carteira vacinal esta incorreto. ID informado: {IdInformado}, ID da carteira: {IdCarteiraVacinal}",id_carteiravacinal,carteiravacinal.Id_carteiraVacinal);
+
             return BadRequest("O id de carteira vacinal esta incorreto");
         }
 
         try
         {
-            _context.Entry(carteiravacinal).State = EntityState.Modified;
+            var carteiraVacinalAtualizar= await _carteiraVacinalService.UpdateCarteiraVacinalAsync(id_carteiravacinal, carteiravacinal);
+            _context.Entry(carteiraVacinalAtualizar).State = EntityState.Modified;
+
             await _context.SaveChangesAsync();
-            return NoContent();
+
+            _logger.LogInformation("Atualizacao de carteira vacinal concluída com sucesso. ID: {IdCarteiraVacinal}",id_carteiravacinal);
+
+            return Ok(carteiraVacinalAtualizar);
         }
         catch (DbUpdateConcurrencyException)
         {
             if (!CarteiraVacinalExists(id_carteiravacinal))
             {
+                _logger.LogWarning("Carteira vacinal não encontrada para atualização. ID: {IdCarteiraVacinal}",id_carteiravacinal);
+
                 return NotFound("Não foi encontrado");
             }
-            else
-            {
-                throw;
-            }
+
+            throw;
+            
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
+            _logger.LogError(ex,"Erro em atualizar carteirs vacinal. ID: {IdCarteiraVacinal}",id_carteiravacinal);
+
             return BadRequest($"Erro em atualizar carteirs vacinal: {ex.Message}");
         }
     }
+
     private bool CarteiraVacinalExists(int id_carteiravacinal)
     {
         return _context.CarteiraVacinals.FirstOrDefault(e => e.Id_carteiraVacinal == id_carteiravacinal) != null;
@@ -118,24 +161,37 @@ public class CarteiraVacinalsController : ControllerBase
     [Route("criar/carteiravacinal")]
     public async Task<ActionResult<CarteiraVacinal>> PostCarteiraVacinal(CarteiraVacinal carteiravacinal)
     {
+        _logger.LogInformation("Iniciando criação da carteira vacinal. ID Animal: {IdAnimal}",carteiravacinal.Id_animal);
+
         try
         {
-            var AnimalExistente = await _context.Animals
-                .FirstOrDefaultAsync(a => a.Id_animal == carteiravacinal.Id_animal);
+            var AnimalExistente = await _context.Animals.FirstOrDefaultAsync(a => a.Id_animal == carteiravacinal.Id_animal);
 
-            if (AnimalExistente != null) 
-            { 
-                _context.CarteiraVacinals.Add(carteiravacinal);
+            if (AnimalExistente != null)
+            {
+                var carteiraVacinal = await _carteiraVacinalService.CreateCarteiraVacinalAsync(carteiravacinal);
+
+                _context.CarteiraVacinals.Add(carteiraVacinal);
                 await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Carteira vacinal criada com sucesso. ID: {IdCarteiraVacinal}",carteiravacinal.Id_carteiraVacinal);
+
                 return CreatedAtAction("GetCarteiraVacinal", new { id_carteiraVacinal = carteiravacinal.Id_carteiraVacinal }, carteiravacinal);
             }
             else
             {
+                _logger.LogWarning("Id do animal não encontrado. ID Animal: {IdAnimal}",carteiravacinal.Id_animal);
+
                 return BadRequest("Id do animal não encontrado");
             }
         }
-        catch (Exception ex) 
+        catch (Exception ex)
         {
+            _logger.LogError(
+                ex,
+                "Erro em salvar os dados da carteira vacinal. ID Animal: {IdAnimal}",
+                carteiravacinal.Id_animal);
+
             return BadRequest($"Erro em salvar os dados: {ex.Message}");
         }
     }
@@ -154,18 +210,28 @@ public class CarteiraVacinalsController : ControllerBase
     [Route("deleta/carteiravacinal/{id_carteiravacinal:int}")]
     public async Task<IActionResult> DeleteCarteiraVacinal(int id_carteiravacinal)
     {
+        _logger.LogInformation("Iniciando remoção da carteira vacinal. ID: {IdCarteiraVacinal}",id_carteiravacinal);
+
         try
         {
             var carteiraVacinalExiste = await _context.CarteiraVacinals.FirstOrDefaultAsync(e => e.Id_carteiraVacinal == id_carteiravacinal);
-            if(carteiraVacinalExiste== null)
+
+            if (carteiraVacinalExiste==null)
             {
+                _logger.LogWarning("Carteira Vacinal não encontrada. ID: {IdCarteiraVacinal}", id_carteiravacinal);
                 return NotFound("Carteira Vacinal não encontrada");
             }
+
             _context.CarteiraVacinals.Remove(carteiraVacinalExiste);
             await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Remoção da carteira vacinal concluída com sucesso. ID: {IdCarteiraVacinal}",id_carteiravacinal);
+
             return NoContent();
         }catch (Exception ex)
         {
+            _logger.LogError(ex,"Erro ao deletar a carteira vacinal. ID: {IdCarteiraVacinal}",id_carteiravacinal);
+
             return BadRequest($"Erro ao deletar : {ex.Message}");
         }
     }

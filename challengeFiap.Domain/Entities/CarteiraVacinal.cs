@@ -31,7 +31,7 @@ namespace challengeFiap.Domain.Entities
         [ForeignKey("Id_animal")]
         public Animal? Animal { get; set; }
 
-        protected CarteiraVacinal() { }
+        public CarteiraVacinal() { }
 
         public CarteiraVacinal(int id_carteiraVacinal, string nm_vacina, DateTime dt_vacina_prevista, DateTime dt_vacina_efetuada, StatusVacinacao st_vacina, int id_animal)
         {

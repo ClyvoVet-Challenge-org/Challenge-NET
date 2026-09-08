@@ -42,7 +42,7 @@ namespace challengeFiap.Domain.Entities
         public Animal? Animal{ get; set; }
 
 
-        protected EnderecoAnimal() { }
+        public EnderecoAnimal() { }
 
         public EnderecoAnimal(int id_endereco_animal, string pais, string estado, string cidade, string bairro, string logradouro_rua, string nr_rua, string complemento, string cep, int id_animal)
         {

@@ -22,7 +22,7 @@ namespace challengeFiap.Domain.Entities
         [Column("nr_telefone_tutor")]
         public string? Nr_telefone_tutor { get; set; }
 
-        protected Tutor() { }
+        public Tutor() { }
 
         public Tutor(int id_tutor, string cpf_tutor, string nm_tutor, string nr_telefone_tutor)
         {
