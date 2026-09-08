@@ -34,12 +34,12 @@ public class AnimalsController : ControllerBase
     [Route("relatorio/animal")]
     public async Task<ActionResult<IEnumerable<Animal>>> GetAllAnimal()
     {
-        _logger.LogInformation("Iniciando a busca de todos os animais");
+        _logger.LogInformation("Começando o relatorio dos animais.");
         try
         {
             var relatorioAnimal = await _context.Animals.ToListAsync();
 
-            _logger.LogInformation("Busca de todos os animais concluída com sucesso. Total de animais encontrados: {Count}", relatorioAnimal.Count);
+            _logger.LogInformation("Relatorio geral de animal realizado com sucesso - total presente: {Count}", relatorioAnimal.Count);
 
             return Ok(relatorioAnimal);
         }
@@ -64,19 +64,19 @@ public class AnimalsController : ControllerBase
     [Route("relatorio/animal/{id_animal:int}")]
     public async Task<ActionResult<Animal>> GetAnimal(int id_animal)
     {
-        _logger.LogInformation("Iniciando a busca do animal com ID: {IdAnimal}", id_animal);
+        _logger.LogInformation($"Começando a buscar pelo animal por seu id: {id_animal}");
         try
         {
             var animal = await _context.Animals.FindAsync(id_animal);
 
             if (animal == null)
             {
-                _logger.LogWarning("Animal com ID: {IdAnimal} não encontrado", id_animal);
+                _logger.LogWarning("Id não inseridor");
 
                 return NotFound("Id Animal não encontrada");
             }
 
-            _logger.LogInformation("Busca do animal com ID: {IdAnimal} concluída com sucesso", id_animal);
+            _logger.LogInformation("Busca do animal com id_animal -> {IdAnimal} realizada com sucesso", id_animal);
 
             return Ok(animal);
         }
@@ -103,11 +103,11 @@ public class AnimalsController : ControllerBase
     [Route("atualizar/animal/{id_animal:int}")]
     public async Task<IActionResult> PutAnimal(int id_animal, Animal animal)
     {
-        _logger.LogInformation("Iniciando a atualização do animal com ID: {IdAnimal}", id_animal);
+        _logger.LogInformation("Começando o processo de atualização do animal com ID: {IdAnimal}", id_animal);
 
         if (id_animal != animal.Id_animal)
         {
-            _logger.LogWarning("ID da URL {IdAnimal} diferente do ID informado no animal {AnimalId}", id_animal, animal.Id_animal);
+            _logger.LogWarning("Id oferecido está errado.");
 
             return BadRequest("O id de animal esta incorreto");
         }
@@ -118,18 +118,18 @@ public class AnimalsController : ControllerBase
             _context.Entry(animalAtualizado).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Atualização do animal com ID: {IdAnimal} concluída com sucesso", id_animal);
+            _logger.LogInformation("Atualização do animal com ID: {IdAnimal} realizada", id_animal);
 
             return Ok(animalAtualizado);
 
         }
         catch (DbUpdateConcurrencyException ex)
         {
-            _logger.LogWarning(ex, "Erro de concorrência ao atualizar o animal com ID: {IdAnimal}", id_animal);
+            _logger.LogWarning(ex, "Erro em atualizar o animal com ID: {IdAnimal}", id_animal);
 
             if (!AnimalExists(id_animal))
             {
-                _logger.LogWarning("Animal com ID: {IdAnimal} não encontrado para atualização", id_animal);
+                _logger.LogWarning("Animal com ID: {IdAnimal} não  existe", id_animal);
 
                 return NotFound("O animal não encontrado");
             }
@@ -161,7 +161,7 @@ public class AnimalsController : ControllerBase
     [Route("criar/animal")]
     public async Task<ActionResult<Animal>> PostAnimal(Animal animal)
     {
-        _logger.LogInformation("Iniciando a criação do animal com ID: {IdAnimal}", animal.Id_animal);
+        _logger.LogInformation("Iniciando processo de criação do animal");
         try
         {
             var responsavelExistente = await _context.Tutor.FirstOrDefaultAsync(a => a.Id_tutor == animal.Id_tutor);
@@ -173,14 +173,14 @@ public class AnimalsController : ControllerBase
                 _context.Animals.Add(animalCriado);
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation("Criação do animal com ID: {IdAnimal} concluída com sucesso", animal.Id_animal);
+                _logger.LogInformation("Criação do animal, {nm_animal}, concluída com sucesso", animal.nm_animal);
 
                 return Ok(animalCriado);
             }
             else
             {
-                _logger.LogWarning("Id do tutor: {IdTutor} não encontrado para criação do animal", animal.Id_tutor);
-                return BadRequest("Id responsavel não encontrado");
+                _logger.LogWarning("O tutor com o id {IdTutor} não foi encontrado", animal.Id_tutor);
+                return BadRequest("Id Tutor não encontrado");
             }
         }
         catch (Exception ex)
@@ -205,13 +205,13 @@ public class AnimalsController : ControllerBase
     [Route("deleta/animal/{id_animal:int}")]
     public async Task<IActionResult> DeleteAnimal(int id_animal)
     {
-        _logger.LogInformation("Iniciando a remoção do animal com ID: {IdAnimal}", id_animal);
+        _logger.LogInformation("Processo de deletar do animal");
         try
         {
             var animalExistente = await _context.Animals.FirstOrDefaultAsync(e => e.Id_animal == id_animal);
             if (animalExistente == null)
             {
-                _logger.LogWarning("Animal com ID: {IdAnimal} não encontrado para remoção", id_animal);
+                _logger.LogWarning("Id de animal {IdAnimal} não foi encontrado. ", id_animal);
 
                 return NotFound("Animal não encontrado.");
             }
@@ -219,13 +219,13 @@ public class AnimalsController : ControllerBase
             _context.Animals.Remove(animalExistente);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Remoção do animal com ID: {IdAnimal} concluída com sucesso", id_animal);
+            _logger.LogInformation("Deletar o id animal: {IdAnimal} feito com sucesso", id_animal);
 
             return NoContent();
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Erro ao remover o animal com ID: {IdAnimal}", id_animal);
+            _logger.LogError(e, "Erro ao remover o animal {IdAnimal}", id_animal);
 
             return BadRequest($"Erro em deletar: {e.Message}");
         }
