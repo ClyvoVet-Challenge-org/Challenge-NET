@@ -53,7 +53,7 @@ namespace challengeFiap.Application.Service
             };
       
 
-            _logger.LogInformation("Animal criar: {AnimalId} - {AnimalName}", createdAnimal.Id_animal, createdAnimal.Nm_animal);
+            _logger.LogInformation("Animal criado: id_animal -> {animal.id} nm_animal -> {animal.name}", createdAnimal.Id_animal, createdAnimal.Nm_animal);
 
             _animalCreateCounter.Add(1, new KeyValuePair<string, object?>("animal.id", createdAnimal.Id_animal), new KeyValuePair<string, object?>("animal.name", createdAnimal.Nm_animal));
 
@@ -80,7 +80,7 @@ namespace challengeFiap.Application.Service
                 Id_tutor = animal.Id_tutor,
             };
 
-            _logger.LogInformation("Animal atualizar: {Animal} - {AnimalName}", updatedAnimal.Id_animal, updatedAnimal.Nm_animal);
+            _logger.LogInformation("Animal atualizando com sucesso: {Animal} - {AnimalName}", updatedAnimal.Id_animal, updatedAnimal.Nm_animal);
 
             _animalUpdateCounter.Add(1,new KeyValuePair<string, object?>("animal.id", updatedAnimal.Id_animal));
             return updatedAnimal;
