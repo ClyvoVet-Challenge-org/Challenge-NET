@@ -35,13 +35,13 @@ public class CarteiraVacinalsController : ControllerBase
     [Route("relatorio/carteiravacinal")]
     public async Task<ActionResult<IEnumerable<CarteiraVacinal>>> GetAllCarteiraVacinal()
     {
-        _logger.LogInformation("Iniciando a busca de carteira vacinal");
+        _logger.LogInformation("Começado a busca de carteira vacinal do pet");
 
         try
         {
             var relatorioCarteiraVacinal = await _context.CarteiraVacinals.ToArrayAsync();
 
-            _logger.LogInformation("Busca de carteira vacinal concluída com sucesso.");
+            _logger.LogInformation("Busca realizada com sucesso.");
             return Ok(relatorioCarteiraVacinal);
         }
         catch (Exception ex)
@@ -64,18 +64,18 @@ public class CarteiraVacinalsController : ControllerBase
     [Route("relatorio/carteiravacinal/{id_carteiravacinal:int}")]
     public async Task<ActionResult<CarteiraVacinal>> GetCarteiraVacinal(int id_carteiravacinal)
     {
-        _logger.LogInformation("Iniciando a busca de carteira vacinal com ID: {IdCarteiraVacinal}",id_carteiravacinal);
+        _logger.LogInformation("busca de carteira vacinal com ID: {IdCarteiraVacinal}",id_carteiravacinal);
         try
         {
             var carteiravacinal = await _context.CarteiraVacinals.FindAsync(id_carteiravacinal);
 
             if (carteiravacinal == null)
             {
-                _logger.LogWarning("Carteira vacinal não encontrada. ID: {IdCarteiraVacinal}",id_carteiravacinal);
+                _logger.LogWarning("Carteira vacinal, ID: {IdCarteiraVacinal}, nao foi encontrada.",id_carteiravacinal);
                 return NotFound($"Id carteira vacinal não encontrada");
             }
 
-            _logger.LogInformation("Carteira Vacinal encontrada,");
+            _logger.LogInformation("Carteira Vacinal encontrada com sucesso,");
 
             return Ok(carteiravacinal);
         }
@@ -102,12 +102,11 @@ public class CarteiraVacinalsController : ControllerBase
     [Route("atualizar/carteiravacinal/{id_carteiravacinal:int}")]
     public async Task<IActionResult> PutCarteiraVacinal(int id_carteiravacinal, CarteiraVacinal carteiravacinal)
     {
-        _logger.LogInformation("Iniciando atualizacao de carteira vacinal com ID: {IdCarteiraVacinal}",
-            id_carteiravacinal);
+        _logger.LogInformation("Iniciando atualizacao de carteira vacinal.");
 
         if (id_carteiravacinal != carteiravacinal.Id_carteiraVacinal)
         {
-            _logger.LogWarning("O id de carteira vacinal esta incorreto. ID informado: {IdInformado}, ID da carteira: {IdCarteiraVacinal}",id_carteiravacinal,carteiravacinal.Id_carteiraVacinal);
+            _logger.LogWarning("O id de carteira vacinal esta errada com a principal. ID informada: {IdInformado}, ID oferecido para atualizar: {IdCarteiraVacinal}",id_carteiravacinal,carteiravacinal.Id_carteiraVacinal);
 
             return BadRequest("O id de carteira vacinal esta incorreto");
         }
@@ -210,7 +209,7 @@ public class CarteiraVacinalsController : ControllerBase
     [Route("deleta/carteiravacinal/{id_carteiravacinal:int}")]
     public async Task<IActionResult> DeleteCarteiraVacinal(int id_carteiravacinal)
     {
-        _logger.LogInformation("Iniciando remoção da carteira vacinal. ID: {IdCarteiraVacinal}",id_carteiravacinal);
+        _logger.LogInformation("comecando processo de deletar da carteira vacinal. ID: {IdCarteiraVacinal}",id_carteiravacinal);
 
         try
         {
