@@ -21,9 +21,8 @@ namespace challenge.IntegrationTests.Integration
             // Arrange
             var id_clinica = 9984;
 
-            // Remove o cadastro anterior, caso exista
-            await _client.DeleteAsync(
-                $"api/clinicas/deleta/clinica/{id_clinica}");
+            //Essa questão foi colocada aqui para evitar precisa mudar os dados o tempo todos para ver se ta funcionando o testes.
+            await _client.DeleteAsync($"api/clinicas/deleta/clinica/{id_clinica}");
 
             var novaClinica = new
             {
@@ -33,17 +32,14 @@ namespace challenge.IntegrationTests.Integration
             };
 
             // Act
-            var response = await _client.PostAsJsonAsync(
-                "api/clinicas/criar/clinica",
-                novaClinica);
+            var response = await _client.PostAsJsonAsync("api/clinicas/criar/clinica",novaClinica);
 
             // Assert
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            var clinicaCriada =
-                await response.Content.ReadFromJsonAsync<Clinica>();
+            var clinicaCriada = await response.Content.ReadFromJsonAsync<Clinica>();
 
             Assert.NotNull(clinicaCriada);
             Assert.Equal("PetSoule", clinicaCriada.Nm_clinica);
@@ -56,8 +52,7 @@ namespace challenge.IntegrationTests.Integration
             var id_clinica = 9998;
 
             // Remove o cadastro anterior, caso exista
-            await _client.DeleteAsync(
-                $"api/clinicas/deleta/clinica/{id_clinica}");
+            await _client.DeleteAsync($"api/clinicas/deleta/clinica/{id_clinica}");
 
             var novaClinica = new
             {
@@ -66,9 +61,7 @@ namespace challenge.IntegrationTests.Integration
                 Nm_clinica = "ClinicaTeste"
             };
 
-            var createResponse = await _client.PostAsJsonAsync(
-                "api/clinicas/criar/clinica",
-                novaClinica);
+            var createResponse = await _client.PostAsJsonAsync("api/clinicas/criar/clinica",novaClinica);
 
             createResponse.EnsureSuccessStatusCode();
 
@@ -80,9 +73,7 @@ namespace challenge.IntegrationTests.Integration
             };
 
             // Act
-            var response = await _client.PutAsJsonAsync(
-                $"api/clinicas/atualizar/clinica/{id_clinica}",
-                clinicaAtualizada);
+            var response = await _client.PutAsJsonAsync($"api/clinicas/atualizar/clinica/{id_clinica}",clinicaAtualizada);
 
             // Assert
             response.EnsureSuccessStatusCode();
