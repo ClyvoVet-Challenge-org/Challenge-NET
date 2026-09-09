@@ -77,13 +77,13 @@ public class ConsultasController : ControllerBase
                 return NotFound("Id Consulta não encontrado");
             }
 
-            _logger.LogInformation("Consulta encontrada com sucesso. ID: {IdConsulta}",id_consulta);
+            _logger.LogInformation("Consulta do id: {IdConsulta} foi encontrada com sucesso.",id_consulta);
 
             return Ok(consulta);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Erro em buscar consulta. ID: {IdConsulta}",id_consulta);
+            _logger.LogError(ex,"Erro em buscar consulta");
 
             return BadRequest($"Erro em buscar: {ex.Message}");
         }
@@ -108,7 +108,7 @@ public class ConsultasController : ControllerBase
 
         if (id_consulta != consulta.Id_consulta)
         {
-            _logger.LogWarning("Id da consulta está incorreto. ID informado: {IdInformado}, ID da consulta: {IdConsulta}",id_consulta,consulta.Id_consulta);
+            _logger.LogWarning("Id da consulta oferencido não esta igual do atualzar.");
 
             return BadRequest("Id da consulta está incorreto");
         }
@@ -121,7 +121,7 @@ public class ConsultasController : ControllerBase
 
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Consulta atualizada com sucesso. ID: {IdConsulta}",id_consulta);
+            _logger.LogInformation("Consulta atualizada com sucesso");
 
             return Ok(consultaAtualizada);
         }
@@ -129,7 +129,7 @@ public class ConsultasController : ControllerBase
         {
             if (!ConsultaExists(id_consulta))
             {
-                _logger.LogWarning("Consulta não encontrada. ID: {IdConsulta}",id_consulta);
+                _logger.LogWarning("Consulta não encontrada");
 
                 return NotFound("Consulta não encontrada");
             }
@@ -137,7 +137,7 @@ public class ConsultasController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Erro em atualizar consulta. ID: {IdConsulta}",id_consulta);
+            _logger.LogError(ex,"Erro em atualizar consulta");
             return BadRequest($"Erro em atualizar: {ex.Message}");
         }
     }
@@ -159,7 +159,7 @@ public class ConsultasController : ControllerBase
     [Route("criar/consulta")]
     public async Task<ActionResult<Consulta>> PostConsulta(Consulta consulta)
     {
-        _logger.LogInformation("Iniciando criação de consulta. ID Animal: {IdAnimal}, ID Veterinario: {IdVet}",consulta.Id_animal,consulta.Id_vet);
+        _logger.LogInformation("Iniciado criação de uma nova consulta.");
 
         try
         {
@@ -175,20 +175,20 @@ public class ConsultasController : ControllerBase
 
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation("Consulta criada com sucesso. ID: {IdConsulta}", consulta.Id_consulta);
+                _logger.LogInformation("Consulta criada com sucesso");
 
                 return Ok(consultaCriada);
             }
             else
             {
-                _logger.LogWarning("Ids não encontrado. ID Animal: {IdAnimal}, ID Veterinario: {IdVet}", consulta.Id_animal, consulta.Id_vet);
+                _logger.LogWarning("Id animal ou vet não foram encontrado.");
 
                 return BadRequest("Ids não encontrado");
             }
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Erro ao salvar os dados da consulta. ID Animal: {IdAnimal}, ID Veterinario: {IdVet}", consulta.Id_animal, consulta.Id_vet);
+            _logger.LogError(ex, "Erro ao salvar os dados da consulta.");
             return BadRequest($"Erro ao salvar os dados: {ex.Message}");
         }
     }
@@ -215,7 +215,7 @@ public class ConsultasController : ControllerBase
 
             if (consulta == null)
             {
-                _logger.LogWarning("Consulta não encontrado. ID: {IdConsulta}",id_consulta);
+                _logger.LogWarning("Consulta esta vazia.");
 
                 return NotFound("Consulta não encontrado.");
             }
@@ -224,13 +224,13 @@ public class ConsultasController : ControllerBase
 
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Consulta removida com sucesso. ID: {IdConsulta}",id_consulta);
+            _logger.LogInformation("Consulta removida com sucesso.");
 
             return NoContent();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Erro em deletar consulta. ID: {IdConsulta}",id_consulta);
+            _logger.LogError(ex,"Erro encontrado em deletar consulta. ID: {IdConsulta}");
 
             return BadRequest($"Erro em deletar: {ex.Message}");
         }
