@@ -64,7 +64,7 @@ public class EnderecoAnimalsController : ControllerBase
     [Route("relatorio/enderecoanimal/{id_endereco_animal:int}")]
     public async Task<ActionResult<EnderecoAnimal>> GetEnderecoAnimal(int id_endereco_animal)
     {
-        _logger.LogInformation("Iniciando a busca de endereço animal com ID: {IdEnderecoAnimal}",id_endereco_animal);
+        _logger.LogInformation("Iniciando a busca de endereço animal do id: {id_endereco_animal}",id_endereco_animal);
 
         try
         {
@@ -72,18 +72,18 @@ public class EnderecoAnimalsController : ControllerBase
 
             if (enderecoanimal == null)
             {
-                _logger.LogWarning("Endereço animal não encontrado. ID: {IdEnderecoAnimal}",id_endereco_animal);
+                _logger.LogWarning("Endereço animal não encontrou o id: {id_endereco_animal}",id_endereco_animal);
 
                 return NotFound("Endereço animal não encontrado.");
             }
 
-            _logger.LogInformation("Endereço animal encontrado com sucesso. ID: {IdEnderecoAnimal}",id_endereco_animal);
+            _logger.LogInformation("Endereço animal encontrado com sucesso.");
 
             return Ok(enderecoanimal);
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex,"Erro em buscar endereço animal. ID: {IdEnderecoAnimal}",id_endereco_animal);
+            _logger.LogError(ex,"Erro em buscar endereço animal.");
 
             return BadRequest($"Erro em buscar: {ex.Message}");
         }
@@ -108,7 +108,7 @@ public class EnderecoAnimalsController : ControllerBase
 
         if (id_endereco_animal != enderecoanimal.Id_endereco_animal)
         {
-            _logger.LogWarning("Id endereco animal está incorreto. ID informado: {IdInformado}, ID do endereço: {IdEnderecoAnimal}",id_endereco_animal,enderecoanimal.Id_endereco_animal);
+            _logger.LogWarning("Id endereco animal está difeerente doque esta no sistema.");
 
             return BadRequest("Id endereco animal está incorreto");
         }
@@ -120,7 +120,7 @@ public class EnderecoAnimalsController : ControllerBase
 
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Atualização de endereço animal concluída com sucesso. ID: {IdEnderecoAnimal}",id_endereco_animal);
+            _logger.LogInformation("Atualização de endereço animal  foi concluída com sucesso.");
 
             return Ok(enderecoAnimalAtualizado);
         }
@@ -128,7 +128,7 @@ public class EnderecoAnimalsController : ControllerBase
         {
             if (!EnderecoAnimalExists(id_endereco_animal))
             {
-                _logger.LogWarning("Id endereço animal não encontrado. ID: {IdEnderecoAnimal}",id_endereco_animal);
+                _logger.LogWarning("Id endereço animal não encontrado.");
 
                 return NotFound("Id endereço animal não encontrado");
             }
@@ -136,7 +136,7 @@ public class EnderecoAnimalsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Erro em atualizar endereço animal. ID: {IdEnderecoAnimal}",id_endereco_animal);
+            _logger.LogError(ex,"Erro em atualizar endereco animal.");
 
             return BadRequest(
                 $"Erro em atualizar endereço animal: {ex.Message} ");
@@ -162,7 +162,7 @@ public class EnderecoAnimalsController : ControllerBase
     public async Task<ActionResult<EnderecoAnimal>> PostEnderecoAnimal(
         EnderecoAnimal enderecoanimal)
     {
-        _logger.LogInformation("Iniciando criação de endereço animal. ID Animal: {IdAnimal}",enderecoanimal.Id_animal);
+        _logger.LogInformation("Iniciando criação de endereço animal");
 
         try
         {
@@ -176,20 +176,20 @@ public class EnderecoAnimalsController : ControllerBase
 
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation("Endereço animal criado com sucesso. ID: {IdEnderecoAnimal}",enderecoanimal.Id_endereco_animal);
+                _logger.LogInformation("Endereço animal criado com sucesso.");
 
                 return Ok(enderecoAnimalCriado);
             }
             else
             {
-                _logger.LogWarning("Id animal não existe. ID Animal: {IdAnimal}",enderecoanimal.Id_animal);
+                _logger.LogWarning("Id animal informado não existe no sistema");
 
                 return BadRequest("Id animal não existe");
             }
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex,"Erro ao salvar os dados do endereço animal. ID Animal: {IdAnimal}",enderecoanimal.Id_animal);
+            _logger.LogError(ex,"Erro ao salvar os dados do endereço animal");
 
             return BadRequest($"Erro ao salvar os dados: {ex.Message}");
         }
@@ -217,7 +217,7 @@ public class EnderecoAnimalsController : ControllerBase
 
             if (enderecoanimal == null)
             {
-                _logger.LogWarning("Id não encontrado. ID: {IdEnderecoAnimal}", id_endereco_animal);
+                _logger.LogWarning("Id oferecido esta diferente ao id presente principal.");
 
                 return NotFound("Id não encontrado");
             }
@@ -226,12 +226,12 @@ public class EnderecoAnimalsController : ControllerBase
 
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Endereço animal removido com sucesso. ID: {IdEnderecoAnimal}",id_endereco_animal);
+            _logger.LogInformation("Endereço animal removido com sucesso.");
 
             return NoContent();
         }catch(Exception ex)
         {
-            _logger.LogError(ex,"Erro em deletar endereço animal. ID: {IdEnderecoAnimal}",id_endereco_animal);
+            _logger.LogError(ex,"Erro em deletar endereço animal.");
 
             return BadRequest($"Erro em deletar: {ex.Message}");
         }
