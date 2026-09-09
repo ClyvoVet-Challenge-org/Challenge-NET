@@ -64,7 +64,7 @@ public class EnderecoAnimalsController : ControllerBase
     [Route("relatorio/enderecoanimal/{id_endereco_animal:int}")]
     public async Task<ActionResult<EnderecoAnimal>> GetEnderecoAnimal(int id_endereco_animal)
     {
-        _logger.LogInformation("Iniciando a busca de endereço animal do id: {id_endereco_animal}",id_endereco_animal);
+        _logger.LogInformation("Iniciando a busca de endereço animal");
 
         try
         {
@@ -72,7 +72,7 @@ public class EnderecoAnimalsController : ControllerBase
 
             if (enderecoanimal == null)
             {
-                _logger.LogWarning("Endereço animal não encontrou o id: {id_endereco_animal}",id_endereco_animal);
+                _logger.LogWarning("Endereço animal não encontrou o id esta vazio");
 
                 return NotFound("Endereço animal não encontrado.");
             }
