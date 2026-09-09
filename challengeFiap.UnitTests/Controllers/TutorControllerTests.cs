@@ -11,86 +11,71 @@ using System.Text;
 
 namespace challengeFiap.UnitTests.Controllers
 {
-    public class AnimalsControllerTests
+    public class TutorControllerTests
     {
 
-        private readonly Mock<IAnimalService> _animalServiceMock;
+        private readonly Mock<ItutorService> _TutorServiceMock;
 
-        private readonly AnimalsController _controller;
-        private readonly ILogger<AnimalsController> _logger;
+        private readonly TutorController _controller;
+        private readonly ILogger<TutorController> _logger;
         private readonly AppDbContext _context;
 
-        public AnimalsControllerTests()
+        public TutorControllerTests()
         {
-            _animalServiceMock = new Mock<IAnimalService>();
-            _controller = new AnimalsController(_context, _logger, _animalServiceMock.Object);
+            _TutorServiceMock = new Mock<ItutorService>();
+            _controller = new TutorController(_context, _logger, _TutorServiceMock.Object);
         }
 
         //Criação
         [Fact]
-        public async Task Create_Animal_RetornaOK()
+        public async Task Create_Tutor_RetornaOK()
         {
             // Arrange
-            var animal = new Animal
+            var tutor = new Tutor
             {
-                Id_animal = 1,
-                Rg_animal = "123456789",
-                Nr_microchip_animal = "123123123",
-                Nm_animal = "Rex",
-                Dt_nascimento_animal = DateTime.Now,
-                Peso_animal = 1,
-                Especie_animal = "Cachorro",
-                Raca_animal = "Labrador",
-                Id_tutor = 1
+                Id_tutor =1,
+                Cpf_tutor = "123456789",
+                Nm_tutor = "Leticia",
+                Nr_telefone_tutor = "11987562335"
             };
-            _animalServiceMock.Setup(service => service.CreateAnimalAsync(animal))
-                .ReturnsAsync(animal);
+            _TutorServiceMock.Setup(service => service.CreateTutorAsync(tutor))
+                .ReturnsAsync(tutor);
             // Act
-            var result = await _controller.PostAnimal(animal);
+            var result = await _controller.PostTutor(tutor);
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedAnimal = Assert.IsType<Animal>(okResult.Value);
-            Assert.NotNull(returnedAnimal);
+            var returnedTutor = Assert.IsType<Tutor>(okResult.Value);
+            Assert.NotNull(returnedTutor);
         }
 
         //Atualização
         [Fact]
-        public async Task Update_Animal_RetornaOk()
+        public async Task Update_Tutor_RetornaOk()
         {
             //Arrenge
-            var id_animal = 1;
-            var animal = new Animal
+            var id_Tutor = 1;
+            var Tutor = new Tutor
             {
-                Id_animal = id_animal,
-                Rg_animal = "123456789",
-                Nr_microchip_animal = "123123123",
-                Nm_animal = "mel",
-                Dt_nascimento_animal = DateTime.Now,
-                Peso_animal = 1,
-                Especie_animal = "Cachorro",
-                Raca_animal = "Labrador",
-                Id_tutor = 1
+                Id_tutor = id_Tutor,
+                Cpf_tutor = "123456789",
+                Nm_tutor = "Leticia",
+                Nr_telefone_tutor = "11987562335"
             };
 
-            _animalServiceMock.Setup(service => service.UpdateAnimalAsync(id_animal, animal))
-                .ReturnsAsync(animal);
+            _TutorServiceMock.Setup(service => service.UpdateTutorAsync(id_Tutor, Tutor))
+                .ReturnsAsync(Tutor);
 
             //Act
-            var atualizacaoRealizada = await _controller.PutAnimal(id_animal, animal);
+            var atualizacaoRealizada = await _controller.PutTutor(id_Tutor, Tutor);
 
             //Assert
             var OkResultado = Assert.IsType<OkObjectResult>(atualizacaoRealizada);
-            var retornoAnimal = Assert.IsType<Animal>(OkResultado.Value);
+            var retornoTutor = Assert.IsType<Tutor>(OkResultado.Value);
             //Dados atualizados
-            Assert.Equal(animal.Id_animal, retornoAnimal.Id_animal);
-            Assert.Equal(animal.Rg_animal, retornoAnimal.Rg_animal);
-            Assert.Equal(animal.Nr_microchip_animal, retornoAnimal.Nr_microchip_animal);
-            Assert.Equal(animal.Nm_animal, retornoAnimal.Nm_animal);
-            Assert.Equal(animal.Dt_nascimento_animal, retornoAnimal.Dt_nascimento_animal);
-            Assert.Equal(animal.Peso_animal, retornoAnimal.Peso_animal);
-            Assert.Equal(animal.Especie_animal, retornoAnimal.Especie_animal);
-            Assert.Equal(animal.Raca_animal, retornoAnimal.Raca_animal);
-            Assert.Equal(animal.Id_tutor, retornoAnimal.Id_tutor);
+            Assert.Equal(Tutor.Id_tutor, retornoTutor.Id_tutor);
+            Assert.Equal(Tutor.Cpf_tutor, retornoTutor.Cpf_tutor);
+            Assert.Equal(Tutor.Nm_tutor, retornoTutor.Nm_tutor);
+            Assert.Equal(Tutor.Nr_telefone_tutor, retornoTutor.Nr_telefone_tutor);
         }
     }
 }

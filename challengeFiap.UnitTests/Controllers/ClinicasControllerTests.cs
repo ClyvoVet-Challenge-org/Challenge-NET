@@ -14,16 +14,16 @@ namespace challengeFiap.UnitTests.Controllers
     public class ClinicaControllerTests
     {
 
-        private readonly Mock<IClinicaervice> _ClinicaServiceMock;
+        private readonly Mock<IClinicaService> _ClinicaServiceMock;
 
-        private readonly ClinicaController _controller;
-        private readonly ILogger<ClinicaController> _logger;
+        private readonly ClinicasController _controller;
+        private readonly ILogger<ClinicasController> _logger;
         private readonly AppDbContext _context;
 
         public ClinicaControllerTests()
         {
-            _ClinicaServiceMock = new Mock<IClinicaervice>();
-            _controller = new ClinicaController(_context, _logger, _ClinicaServiceMock.Object);
+            _ClinicaServiceMock = new Mock<IClinicaService>();
+            _controller = new ClinicasController(_context, _logger, _ClinicaServiceMock.Object);
         }
 
         //Criação
@@ -33,15 +33,9 @@ namespace challengeFiap.UnitTests.Controllers
             // Arrange
             var Clinica = new Clinica
             {
-                Id_Clinica = 1,
-                Rg_Clinica = "123456789",
-                Nr_microchip_Clinica = "123123123",
-                Nm_Clinica = "Rex",
-                Dt_nascimento_Clinica = DateTime.Now,
-                Peso_Clinica = 1,
-                Especie_Clinica = "Cachorro",
-                Raca_Clinica = "Labrador",
-                Id_tutor = 1
+                Id_clinica = 1,
+                Cnpj_clinica = "123456789",
+                Nm_clinica = "PetSoule"
             };
             _ClinicaServiceMock.Setup(service => service.CreateadAsync(Clinica))
                 .ReturnsAsync(Clinica);
@@ -61,15 +55,9 @@ namespace challengeFiap.UnitTests.Controllers
             var id_Clinica = 1;
             var Clinica = new Clinica
             {
-                Id_Clinica = id_Clinica,
-                Rg_Clinica = "123456789",
-                Nr_microchip_Clinica = "123123123",
-                Nm_Clinica = "mel",
-                Dt_nascimento_Clinica = DateTime.Now,
-                Peso_Clinica = 1,
-                Especie_Clinica = "Cachorro",
-                Raca_Clinica = "Labrador",
-                Id_tutor = 1
+                Id_clinica = id_Clinica,
+                Cnpj_clinica = "123456789",
+                Nm_clinica = "PetSoule"
             };
 
             _ClinicaServiceMock.Setup(service => service.UpdateClinicaAsync(id_Clinica, Clinica))
@@ -82,15 +70,10 @@ namespace challengeFiap.UnitTests.Controllers
             var OkResultado = Assert.IsType<OkObjectResult>(atualizacaoRealizada);
             var retornoClinica = Assert.IsType<Clinica>(OkResultado.Value);
             //Dados atualizados
-            Assert.Equal(Clinica.Id_Clinica, retornoClinica.Id_Clinica);
-            Assert.Equal(Clinica.Rg_Clinica, retornoClinica.Rg_Clinica);
-            Assert.Equal(Clinica.Nr_microchip_Clinica, retornoClinica.Nr_microchip_Clinica);
-            Assert.Equal(Clinica.Nm_Clinica, retornoClinica.Nm_Clinica);
-            Assert.Equal(Clinica.Dt_nascimento_Clinica, retornoClinica.Dt_nascimento_Clinica);
-            Assert.Equal(Clinica.Peso_Clinica, retornoClinica.Peso_Clinica);
-            Assert.Equal(Clinica.Especie_Clinica, retornoClinica.Especie_Clinica);
-            Assert.Equal(Clinica.Raca_Clinica, retornoClinica.Raca_Clinica);
-            Assert.Equal(Clinica.Id_tutor, retornoClinica.Id_tutor);
+            Assert.Equal(Clinica.Id_clinica, retornoClinica.Id_clinica);
+            Assert.Equal(Clinica.Cnpj_clinica, retornoClinica.Cnpj_clinica);
+            Assert.Equal(Clinica.Nm_clinica, retornoClinica.Nm_clinica);
+
         }
     }
 }

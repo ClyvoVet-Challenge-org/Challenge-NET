@@ -46,6 +46,8 @@
 
     <PackageReference Include="AspNetCore.HealthChecks.Uris" Version="9.0.0" />
 
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.12" />
+
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8">
 
       <PrivateAssets>all</PrivateAssets>
@@ -72,7 +74,7 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
 
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
-
+	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="..." />
   </ItemGroup>
 
 

@@ -11,86 +11,68 @@ using System.Text;
 
 namespace challengeFiap.UnitTests.Controllers
 {
-    public class AnimalsControllerTests
+    public class VetClinicasControllerTests
     {
 
-        private readonly Mock<IAnimalService> _animalServiceMock;
+        private readonly Mock<IVetClinica> _VetClinicaServiceMock;
 
-        private readonly AnimalsController _controller;
-        private readonly ILogger<AnimalsController> _logger;
+        private readonly VetClinicasController _controller;
+        private readonly ILogger<VetClinicasController> _logger;
         private readonly AppDbContext _context;
 
-        public AnimalsControllerTests()
+        public VetClinicasControllerTests()
         {
-            _animalServiceMock = new Mock<IAnimalService>();
-            _controller = new AnimalsController(_context, _logger, _animalServiceMock.Object);
+            _VetClinicaServiceMock = new Mock<IVetClinica>();
+            _controller = new VetClinicasController(_context, _logger, _VetClinicaServiceMock.Object);
         }
 
         //Criação
         [Fact]
-        public async Task Create_Animal_RetornaOK()
+        public async Task Create_VetClinica_RetornaOK()
         {
             // Arrange
-            var animal = new Animal
+            var VetClinica = new VetClinica
             {
-                Id_animal = 1,
-                Rg_animal = "123456789",
-                Nr_microchip_animal = "123123123",
-                Nm_animal = "Rex",
-                Dt_nascimento_animal = DateTime.Now,
-                Peso_animal = 1,
-                Especie_animal = "Cachorro",
-                Raca_animal = "Labrador",
-                Id_tutor = 1
+                Id_clinica_vet=1,
+                Id_vet=1,
+                Id_clinica=1,
             };
-            _animalServiceMock.Setup(service => service.CreateAnimalAsync(animal))
-                .ReturnsAsync(animal);
+            _VetClinicaServiceMock.Setup(service => service.CreateVetClinicaAsync(VetClinica))
+                .ReturnsAsync(VetClinica);
             // Act
-            var result = await _controller.PostAnimal(animal);
+            var result = await _controller.PostVetClinica(VetClinica);
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedAnimal = Assert.IsType<Animal>(okResult.Value);
-            Assert.NotNull(returnedAnimal);
+            var returnedVetClinica = Assert.IsType<VetClinica>(okResult.Value);
+            Assert.NotNull(returnedVetClinica);
         }
 
         //Atualização
         [Fact]
-        public async Task Update_Animal_RetornaOk()
+        public async Task Update_VetClinica_RetornaOk()
         {
             //Arrenge
-            var id_animal = 1;
-            var animal = new Animal
+            var id_VetClinica = 1;
+            var VetClinica = new VetClinica
             {
-                Id_animal = id_animal,
-                Rg_animal = "123456789",
-                Nr_microchip_animal = "123123123",
-                Nm_animal = "mel",
-                Dt_nascimento_animal = DateTime.Now,
-                Peso_animal = 1,
-                Especie_animal = "Cachorro",
-                Raca_animal = "Labrador",
-                Id_tutor = 1
+                Id_clinica_vet = id_VetClinica,
+                Id_vet = 1,
+                Id_clinica = 1,
             };
 
-            _animalServiceMock.Setup(service => service.UpdateAnimalAsync(id_animal, animal))
-                .ReturnsAsync(animal);
+            _VetClinicaServiceMock.Setup(service => service.UpdateVetClinicaAsync(id_VetClinica, VetClinica))
+                .ReturnsAsync(VetClinica);
 
             //Act
-            var atualizacaoRealizada = await _controller.PutAnimal(id_animal, animal);
+            var atualizacaoRealizada = await _controller.PutVetClinica(id_VetClinica, VetClinica);
 
             //Assert
             var OkResultado = Assert.IsType<OkObjectResult>(atualizacaoRealizada);
-            var retornoAnimal = Assert.IsType<Animal>(OkResultado.Value);
+            var retornoVetClinica = Assert.IsType<VetClinica>(OkResultado.Value);
             //Dados atualizados
-            Assert.Equal(animal.Id_animal, retornoAnimal.Id_animal);
-            Assert.Equal(animal.Rg_animal, retornoAnimal.Rg_animal);
-            Assert.Equal(animal.Nr_microchip_animal, retornoAnimal.Nr_microchip_animal);
-            Assert.Equal(animal.Nm_animal, retornoAnimal.Nm_animal);
-            Assert.Equal(animal.Dt_nascimento_animal, retornoAnimal.Dt_nascimento_animal);
-            Assert.Equal(animal.Peso_animal, retornoAnimal.Peso_animal);
-            Assert.Equal(animal.Especie_animal, retornoAnimal.Especie_animal);
-            Assert.Equal(animal.Raca_animal, retornoAnimal.Raca_animal);
-            Assert.Equal(animal.Id_tutor, retornoAnimal.Id_tutor);
+            Assert.Equal(VetClinica.Id_clinica_vet, retornoVetClinica.Id_clinica_vet);
+            Assert.Equal(VetClinica.Id_vet, retornoVetClinica.Id_vet);
+            Assert.Equal(VetClinica.Id_clinica, retornoVetClinica.Id_clinica);
         }
     }
 }

@@ -33,15 +33,12 @@ namespace challengeFiap.UnitTests.Controllers
             // Arrange
             var CarteiraVacinal = new CarteiraVacinal
             {
-                Id_CarteiraVacinal = 1,
-                Rg_CarteiraVacinal = "123456789",
-                Nr_microchip_CarteiraVacinal = "123123123",
-                Nm_CarteiraVacinal = "Rex",
-                Dt_nascimento_CarteiraVacinal = DateTime.Now,
-                Peso_CarteiraVacinal = 1,
-                Especie_CarteiraVacinal = "Cachorro",
-                Raca_CarteiraVacinal = "Labrador",
-                Id_tutor = 1
+                Id_carteiraVacinal = 1,
+                Nm_vacina = "raiva",
+                Dt_vacina_efetuada = DateTime.Now,
+                Dt_vacina_prevista = new DateTime(2026,9,9),
+                St_vacina = Domain.Enums.StatusVacinacao.EFETUADA,
+                Id_animal= 1,
             };
             _CarteiraVacinalServiceMock.Setup(service => service.CreateCarteiraVacinalAsync(CarteiraVacinal))
                 .ReturnsAsync(CarteiraVacinal);
@@ -61,15 +58,12 @@ namespace challengeFiap.UnitTests.Controllers
             var id_CarteiraVacinal = 1;
             var CarteiraVacinal = new CarteiraVacinal
             {
-                Id_CarteiraVacinal = id_CarteiraVacinal,
-                Rg_CarteiraVacinal = "123456789",
-                Nr_microchip_CarteiraVacinal = "123123123",
-                Nm_CarteiraVacinal = "mel",
-                Dt_nascimento_CarteiraVacinal = DateTime.Now,
-                Peso_CarteiraVacinal = 1,
-                Especie_CarteiraVacinal = "Cachorro",
-                Raca_CarteiraVacinal = "Labrador",
-                Id_tutor = 1
+                Id_carteiraVacinal = 1,
+                Nm_vacina = "semanal",
+                Dt_vacina_efetuada = DateTime.Now,
+                Dt_vacina_prevista = new DateTime(2026, 9, 9),
+                St_vacina = Domain.Enums.StatusVacinacao.EFETUADA,
+                Id_animal = 1
             };
 
             _CarteiraVacinalServiceMock.Setup(service => service.UpdateCarteiraVacinalAsync(id_CarteiraVacinal, CarteiraVacinal))
@@ -82,15 +76,12 @@ namespace challengeFiap.UnitTests.Controllers
             var OkResultado = Assert.IsType<OkObjectResult>(atualizacaoRealizada);
             var retornoCarteiraVacinal = Assert.IsType<CarteiraVacinal>(OkResultado.Value);
             //Dados atualizados
-            Assert.Equal(CarteiraVacinal.Id_CarteiraVacinal, retornoCarteiraVacinal.Id_CarteiraVacinal);
-            Assert.Equal(CarteiraVacinal.Rg_CarteiraVacinal, retornoCarteiraVacinal.Rg_CarteiraVacinal);
-            Assert.Equal(CarteiraVacinal.Nr_microchip_CarteiraVacinal, retornoCarteiraVacinal.Nr_microchip_CarteiraVacinal);
-            Assert.Equal(CarteiraVacinal.Nm_CarteiraVacinal, retornoCarteiraVacinal.Nm_CarteiraVacinal);
-            Assert.Equal(CarteiraVacinal.Dt_nascimento_CarteiraVacinal, retornoCarteiraVacinal.Dt_nascimento_CarteiraVacinal);
-            Assert.Equal(CarteiraVacinal.Peso_CarteiraVacinal, retornoCarteiraVacinal.Peso_CarteiraVacinal);
-            Assert.Equal(CarteiraVacinal.Especie_CarteiraVacinal, retornoCarteiraVacinal.Especie_CarteiraVacinal);
-            Assert.Equal(CarteiraVacinal.Raca_CarteiraVacinal, retornoCarteiraVacinal.Raca_CarteiraVacinal);
-            Assert.Equal(CarteiraVacinal.Id_tutor, retornoCarteiraVacinal.Id_tutor);
+            Assert.Equal(CarteiraVacinal.Id_carteiraVacinal, retornoCarteiraVacinal.Id_carteiraVacinal);
+            Assert.Equal(CarteiraVacinal.Nm_vacina, retornoCarteiraVacinal.Nm_vacina);
+            Assert.Equal(CarteiraVacinal.Dt_vacina_efetuada, retornoCarteiraVacinal.Dt_vacina_efetuada);
+            Assert.Equal(CarteiraVacinal.Dt_vacina_prevista, retornoCarteiraVacinal.Dt_vacina_prevista);
+            Assert.Equal(CarteiraVacinal.St_vacina, retornoCarteiraVacinal.St_vacina);
+            Assert.Equal(CarteiraVacinal.Id_animal, retornoCarteiraVacinal.Id_animal);
         }
     }
 }

@@ -11,86 +11,90 @@ using System.Text;
 
 namespace challengeFiap.UnitTests.Controllers
 {
-    public class AnimalsControllerTests
+    public class EnderecoenderecoAnimalsControllerTests
     {
 
-        private readonly Mock<IAnimalService> _animalServiceMock;
+        private readonly Mock<IenderecoAnimalService> _enderecoAnimalServiceMock;
 
-        private readonly AnimalsController _controller;
-        private readonly ILogger<AnimalsController> _logger;
+        private readonly EnderecoAnimalsController _controller;
+        private readonly ILogger<EnderecoAnimalsController> _logger;
         private readonly AppDbContext _context;
 
-        public AnimalsControllerTests()
+        public EnderecoenderecoAnimalsControllerTests()
         {
-            _animalServiceMock = new Mock<IAnimalService>();
-            _controller = new AnimalsController(_context, _logger, _animalServiceMock.Object);
+            _enderecoAnimalServiceMock = new Mock<IenderecoAnimalService>();
+            _controller = new EnderecoAnimalsController(_context, _logger, _enderecoAnimalServiceMock.Object);
         }
 
         //Criação
         [Fact]
-        public async Task Create_Animal_RetornaOK()
+        public async Task Create_enderecoAnimal_RetornaOK()
         {
             // Arrange
-            var animal = new Animal
+            var enderecoAnimal = new EnderecoAnimal
             {
-                Id_animal = 1,
-                Rg_animal = "123456789",
-                Nr_microchip_animal = "123123123",
-                Nm_animal = "Rex",
-                Dt_nascimento_animal = DateTime.Now,
-                Peso_animal = 1,
-                Especie_animal = "Cachorro",
-                Raca_animal = "Labrador",
-                Id_tutor = 1
+                Id_endereco_animal = 1,
+                Pais = "brasil",
+                Estado= "são paulo",
+                Cidade= "são paulo",
+                Bairro= "bairro roxo",
+                Logradouro_rua= "1263",
+                Nr_rua= "Dom Cachorro",
+                Complemento= "1212",
+                Cep = "123456",
+                Id_animal= 1,
             };
-            _animalServiceMock.Setup(service => service.CreateAnimalAsync(animal))
-                .ReturnsAsync(animal);
+            _enderecoAnimalServiceMock.Setup(service => service.CreateEnderecoAnimalAsync(enderecoAnimal))
+                .ReturnsAsync(enderecoAnimal);
             // Act
-            var result = await _controller.PostAnimal(animal);
+            var result = await _controller.PostEnderecoAnimal(enderecoAnimal);
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedAnimal = Assert.IsType<Animal>(okResult.Value);
-            Assert.NotNull(returnedAnimal);
+            var returnedenderecoAnimal = Assert.IsType<EnderecoAnimal>(okResult.Value);
+            Assert.NotNull(returnedenderecoAnimal);
         }
 
         //Atualização
         [Fact]
-        public async Task Update_Animal_RetornaOk()
+        public async Task Update_enderecoAnimal_RetornaOk()
         {
             //Arrenge
-            var id_animal = 1;
-            var animal = new Animal
+            var id_enderecoAnimal = 1;
+            var enderecoAnimal = new EnderecoAnimal
             {
-                Id_animal = id_animal,
-                Rg_animal = "123456789",
-                Nr_microchip_animal = "123123123",
-                Nm_animal = "mel",
-                Dt_nascimento_animal = DateTime.Now,
-                Peso_animal = 1,
-                Especie_animal = "Cachorro",
-                Raca_animal = "Labrador",
-                Id_tutor = 1
+                Id_endereco_animal = id_enderecoAnimal,
+                Pais = "brasil",
+                Estado = "são paulo",
+                Cidade = "são paulo",
+                Bairro = "bairro roxo",
+                Logradouro_rua = "1263",
+                Nr_rua = "Dom Cachorro",
+                Complemento = "1212",
+                Cep = "123456",
+                Id_animal = 1,
             };
 
-            _animalServiceMock.Setup(service => service.UpdateAnimalAsync(id_animal, animal))
-                .ReturnsAsync(animal);
+            _enderecoAnimalServiceMock.Setup(service => service.UpdateEnderecoAnimalAsync(id_enderecoAnimal, enderecoAnimal))
+                .ReturnsAsync(enderecoAnimal);
 
             //Act
-            var atualizacaoRealizada = await _controller.PutAnimal(id_animal, animal);
+            var atualizacaoRealizada = await _controller.PutEnderecoAnimal(id_enderecoAnimal, enderecoAnimal);
 
             //Assert
             var OkResultado = Assert.IsType<OkObjectResult>(atualizacaoRealizada);
-            var retornoAnimal = Assert.IsType<Animal>(OkResultado.Value);
+            var retornoenderecoAnimal = Assert.IsType<EnderecoAnimal>(OkResultado.Value);
             //Dados atualizados
-            Assert.Equal(animal.Id_animal, retornoAnimal.Id_animal);
-            Assert.Equal(animal.Rg_animal, retornoAnimal.Rg_animal);
-            Assert.Equal(animal.Nr_microchip_animal, retornoAnimal.Nr_microchip_animal);
-            Assert.Equal(animal.Nm_animal, retornoAnimal.Nm_animal);
-            Assert.Equal(animal.Dt_nascimento_animal, retornoAnimal.Dt_nascimento_animal);
-            Assert.Equal(animal.Peso_animal, retornoAnimal.Peso_animal);
-            Assert.Equal(animal.Especie_animal, retornoAnimal.Especie_animal);
-            Assert.Equal(animal.Raca_animal, retornoAnimal.Raca_animal);
-            Assert.Equal(animal.Id_tutor, retornoAnimal.Id_tutor);
+            Assert.Equal(enderecoAnimal.Id_endereco_animal, retornoenderecoAnimal.Id_endereco_animal);
+            Assert.Equal(enderecoAnimal.Pais, retornoenderecoAnimal.Pais);
+            Assert.Equal(enderecoAnimal.Estado, retornoenderecoAnimal.Estado);
+            Assert.Equal(enderecoAnimal.Cidade, retornoenderecoAnimal.Cidade);
+            Assert.Equal(enderecoAnimal.Bairro, retornoenderecoAnimal.Bairro);
+            Assert.Equal(enderecoAnimal.Logradouro_rua, retornoenderecoAnimal.Logradouro_rua);
+            Assert.Equal(enderecoAnimal.Nr_rua, retornoenderecoAnimal.Nr_rua);
+            Assert.Equal(enderecoAnimal.Complemento, retornoenderecoAnimal.Complemento);
+            Assert.Equal(enderecoAnimal.Cep, retornoenderecoAnimal.Cep);
+            Assert.Equal(enderecoAnimal.Id_animal, retornoenderecoAnimal.Id_animal);
+
         }
     }
 }

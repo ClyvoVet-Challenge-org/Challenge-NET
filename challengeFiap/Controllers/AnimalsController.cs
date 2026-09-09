@@ -173,7 +173,7 @@ public class AnimalsController : ControllerBase
                 _context.Animals.Add(animalCriado);
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation("Criação do animal, {nm_animal}, concluída com sucesso", animal.nm_animal);
+                _logger.LogInformation("Criação do animal, {nm_animal}, concluída com sucesso", animal.Nm_animal);
 
                 return Ok(animalCriado);
             }

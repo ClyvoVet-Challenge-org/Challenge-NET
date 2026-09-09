@@ -1,6 +1,7 @@
 using challengeFiap.Infrastruture;
 using challengeFiap.Infrastruture.Data;
 using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -47,6 +48,10 @@ try
     //Parte de Controllers
 
     builder.Services.AddControllers();
+
+    //PARA VER O TEST FUNCIONAR
+    builder.Services.AddAuthentication("ApiKey")
+        .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler >
 
     //Parte de Swagger
 

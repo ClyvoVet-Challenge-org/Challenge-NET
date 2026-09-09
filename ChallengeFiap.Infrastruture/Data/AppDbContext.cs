@@ -115,14 +115,14 @@ namespace challengeFiap.Infrastruture.Data
             modelBuilder.Entity<CarteiraVacinal>().Property(g => g.Nm_vacina).HasColumnName("nm_vacina").IsRequired();
             modelBuilder.Entity<CarteiraVacinal>().Property(g => g.Dt_vacina_prevista).HasColumnName("dt_vacinacao_prevista").IsRequired();
             modelBuilder.Entity<CarteiraVacinal>().Property(g => g.Dt_vacina_efetuada).HasColumnName("dt_vacinacao_efetuada").IsRequired();
-            modelBuilder.Entity<CarteiraVacinal>().Property(g => g.St_vacina).HasColumnName("st_vacinacao").IsRequired();
+            modelBuilder.Entity<CarteiraVacinal>().Property(g => g.St_vacina).HasColumnName("st_vacinacao").HasConversion<string>().IsRequired();
             modelBuilder.Entity<CarteiraVacinal>().HasOne(g => g.Animal).WithMany().HasForeignKey(g => g.Id_animal).IsRequired();
 
             modelBuilder.Entity<Consulta>().ToTable("T_CLYVO_CONSULTA");
             modelBuilder.Entity<Consulta>().HasKey(g => g.Id_consulta);
             modelBuilder.Entity<Consulta>().Property(g => g.Id_consulta).HasColumnName("id_consulta").IsRequired();
             modelBuilder.Entity<Consulta>().Property(g => g.Historico_consulta).HasColumnName("historico_consulta").IsRequired();
-            modelBuilder.Entity<Consulta>().Property(g => g.St_consulta).HasColumnName("st_consulta").IsRequired();
+            modelBuilder.Entity<Consulta>().Property(g => g.St_consulta).HasColumnName("st_consulta").HasConversion<string>().IsRequired();
             modelBuilder.Entity<Consulta>().Property(g => g.Dt_consulta).HasColumnName("dt_consulta").IsRequired();
             modelBuilder.Entity<Consulta>().HasOne(g => g.Veterinario).WithMany().HasForeignKey(g => g.Id_vet).IsRequired();
             modelBuilder.Entity<Consulta>().HasOne(g => g.Animal).WithMany().HasForeignKey(g => g.Id_animal).IsRequired();

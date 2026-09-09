@@ -11,86 +11,74 @@ using System.Text;
 
 namespace challengeFiap.UnitTests.Controllers
 {
-    public class AnimalsControllerTests
+    public class PrescricaosControllerTests
     {
 
-        private readonly Mock<IAnimalService> _animalServiceMock;
+        private readonly Mock<IprescricaoService> _PrescricaosServiceMock;
 
-        private readonly AnimalsController _controller;
-        private readonly ILogger<AnimalsController> _logger;
+        private readonly PrescricaosController _controller;
+        private readonly ILogger<PrescricaosController> _logger;
         private readonly AppDbContext _context;
 
-        public AnimalsControllerTests()
+        public PrescricaosControllerTests()
         {
-            _animalServiceMock = new Mock<IAnimalService>();
-            _controller = new AnimalsController(_context, _logger, _animalServiceMock.Object);
+            _PrescricaosServiceMock = new Mock<IprescricaoService>();
+            _controller = new PrescricaosController(_context, _logger, _PrescricaosServiceMock.Object);
         }
 
         //Criação
         [Fact]
-        public async Task Create_Animal_RetornaOK()
+        public async Task Create_Prescricaos_RetornaOK()
         {
             // Arrange
-            var animal = new Animal
+            var Prescricaos = new Prescricao
             {
-                Id_animal = 1,
-                Rg_animal = "123456789",
-                Nr_microchip_animal = "123123123",
-                Nm_animal = "Rex",
-                Dt_nascimento_animal = DateTime.Now,
-                Peso_animal = 1,
-                Especie_animal = "Cachorro",
-                Raca_animal = "Labrador",
-                Id_tutor = 1
+                Id_prescricao = 1,
+                Dt_emissao = DateTime.Now,
+                Dt_expiracao = new DateTime(2026,09,10),
+                Id_consulta = 1,
+                Observacoes_gerais="Paciente esta bem"
             };
-            _animalServiceMock.Setup(service => service.CreateAnimalAsync(animal))
-                .ReturnsAsync(animal);
+            _PrescricaosServiceMock.Setup(service => service.CreatePrescricaoAsync(Prescricaos))
+                .ReturnsAsync(Prescricaos);
             // Act
-            var result = await _controller.PostAnimal(animal);
+            var result = await _controller.PostPrescricao(Prescricaos);
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedAnimal = Assert.IsType<Animal>(okResult.Value);
-            Assert.NotNull(returnedAnimal);
+            var returnedPrescricaos = Assert.IsType<Prescricao>(okResult.Value);
+            Assert.NotNull(returnedPrescricaos);
         }
 
         //Atualização
         [Fact]
-        public async Task Update_Animal_RetornaOk()
+        public async Task Update_Prescricaos_RetornaOk()
         {
             //Arrenge
-            var id_animal = 1;
-            var animal = new Animal
+            var id_Prescricaos = 1;
+            var Prescricaos = new Prescricao
             {
-                Id_animal = id_animal,
-                Rg_animal = "123456789",
-                Nr_microchip_animal = "123123123",
-                Nm_animal = "mel",
-                Dt_nascimento_animal = DateTime.Now,
-                Peso_animal = 1,
-                Especie_animal = "Cachorro",
-                Raca_animal = "Labrador",
-                Id_tutor = 1
+                Id_prescricao = id_Prescricaos,
+                Dt_emissao = DateTime.Now,
+                Dt_expiracao = new DateTime(2026, 09, 10),
+                Id_consulta = 1,
+                Observacoes_gerais = "Paciente esta bem"
             };
 
-            _animalServiceMock.Setup(service => service.UpdateAnimalAsync(id_animal, animal))
-                .ReturnsAsync(animal);
+            _PrescricaosServiceMock.Setup(service => service.UpdatePrescricaoAsync(id_Prescricaos, Prescricaos))
+                .ReturnsAsync(Prescricaos);
 
             //Act
-            var atualizacaoRealizada = await _controller.PutAnimal(id_animal, animal);
+            var atualizacaoRealizada = await _controller.PutPrescricao(id_Prescricaos, Prescricaos);
 
             //Assert
             var OkResultado = Assert.IsType<OkObjectResult>(atualizacaoRealizada);
-            var retornoAnimal = Assert.IsType<Animal>(OkResultado.Value);
+            var retornoPrescricaos = Assert.IsType<Prescricao>(OkResultado.Value);
             //Dados atualizados
-            Assert.Equal(animal.Id_animal, retornoAnimal.Id_animal);
-            Assert.Equal(animal.Rg_animal, retornoAnimal.Rg_animal);
-            Assert.Equal(animal.Nr_microchip_animal, retornoAnimal.Nr_microchip_animal);
-            Assert.Equal(animal.Nm_animal, retornoAnimal.Nm_animal);
-            Assert.Equal(animal.Dt_nascimento_animal, retornoAnimal.Dt_nascimento_animal);
-            Assert.Equal(animal.Peso_animal, retornoAnimal.Peso_animal);
-            Assert.Equal(animal.Especie_animal, retornoAnimal.Especie_animal);
-            Assert.Equal(animal.Raca_animal, retornoAnimal.Raca_animal);
-            Assert.Equal(animal.Id_tutor, retornoAnimal.Id_tutor);
+            Assert.Equal(Prescricaos.Id_prescricao, retornoPrescricaos.Id_prescricao);
+            Assert.Equal(Prescricaos.Dt_emissao, retornoPrescricaos.Dt_emissao);
+            Assert.Equal(Prescricaos.Dt_expiracao, retornoPrescricaos.Dt_expiracao);
+            Assert.Equal(Prescricaos.Id_consulta, retornoPrescricaos.Id_consulta);
+            Assert.Equal(Prescricaos.Observacoes_gerais, retornoPrescricaos.Observacoes_gerais);
         }
     }
 }
