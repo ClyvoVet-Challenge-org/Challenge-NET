@@ -59,7 +59,7 @@ public class EnderecoClinicasController : ControllerBase
     [Route("relatorio/enderecoclinica/{id_endereco_clinica:int}")]
     public async Task<ActionResult<EnderecoClinica>> GetEnderecoClinica(int id_endereco_clinica)
     {
-        _logger.LogInformation("Iniciando a busca de endereço clinica com ID: {IdEnderecoClinica}", id_endereco_clinica);
+        _logger.LogInformation("Iniciando a busca de endereço clinica com ID");
 
         try
         {
@@ -67,12 +67,12 @@ public class EnderecoClinicasController : ControllerBase
 
             if (enderecoclinica == null)
             {
-                _logger.LogWarning("Id não encontrado. ID: {IdEnderecoClinica}", id_endereco_clinica);
+                _logger.LogWarning("Id não encontrado presente no sistema de inserir");
 
                 return NotFound("Id não encontrado.");
             }
 
-            _logger.LogInformation("Endereço clinica encontrado com sucesso. ID: {IdEnderecoClinica}", id_endereco_clinica);
+            _logger.LogInformation("Endereço clinica encontrado com sucesso.");
 
             return Ok(enderecoclinica);
         }
