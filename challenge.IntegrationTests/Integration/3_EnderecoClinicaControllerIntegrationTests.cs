@@ -20,9 +20,8 @@ namespace challenge.IntegrationTests.Integration
         {
             // Arrange
 
-            // Garante que a clínica necessária exista
-            await _client.DeleteAsync(
-                "api/clinicas/deleta/clinica/9984");
+            //Essa questão foi colocada aqui para evitar precisa mudar os dados o tempo todos para ver se ta funcionando o testes.
+            await _client.DeleteAsync("api/clinicas/deleta/clinica/9984");
 
             var novaClinica = new
             {
@@ -31,9 +30,7 @@ namespace challenge.IntegrationTests.Integration
                 Nm_clinica = "PetSoule"
             };
 
-            var respostaClinica = await _client.PostAsJsonAsync(
-                "api/clinicas/criar/clinica",
-                novaClinica);
+            var respostaClinica = await _client.PostAsJsonAsync("api/clinicas/criar/clinica",novaClinica);
 
             respostaClinica.EnsureSuccessStatusCode();
 
