@@ -20,9 +20,9 @@ namespace challenge.IntegrationTests.Integration
         {
             // Arrange
             var id_vet = 9999;
-
-            await _client.DeleteAsync(
-                $"api/veterinarios/deleta/veterinario/{id_vet}");
+            
+            //Essa questão foi colocada aqui para evitar precisa mudar os dados o tempo todos para ver se ta funcionando o testes.
+            await _client.DeleteAsync($"api/veterinarios/deleta/veterinario/{id_vet}");
 
             var novoVeterinario = new
             {
@@ -44,8 +44,7 @@ namespace challenge.IntegrationTests.Integration
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            var veterinarioCriado =
-                await response.Content.ReadFromJsonAsync<Veterinario>();
+            var veterinarioCriado = await response.Content.ReadFromJsonAsync<Veterinario>();
 
             Assert.NotNull(veterinarioCriado);
             Assert.Equal("lual", veterinarioCriado.Nm_vet);
@@ -68,9 +67,7 @@ namespace challenge.IntegrationTests.Integration
             };
 
             // Act
-            var response = await _client.PutAsJsonAsync(
-                $"api/veterinarios/atualizar/veterinario/{id_veterinario}",
-                veterinarioAtualizado);
+            var response = await _client.PutAsJsonAsync($"api/veterinarios/atualizar/veterinario/{id_veterinario}",veterinarioAtualizado);
 
             // Assert
             response.EnsureSuccessStatusCode();
