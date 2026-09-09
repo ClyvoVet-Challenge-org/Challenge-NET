@@ -8,11 +8,11 @@ using System.Text;
 
 namespace challenge.IntegrationTests.Integration
 {
-    public class PrescricaoControllerIntegrationTests
+    public class _94PrescricaoControllerIntegrationTests
     {
         private readonly HttpClient _client;
 
-        public PrescricaoControllerIntegrationTests(ApiFactoryFixture factory)
+        public _94PrescricaoControllerIntegrationTests(ApiFactoryFixture factory)
         {
             _client = factory.CreateClient();
         }
@@ -22,18 +22,18 @@ namespace challenge.IntegrationTests.Integration
             //Arrange
             var novoprescricao = new
             {
-                Id_vet = 1,
+                Id_vet = 2,
                 Dt_emissao = DateTime.Now,
                 Dt_expiracao = new DateTime(2026, 09, 10),
                 Id_consulta = 1,
                 Observacoes_gerais = "Paciente esta bem"
             };
             //Act
-            var response = await _client.PostAsJsonAsync("api/prescricao", novoprescricao);
+            var response = await _client.PostAsJsonAsync("api/prescricaos/criar/prescricao", novoprescricao);
 
             //Assert
             response.EnsureSuccessStatusCode();
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var prescricaoCriado = await response.Content.ReadFromJsonAsync<Prescricao>();
             Assert.NotNull(prescricaoCriado);
@@ -47,14 +47,14 @@ namespace challenge.IntegrationTests.Integration
             var id_prescricao = 1;
             var prescricaoAtualizado = new
             {
-                Id_tutor = id_prescricao,
+                Id_prescricao = id_prescricao,
                 Dt_emissao = DateTime.Now,
                 Dt_expiracao = new DateTime(2026, 09, 10),
                 Id_consulta = 1,
                 Observacoes_gerais = "Paciente esta bem"
             };
             //Act
-            var response = await _client.PostAsJsonAsync("api/prescricao/atualizar/{id_prescricao}", prescricaoAtualizado);
+            var response = await _client.PutAsJsonAsync($"api/prescricaos/atualizar/prescricao/{id_prescricao}", prescricaoAtualizado);
 
             //Assert
             response.EnsureSuccessStatusCode();

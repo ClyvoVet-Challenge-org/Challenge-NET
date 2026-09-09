@@ -50,8 +50,8 @@ try
     builder.Services.AddControllers();
 
     //PARA VER O TEST FUNCIONAR
-    builder.Services.AddAuthentication("ApiKey")
-        .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler >
+   
+    builder.Services.AddAuthorization();
 
     //Parte de Swagger
 

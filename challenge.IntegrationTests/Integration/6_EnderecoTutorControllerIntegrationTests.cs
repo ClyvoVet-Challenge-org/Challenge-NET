@@ -8,11 +8,11 @@ using System.Text;
 
 namespace challenge.IntegrationTests.Integration
 {
-    public class EnderecoTutorControllerIntegrationTests
+    public class _6EnderecoTutorControllerIntegrationTests
     {
         private readonly HttpClient _client;
 
-        public EnderecoTutorControllerIntegrationTests(ApiFactoryFixture factory)
+        public _6EnderecoTutorControllerIntegrationTests(ApiFactoryFixture factory)
         {
             _client = factory.CreateClient();
         }
@@ -22,7 +22,7 @@ namespace challenge.IntegrationTests.Integration
             //Arrange
             var novoEnderecoTutor = new
             {
-                Id_endereco_tutor = 1,
+                Id_endereco_tutor = 2,
                 Pais = "brasil",
                 Estado = "são paulo",
                 Cidade = "são paulo",
@@ -34,11 +34,11 @@ namespace challenge.IntegrationTests.Integration
                 Id_tutor = 1,
             };
             //Act
-            var response = await _client.PostAsJsonAsync("api/EnderecoTutor", novoEnderecoTutor);
+            var response = await _client.PostAsJsonAsync("api/enderecotutors/criar/enderecoresponsavel", novoEnderecoTutor);
 
             //Assert
             response.EnsureSuccessStatusCode();
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var EnderecoTutorCriado = await response.Content.ReadFromJsonAsync<EnderecoTutor>();
             Assert.NotNull(EnderecoTutorCriado);
@@ -52,7 +52,7 @@ namespace challenge.IntegrationTests.Integration
             var id_EnderecoTutor = 1;
             var EnderecoTutorAtualizado = new
             {
-                id_EnderecoTutor= id_EnderecoTutor,
+                id_EnderecoTutor = id_EnderecoTutor,
                 Pais = "brasil",
                 Estado = "são paulo",
                 Cidade = "são paulo",
@@ -64,7 +64,7 @@ namespace challenge.IntegrationTests.Integration
                 Id_tutor = 1,
             };
             //Act
-            var response = await _client.PostAsJsonAsync("api/EnderecoTutor/atualizar/{id_EnderecoTutor}", EnderecoTutorAtualizado);
+            var response = await _client.PutAsJsonAsync($"api/enderecotutors/atualizar/enderecoresponsavel/{id_EnderecoTutor}", EnderecoTutorAtualizado);
 
             //Assert
             response.EnsureSuccessStatusCode();

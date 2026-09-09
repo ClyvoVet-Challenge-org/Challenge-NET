@@ -8,11 +8,11 @@ using System.Text;
 
 namespace challenge.IntegrationTests.Integration
 {
-    public class ConsultaControllerIntegrationTests
+    public class _92ConsultaControllerIntegrationTests
     {
         private readonly HttpClient _client;
 
-        public ConsultaControllerIntegrationTests(ApiFactoryFixture factory)
+        public _92ConsultaControllerIntegrationTests(ApiFactoryFixture factory)
         {
             _client = factory.CreateClient();
         }
@@ -22,7 +22,7 @@ namespace challenge.IntegrationTests.Integration
             //Arrange
             var novoconsulta = new
             {
-                Id_consulta = 1,
+                Id_consulta = 2,
                 Historico_consulta = "Foi bom o resultado",
                 St_consulta = challengeFiap.Domain.Enums.StatusConsulta.passada,
                 Dt_consulta = DateTime.Now,
@@ -30,11 +30,11 @@ namespace challenge.IntegrationTests.Integration
                 Id_animal = 1
             };
             //Act
-            var response = await _client.PostAsJsonAsync("api/consulta", novoconsulta);
+            var response = await _client.PostAsJsonAsync("api/consultas/criar/consulta", novoconsulta);
 
             //Assert
             response.EnsureSuccessStatusCode();
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var consultaCriado = await response.Content.ReadFromJsonAsync<Consulta>();
             Assert.NotNull(consultaCriado);
@@ -56,7 +56,7 @@ namespace challenge.IntegrationTests.Integration
                 Id_animal = 1,
             };
             //Act
-            var response = await _client.PostAsJsonAsync("api/consulta/atualizar/{id_consulta}", consultaAtualizado);
+            var response = await _client.PutAsJsonAsync($"api/consultas/atualizar/consulta/{id_consulta}", consultaAtualizado);
 
             //Assert
             response.EnsureSuccessStatusCode();

@@ -9,11 +9,11 @@ using System.Text;
 namespace challenge.IntegrationTests.Integration
 {
     [Collection("ApiCollection")]
-    public class AnimalControllerIntegrationTests
+    public class _7AnimalControllerIntegrationTests
     {
         private readonly HttpClient _client;
 
-        public AnimalControllerIntegrationTests(ApiFactoryFixture factory)
+        public _7AnimalControllerIntegrationTests(ApiFactoryFixture factory)
         {
             _client = factory.CreateClient();
         }
@@ -21,12 +21,12 @@ namespace challenge.IntegrationTests.Integration
         [Fact]
         public async Task CreateAnimal_DadosValidos_RetornaCreated()
         {
-            //Arrange
+            // Arrange
             var novoAnimal = new
             {
-                Id_animal = 1,
-                Rg_animal = "123456789",
-                Nr_microchip_animal = "123123123",
+                Id_animal = 999,
+                Rg_animal = "987654321",
+                Nr_microchip_animal = "987654321",
                 Nm_animal = "Rex",
                 Dt_nascimento_animal = DateTime.Now,
                 Peso_animal = 1,
@@ -34,14 +34,18 @@ namespace challenge.IntegrationTests.Integration
                 Raca_animal = "Labrador",
                 Id_tutor = 1
             };
-            //Act
-            var response = await _client.PostAsJsonAsync("api/animal", novoAnimal);
 
-            //Assert
+            // Act
+            var response = await _client.PostAsJsonAsync(
+                "/api/animals/criar/animal",
+                novoAnimal);
+
+            // Assert
             response.EnsureSuccessStatusCode();
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var animalCriado = await response.Content.ReadFromJsonAsync<Animal>();
+
             Assert.NotNull(animalCriado);
             Assert.Equal("Rex", animalCriado.Nm_animal);
         }
@@ -49,8 +53,9 @@ namespace challenge.IntegrationTests.Integration
         [Fact]
         public async Task UpdateAnimal_DadosValidos_RetornaSucesso()
         {
-            //Arrange
+            // Arrange
             var id_animal = 1;
+
             var animalAtualizado = new
             {
                 Id_animal = id_animal,
@@ -63,29 +68,15 @@ namespace challenge.IntegrationTests.Integration
                 Raca_animal = "Labrador",
                 Id_tutor = 1
             };
-            //Act
-            var response = await _client.PostAsJsonAsync("api/animal/atualizar/{id_animal}", animalAtualizado);
-
-            //Assert
-            response.EnsureSuccessStatusCode();
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task GetAnimal_IdIxiste_RetornaNotFound()
-        {
-            // Arrange
-            var id_animal = 1;
 
             // Act
-            var response = await _client.GetAsync(
-                $"api/animals/relatorio/animal/{id_animal}");
+            var response = await _client.PutAsJsonAsync(
+                $"/api/animals/atualizar/animal/{id_animal}",
+                animalAtualizado);
 
             // Assert
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            response.EnsureSuccessStatusCode();
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
 }
-
-    

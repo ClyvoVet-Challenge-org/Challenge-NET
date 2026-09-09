@@ -1,18 +1,16 @@
 ﻿using challenge.IntegrationTests.FactoryFixture;
 using challengeFiap.Domain.Entities;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http.Json;
-using System.Text;
 
 namespace challenge.IntegrationTests.Integration
 {
-    public class MedicamentoControllerIntegrationTests
+    public class _93MedicamentoControllerIntegrationTests
     {
         private readonly HttpClient _client;
 
-        public MedicamentoControllerIntegrationTests(ApiFactoryFixture factory)
+        public _93MedicamentoControllerIntegrationTests(ApiFactoryFixture factory)
         {
             _client = factory.CreateClient();
         }
@@ -22,7 +20,7 @@ namespace challenge.IntegrationTests.Integration
             //Arrange
             var novomedicamento = new
             {
-                Id_medicamento = 1,
+                Id_medicamento = 2,
                 Id_prescricao = 1,
                 Nm_medicamento = "AJUDA",
                 Dosagem_medicamento = "GOTA",
@@ -30,11 +28,11 @@ namespace challenge.IntegrationTests.Integration
                 Qtd_dias = 1
             };
             //Act
-            var response = await _client.PostAsJsonAsync("api/medicamento", novomedicamento);
+            var response = await _client.PostAsJsonAsync("api/medicamentoes/criar/medicamento", novomedicamento);
 
             //Assert
             response.EnsureSuccessStatusCode();
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var medicamentoCriado = await response.Content.ReadFromJsonAsync<Medicamento>();
             Assert.NotNull(medicamentoCriado);
@@ -56,7 +54,7 @@ namespace challenge.IntegrationTests.Integration
                 Qtd_dias = 1
             };
             //Act
-            var response = await _client.PostAsJsonAsync("api/medicamento/atualizar/{id_medicamento}", medicamentoAtualizado);
+            var response = await _client.PutAsJsonAsync($"api/medicamentoes/atualizar/medicamento/{id_medicamento}", medicamentoAtualizado);
 
             //Assert
             response.EnsureSuccessStatusCode();

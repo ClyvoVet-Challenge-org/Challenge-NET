@@ -8,21 +8,21 @@ using System.Text;
 
 namespace challenge.IntegrationTests.Integration
 {
-    public class EnderecoClinicaControllerIntegrationTests
+    public class _8EnderecoAnimalControllerIntegrationTests
     {
         private readonly HttpClient _client;
 
-        public EnderecoClinicaControllerIntegrationTests(ApiFactoryFixture factory)
+        public _8EnderecoAnimalControllerIntegrationTests(ApiFactoryFixture factory)
         {
             _client = factory.CreateClient();
         }
         [Fact]
-        public async Task GetEnderecoClinica_Dados_RetornaCreated()
+        public async Task GetEnderecoAnimal_Dados_RetornaCreated()
         {
             //Arrange
-            var novoEnderecoClinica = new
+            var novoEnderecoAnimal = new
             {
-                id_endereco_clinica = 1,
+                Id_endereco_animal = 2,
                 Pais = "brasil",
                 Estado = "são paulo",
                 Cidade = "são paulo",
@@ -31,28 +31,28 @@ namespace challenge.IntegrationTests.Integration
                 Nr_rua = "Dom Cachorro",
                 Complemento = "1212",
                 Cep = "123456",
-                Id_clinica = 1,
+                Id_animal = 1,
             };
             //Act
-            var response = await _client.PostAsJsonAsync("api/EnderecoClinica", novoEnderecoClinica);
+            var response = await _client.PostAsJsonAsync("api/enderecoanimals/criar/enderecoanimal", novoEnderecoAnimal);
 
             //Assert
             response.EnsureSuccessStatusCode();
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            var EnderecoClinicaCriado = await response.Content.ReadFromJsonAsync<EnderecoClinica>();
-            Assert.NotNull(EnderecoClinicaCriado);
-            Assert.Equal(1, EnderecoClinicaCriado.Id_endereco_clinica);
+            var EnderecoAnimalCriado = await response.Content.ReadFromJsonAsync<EnderecoAnimal>();
+            Assert.NotNull(EnderecoAnimalCriado);
+            Assert.Equal(1, EnderecoAnimalCriado.Id_animal);
         }
 
         [Fact]
-        public async Task UpdateEnderecoClinica_DadosValidos_RetornaSucesso()
+        public async Task UpdateEnderecoAnimal_DadosValidos_RetornaSucesso()
         {
             //Arrange
-            var id_EnderecoClinica = 1;
-            var EnderecoClinicaAtualizado = new
+            var id_EnderecoAnimal = 1;
+            var EnderecoAnimalAtualizado = new
             {
-                Id_EnderecoClinica = id_EnderecoClinica,
+                Id_EnderecoAnimal = id_EnderecoAnimal,
                 Pais = "brasil",
                 Estado = "são paulo",
                 Cidade = "são paulo",
@@ -61,10 +61,10 @@ namespace challenge.IntegrationTests.Integration
                 Nr_rua = "Dom Cachorro",
                 Complemento = "1212",
                 Cep = "123456",
-                Id_clinica = 1,
+                Id_animal = 1,
             };
             //Act
-            var response = await _client.PostAsJsonAsync("api/EnderecoClinica/atualizar/{id_EnderecoClinica}", EnderecoClinicaAtualizado);
+            var response = await _client.PutAsJsonAsync($"api/enderecoanimals/atualizar/enderecoanimal/{id_EnderecoAnimal}", EnderecoAnimalAtualizado);
 
             //Assert
             response.EnsureSuccessStatusCode();

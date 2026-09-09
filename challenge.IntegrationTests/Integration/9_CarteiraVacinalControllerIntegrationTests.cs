@@ -8,11 +8,11 @@ using System.Text;
 
 namespace challenge.IntegrationTests.Integration
 {
-    public class CarteiraVacinalControllerIntegrationTests
+    public class _9CarteiraVacinalControllerIntegrationTests
     {
         private readonly HttpClient _client;
 
-        public CarteiraVacinalControllerIntegrationTests(ApiFactoryFixture factory)
+        public _9CarteiraVacinalControllerIntegrationTests(ApiFactoryFixture factory)
         {
             _client = factory.CreateClient();
         }
@@ -22,7 +22,7 @@ namespace challenge.IntegrationTests.Integration
             //Arrange
             var novocarteiraVacinal = new
             {
-                Id_carteiraVacinal = 1,
+                Id_carteiraVacinal = 2,
                 Nm_vacina = "raiva",
                 Dt_vacina_efetuada = DateTime.Now,
                 Dt_vacina_prevista = new DateTime(2026, 9, 9),
@@ -30,7 +30,7 @@ namespace challenge.IntegrationTests.Integration
                 Id_animal = 1,
             };
             //Act
-            var response = await _client.PostAsJsonAsync("api/carteiraVacinal", novocarteiraVacinal);
+            var response = await _client.PostAsJsonAsync("api/carteiravacinals/criar/carteiravacinal", novocarteiraVacinal);
 
             //Assert
             response.EnsureSuccessStatusCode();
@@ -56,7 +56,7 @@ namespace challenge.IntegrationTests.Integration
                 Id_animal = 1
             };
             //Act
-            var response = await _client.PostAsJsonAsync("api/carteiraVacinal/atualizar/{id_carteiraVacinal}", carteiraVacinalAtualizado);
+            var response = await _client.PutAsJsonAsync($"api/carteiravacinals/atualizar/carteiravacinal/{id_carteiraVacinal}", carteiraVacinalAtualizado);
 
             //Assert
             response.EnsureSuccessStatusCode();
