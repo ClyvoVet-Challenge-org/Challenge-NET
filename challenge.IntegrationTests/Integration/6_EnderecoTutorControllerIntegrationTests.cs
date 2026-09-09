@@ -1,13 +1,11 @@
-﻿using challenge.IntegrationTests.FactoryFixture;
+using challenge.IntegrationTests.FactoryFixture;
 using challengeFiap.Domain.Entities;
-using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http.Json;
-using System.Text;
 
 namespace challenge.IntegrationTests.Integration
 {
+    [Collection("ApiCollection")]
     public class _6EnderecoTutorControllerIntegrationTests
     {
         private readonly HttpClient _client;
@@ -16,13 +14,18 @@ namespace challenge.IntegrationTests.Integration
         {
             _client = factory.CreateClient();
         }
+        //Parte de teste de cricao 
         [Fact]
-        public async Task GetEnderecoTutor_Dados_RetornaCreated()
+        public async Task CriarEnderecoTutor_DadosValidos_RetornaOk()
         {
-            //Arrange
+            // Arrange
+            var id_endereco_tutor = 2;
+            //Essa questão foi colocada aqui para evitar precisa mudar os dados o tempo todos para ver se ta funcionando o testes.
+            await _client.DeleteAsync($"api/enderecotutors/deleta/enderecoresponsavel/{id_endereco_tutor}");
+
             var novoEnderecoTutor = new
             {
-                Id_endereco_tutor = 2,
+                Id_endereco_tutor = id_endereco_tutor,
                 Pais = "brasil",
                 Estado = "são paulo",
                 Cidade = "são paulo",
@@ -31,28 +34,35 @@ namespace challenge.IntegrationTests.Integration
                 Nr_rua = "Dom Cachorro",
                 Complemento = "1212",
                 Cep = "123456",
-                Id_tutor = 1,
+                Id_tutor = 1
             };
-            //Act
-            var response = await _client.PostAsJsonAsync("api/enderecotutors/criar/enderecoresponsavel", novoEnderecoTutor);
 
-            //Assert
+            // Act
+            var response = await _client.PostAsJsonAsync(
+                "api/enderecotutors/criar/enderecoresponsavel",
+                novoEnderecoTutor);
+
+            // Assert
             response.EnsureSuccessStatusCode();
+
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            var EnderecoTutorCriado = await response.Content.ReadFromJsonAsync<EnderecoTutor>();
-            Assert.NotNull(EnderecoTutorCriado);
-            Assert.Equal(1, EnderecoTutorCriado.Id_endereco_tutor);
+            var enderecoTutorCriado = await response.Content.ReadFromJsonAsync<EnderecoTutor>();
+
+            Assert.NotNull(enderecoTutorCriado);
+
+            Assert.Equal(2,enderecoTutorCriado.Id_endereco_tutor);
         }
 
         [Fact]
         public async Task UpdateEnderecoTutor_DadosValidos_RetornaSucesso()
         {
-            //Arrange
-            var id_EnderecoTutor = 1;
-            var EnderecoTutorAtualizado = new
+            // Arrange
+            var id_enderecoTutor = 1;
+
+            var enderecoTutorAtualizado = new
             {
-                id_EnderecoTutor = id_EnderecoTutor,
+                Id_endereco_tutor = id_enderecoTutor,
                 Pais = "brasil",
                 Estado = "são paulo",
                 Cidade = "são paulo",
@@ -61,12 +71,13 @@ namespace challenge.IntegrationTests.Integration
                 Nr_rua = "Dom Cachorro",
                 Complemento = "1212",
                 Cep = "123456",
-                Id_tutor = 1,
+                Id_tutor = 1
             };
-            //Act
-            var response = await _client.PutAsJsonAsync($"api/enderecotutors/atualizar/enderecoresponsavel/{id_EnderecoTutor}", EnderecoTutorAtualizado);
 
-            //Assert
+            // Act
+            var response = await _client.PutAsJsonAsync($"api/enderecotutors/atualizar/enderecoresponsavel/{id_enderecoTutor}",enderecoTutorAtualizado);
+
+            // Assert
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
