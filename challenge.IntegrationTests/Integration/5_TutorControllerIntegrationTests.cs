@@ -20,8 +20,8 @@ namespace challenge.IntegrationTests.Integration
             // Arrange
             var id_tutor = 2;
 
-            await _client.DeleteAsync(
-                $"api/tutor/deleta/Tutor/{id_tutor}");
+            //Essa questão foi colocada aqui para evitar precisa mudar os dados o tempo todos para ver se ta funcionando o testes.
+            await _client.DeleteAsync($"api/tutor/deleta/Tutor/{id_tutor}");
 
             var novoTutor = new
             {
@@ -41,8 +41,7 @@ namespace challenge.IntegrationTests.Integration
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            var tutorCriado =
-                await response.Content.ReadFromJsonAsync<Tutor>();
+            var tutorCriado = await response.Content.ReadFromJsonAsync<Tutor>();
 
             Assert.NotNull(tutorCriado);
             Assert.Equal("Leticia", tutorCriado.Nm_tutor);
@@ -63,9 +62,7 @@ namespace challenge.IntegrationTests.Integration
             };
 
             // Act
-            var response = await _client.PutAsJsonAsync(
-                $"api/tutor/atualizar/Tutor/{id_tutor}",
-                tutorAtualizado);
+            var response = await _client.PutAsJsonAsync($"api/tutor/atualizar/Tutor/{id_tutor}",tutorAtualizado);
 
             // Assert
             response.EnsureSuccessStatusCode();
