@@ -85,7 +85,7 @@ public class ClinicasController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Erro em processar a buscar pela clinica. ID: {IdClinica}",id_clinica);
+            _logger.LogError(ex,"Erro no processamento da buscar pela clinica. ID: {IdClinica}",id_clinica);
 
             return BadRequest($"Erro em processar a buscar pela clinica: {ex.Message}");
         }
@@ -110,7 +110,7 @@ public class ClinicasController : ControllerBase
 
         if (id_clinica != clinica.Id_clinica)
         {
-            _logger.LogWarning("O id da clinica esta incorreto. ID informado: {IdInformado}, ID da clinica: {IdClinica}",id_clinica,clinica.Id_clinica);
+            _logger.LogWarning("O id da clinica esta incorreto.");
             return BadRequest("O id da clinica esta incorreto");
         }
 
@@ -122,7 +122,7 @@ public class ClinicasController : ControllerBase
 
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Atualizacao de clinica concluída com sucesso. ID: {IdClinica}",id_clinica);
+            _logger.LogInformation("Atualizacao de clinica do id: {IdClinica} concluída com sucesso.",id_clinica);
 
             return Ok(clinicaAtualizada);
         }
@@ -130,9 +130,7 @@ public class ClinicasController : ControllerBase
         {
             if (!ClinicaExists(id_clinica))
             {
-                _logger.LogWarning(
-                    "A clinica não encontrada para atualização. ID: {IdClinica}",
-                    id_clinica);
+                _logger.LogWarning("Id {IdClinica} não foi encontrado",id_clinica);
 
                 return NotFound("A clinica não encontrada");
             }
@@ -143,7 +141,7 @@ public class ClinicasController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Erro em atualizar clinica. ID: {IdClinica}",id_clinica);
+            _logger.LogError(ex,"Erro em atualizar clinica.");
 
             return BadRequest($"Erro em atualizar clinica: {ex.Message}");
         }
@@ -175,7 +173,7 @@ public class ClinicasController : ControllerBase
 
             if (existecpnj != null)
             {
-                _logger.LogWarning("O cnpj já existe. CNPJ: {CnpjClinica}",clinica.Cnpj_clinica);
+                _logger.LogWarning("O cnpj informado já existe");
 
                 return BadRequest("O cnpj já existe");
             }
@@ -186,13 +184,13 @@ public class ClinicasController : ControllerBase
 
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Clinica criada com sucesso. ID: {IdClinica}",clinica.Id_clinica);
+            _logger.LogInformation("Clinica {IdClinica}, criada com sucesso",clinica.Id_clinica);
 
             return Ok(clinicaCriada);
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex,"Erro em salvar os dados da clinica");
+            _logger.LogError(ex,"Erro em salvar os dados");
 
             return BadRequest($"Erro em salvar os dados: {ex.Message}");
         }
@@ -220,20 +218,20 @@ public class ClinicasController : ControllerBase
 
             if (clinica == null)
             {
-                _logger.LogWarning("Clinica não encontrada. ID: {IdClinica}",id_clinica);
+                _logger.LogWarning("Clinica {IdClinica}, não encontrada.",id_clinica);
 
                 return NotFound("Clinica não encontrada");
             }
             _context.Clinicas.Remove(clinica);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Clinica removida com sucesso. ID: {IdClinica}",id_clinica);
+            _logger.LogInformation("Clinica removida com sucesso");
 
             return NoContent();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Erro em deletar clinica. ID: {IdClinica}",id_clinica);
+            _logger.LogError(ex,"Erro em deletar clinica.");
 
             return BadRequest(
                 $"Erro em deletar: {ex.Message}");
