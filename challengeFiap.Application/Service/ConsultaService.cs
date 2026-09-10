@@ -76,5 +76,15 @@ namespace challengeFiap.Application.Service
 
             return updatedConsulta;
         }
+        public async Task<Consulta> GetConsultaIdAsync(int id_Consulta)
+        {
+        
+        }
+        public async Task<Consulta> DeleteConsultaAsync(int id_Consulta)
+        {
+        
+        }
+
+
     }
 }
