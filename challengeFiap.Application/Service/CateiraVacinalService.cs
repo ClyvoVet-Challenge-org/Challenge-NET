@@ -76,6 +76,17 @@ namespace challengeFiap.Application.Service
 
             return updatedCarteiraVacinal;
         }
+
+        public async Task<CarteiraVacinal> GetCarteiraVacinalIdAsync(int id_CarteiraVacinal)
+        {
+        
+        }
+
+        public async Task<CarteiraVacinal> DeleteCarteiraVacinalAsync(int id_CarteiraVacinal)
+        {
+        
+        }
+
     }
 }
 
