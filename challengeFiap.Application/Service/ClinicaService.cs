@@ -66,5 +66,14 @@ namespace challengeFiap.Application.Service
         
             return updatedClinica;
         }
+        public async Task<Clinica> GetClinicaIdAsync(int id_Clinica)
+        {
+        
+        }
+        public async Task<Clinica> DeleteClinicaAsync(int id_Clinica)
+        {
+        
+        }
+
     }
 }
