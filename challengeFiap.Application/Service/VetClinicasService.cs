@@ -67,5 +67,16 @@ namespace challengeFiap.Application.Service
 
             return updatedVetClinica;
         }
+
+        public async Task<VetClinica> GetVetClinicaIdAsync(int id_VetClinica)
+        {
+        
+        }
+
+        public async Task<VetClinica> DeleteVetClinicaAsync(int id_VetClinica)
+        {
+        
+        }
+
     }
 }
