@@ -23,7 +23,7 @@ namespace challenge.IntegrationTests.Integration
         public async Task CriarCarteiraVacinal_DadosValidos_RetornaCreated()
         {
             //Arrange
-            var id_carteiraVacinal = 2;
+            var id_carteiraVacinal = Random.Shared.Next(1, 100);
 
             var novaCarteiraVacinal = new
             {
@@ -39,6 +39,10 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.PostAsJsonAsync("api/carteiravacinals/criar/carteiravacinal",novaCarteiraVacinal);
 
             //Assert
+            var erro = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
@@ -71,7 +75,7 @@ namespace challenge.IntegrationTests.Integration
             // Assert
             var erro = await response.Content.ReadAsStringAsync();
 
-            Assert.True(response.IsSuccessStatusCode,$"Status: {response.StatusCode} - Erro: {erro}");
+            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
 
             response.EnsureSuccessStatusCode();
 

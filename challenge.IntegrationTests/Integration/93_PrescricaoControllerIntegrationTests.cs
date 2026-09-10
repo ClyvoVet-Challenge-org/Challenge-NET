@@ -22,7 +22,7 @@ namespace challenge.IntegrationTests.Integration
         public async Task CriarPrescricao_DadosValidos_RetornaCreated()
         {
             // Arrange
-            var id_prescricao = 1;
+            var id_prescricao = Random.Shared.Next(1, 100);
 
             var novaPrescricao = new
             {

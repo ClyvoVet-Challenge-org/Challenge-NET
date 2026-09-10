@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
+using System.Security.Cryptography.X509Certificates;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -103,7 +104,9 @@ try
 
     app.MapControllers();
     app.Run();
+
 }
+
 catch (Exception ex)
 {
     Log.Fatal(ex, "Host terminated unexpectedly");
@@ -112,4 +115,6 @@ finally
 {
     Log.CloseAndFlush();
 }
+
+public partial class Program { }
 

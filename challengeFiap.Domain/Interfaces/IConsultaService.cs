@@ -9,5 +9,9 @@ namespace challengeFiap.Domain.Interfaces
     {
         Task<Consulta> CreateConsultaAsync(Consulta consulta);
         Task<Consulta> UpdateConsultaAsync(int id_consulta, Consulta consulta);
+
+
+        Task<Consulta> GetConsultaIdAsync(int id_Consulta);
+        Task<Consulta> DeleteConsultaAsync(int id_Consulta);
     }
 }

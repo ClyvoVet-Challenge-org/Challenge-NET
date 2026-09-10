@@ -21,7 +21,7 @@ namespace challenge.IntegrationTests.Integration
         public async Task CriarMedicamento_DadosValidos_RetornaOk()
         {
             // Arrange
-            var id_medicamento = 1;
+            var id_medicamento = Random.Shared.Next(1, 100);
 
             var novoMedicamento = new
             {
@@ -37,6 +37,10 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.PostAsJsonAsync("api/medicamentoes/criar/medicamento",novoMedicamento);
 
             // Assert
+            var erro = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK,response.StatusCode);
@@ -68,6 +72,11 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.PutAsJsonAsync($"api/medicamentoes/atualizar/medicamento/{id_medicamento}",medicamentoAtualizado);
 
             // Assert
+            var erro = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+
+
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK,response.StatusCode);

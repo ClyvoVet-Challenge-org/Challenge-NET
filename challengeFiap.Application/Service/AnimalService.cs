@@ -18,6 +18,7 @@ namespace challengeFiap.Application.Service
 
         private readonly Counter<int> _animalCreateCounter;
         private readonly Counter<int> _animalUpdateCounter;
+        private readonly List<Animal> _AnimalGet= new();
 
 
         public AnimalService(ILogger<AnimalService> logger, IMeterFactory meterFactory)
@@ -84,6 +85,25 @@ namespace challengeFiap.Application.Service
 
             _animalUpdateCounter.Add(1,new KeyValuePair<string, object?>("animal.id", updatedAnimal.Id_animal));
             return updatedAnimal;
+        }
+
+        public async Task<Animal?> GetAnimalIdAsync(int id_animal)
+        {
+            var animalget = _AnimalGet.FirstOrDefault(a => a.Id_animal == id_animal);
+            return animalget;
+        }
+        public Task<Animal> DeleteAnimalAsync(int id_animal)
+        {
+            var animalDelete = _AnimalGet.FirstOrDefault(a => a.Id_animal == id_animal);
+            if (animalDelete != null) {
+
+                _AnimalGet.Remove(animalDelete);
+                _logger.LogInformation("Deletado");
+
+            }
+            _logger.LogInformation("Não deletado Deletado ");
+
+            return Task.FromResult(animalDelete);
         }
     }
 }

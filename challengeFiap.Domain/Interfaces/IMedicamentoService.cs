@@ -9,5 +9,8 @@ namespace challengeFiap.Domain.Interfaces
     {
         Task<Medicamento> CreateMedicamentoAsync(Medicamento medicamento);
         Task<Medicamento> UpdateMedicamentoAsync(int id_medicamento, Medicamento medicamento);
+
+        Task<Medicamento> GetMedicamentoIdAsync(int id_Medicamento);
+        Task<Medicamento> DeleteMedicamentoAsync(int id_Medicamento);
     }
 }

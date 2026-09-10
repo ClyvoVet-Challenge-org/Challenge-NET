@@ -21,15 +21,15 @@ namespace challenge.IntegrationTests.Integration
         public async Task CreateVeterinario_DadosValidos_RetornaOk()
         {
             // Arrange
-            var id_vet = 1;
+            var id_vet = Random.Shared.Next(1,100);
             
             var novoVeterinario = new
             {
                 Id_vet = id_vet,
                 Nm_vet = "lual",
-                Cpf_vet = "98765432100",
-                Crmv_vet = "999999-SP",
-                Email_vet = "lual9999@gmail.com",
+                Cpf_vet = "98745432111",
+                Crmv_vet = "999949-SP",
+                Email_vet = "luall9991@gmail.com",
                 Senha_vet = "21358"
             };
 
@@ -37,11 +37,14 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.PostAsJsonAsync("api/veterinarios/criar/veterinario",novoVeterinario);
 
             // Assert
-            response.EnsureSuccessStatusCode();
+            var erro = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode, $"Ocorrido da rejeicao: {erro}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var veterinarioCriado = await response.Content.ReadFromJsonAsync<Veterinario>();
+
             Assert.NotNull(veterinarioCriado);
             Assert.Equal("lual", veterinarioCriado.Nm_vet);
         }
@@ -66,6 +69,10 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.PutAsJsonAsync($"api/veterinarios/atualizar/veterinario/{id_veterinario}",veterinarioAtualizado);
 
             // Assert
+            var erro = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode, $"Ocorrido da rejeicao: {erro}");
+
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

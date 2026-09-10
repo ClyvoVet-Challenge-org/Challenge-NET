@@ -22,7 +22,7 @@ namespace challenge.IntegrationTests.Integration
         public async Task CreateAnimal_DadosValidos_RetornaCreated()
         {
             // Arrange
-            var id_animal = 999;
+            var id_animal = Random.Shared.Next(1, 100);
             var novoAnimal = new
             {
                 Id_animal = id_animal,
@@ -40,6 +40,10 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.PostAsJsonAsync("/api/animals/criar/animal",novoAnimal);
 
             // Assert
+            var erro = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -72,6 +76,10 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.PutAsJsonAsync($"/api/animals/atualizar/animal/{id_animal}",animalAtualizado);
 
             // Assert
+            var erro = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }

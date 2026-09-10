@@ -20,7 +20,7 @@ namespace challenge.IntegrationTests.Integration
         public async Task CriarEnderecoAnimal_DadosValidos_RetornaOk()
         {
             // Arrange
-            var id_endereco_animal = 2;
+            var id_endereco_animal = Random.Shared.Next(1, 100);
             var novoEnderecoAnimal = new
             {
                 Id_endereco_animal = id_endereco_animal,
@@ -39,6 +39,11 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.PostAsJsonAsync("api/enderecoanimals/criar/enderecoanimal",novoEnderecoAnimal);
 
             // Assert
+            var erro = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+
+
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -68,10 +73,13 @@ namespace challenge.IntegrationTests.Integration
             };
 
             // Act
-            var response = await _client.PutAsJsonAsync(
-                $"api/enderecoanimals/atualizar/enderecoanimal/{id_endereco_animal}",
-                enderecoAnimalAtualizado);
+            var response = await _client.PutAsJsonAsync($"api/enderecoanimals/atualizar/enderecoanimal/{id_endereco_animal}",enderecoAnimalAtualizado);
             // Assert
+            var erro = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+
+
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

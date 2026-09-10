@@ -22,7 +22,7 @@ namespace challenge.IntegrationTests.Integration
         public async Task CriarConsulta_DadosValidos_RetornaOk()
         {
             // Arrange
-            var id_consulta = 2;
+            var id_consulta = Random.Shared.Next(1, 100);
 
             var novaConsulta = new
             {
@@ -38,6 +38,10 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.PostAsJsonAsync("api/consultas/criar/consulta",novaConsulta);
 
             // Assert
+            var erro = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -67,6 +71,11 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.PutAsJsonAsync($"api/consultas/atualizar/consulta/{id_consulta}",consultaAtualizada);
 
             // Assert
+            var erro = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+
+
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }

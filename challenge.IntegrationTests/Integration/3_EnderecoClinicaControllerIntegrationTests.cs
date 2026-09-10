@@ -21,26 +21,29 @@ namespace challenge.IntegrationTests.Integration
         public async Task CriarEnderecoClinica_DadosValidos_RetornaOk()
         {
             // Arrange
-            var id_endereco_clinica = 1;
-
+            var id_endereco_clinica = Random.Shared.Next(1, 100);
+            //cada Clinica dever ter o seu unico endereco
             var novoEnderecoClinica = new
             {
                 Id_endereco_clinica = id_endereco_clinica,
                 Pais = "Brasil",
                 Estado = "São Paulo",
                 Cidade = "São Paulo",
-                Bairro = "Bairro Roxo",
+                Bairro = "Bairro rosa",
                 Logradouro_rua = "Dom Cachorro",
-                Nr_rua = "1263",
+                Nr_rua = "1273",
                 Complemento = "1212",
                 Cep = "123456",
-                Id_clinica = 1
+                Id_clinica = 9999
             };
 
             // Act
             var response = await _client.PostAsJsonAsync("api/enderecoclinicas/criar/enderecoclinica",novoEnderecoClinica);
 
             // Assert
+            var erro = await response.Content.ReadAsStringAsync();
+            Assert.True(response.IsSuccessStatusCode, $"Ocorrido da rejeicao: {erro}");
+
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -56,7 +59,7 @@ namespace challenge.IntegrationTests.Integration
         {
             // Arrange
 
-            var id_endereco_clinica = 1;
+            var id_endereco_clinica = 39;
 
             var EnderecoClinicaAtualizado = new
             {
@@ -69,13 +72,15 @@ namespace challenge.IntegrationTests.Integration
                 Nr_rua = "1263",
                 Complemento = "1212",
                 Cep = "123456",
-                Id_clinica = 1
+                Id_clinica = 43
             };
             // Act
-            var response = await _client.PutAsJsonAsync(
-                $"api/enderecoclinicas/atualizar/enderecoclinica/{id_endereco_clinica}",EnderecoClinicaAtualizado);
+            var response = await _client.PutAsJsonAsync($"api/enderecoclinicas/atualizar/enderecoclinica/{id_endereco_clinica}",EnderecoClinicaAtualizado);
 
             // Assert
+            var erro = await response.Content.ReadAsStringAsync();
+            Assert.True(response.IsSuccessStatusCode, $"Ocorrido da rejeicao: {erro}");
+
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

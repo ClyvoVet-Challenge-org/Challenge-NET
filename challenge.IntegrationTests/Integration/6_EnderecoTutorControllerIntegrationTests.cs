@@ -21,7 +21,7 @@ namespace challenge.IntegrationTests.Integration
         public async Task CriarEnderecoTutor_DadosValidos_RetornaOk()
         {
             // Arrange
-            var id_endereco_tutor = 2;
+            var id_endereco_tutor = Random.Shared.Next(1, 100);
 
             var novoEnderecoTutor = new
             {
@@ -41,6 +41,10 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.PostAsJsonAsync("api/enderecotutors/criar/enderecoresponsavel",novoEnderecoTutor);
 
             // Assert
+            var erro = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -74,6 +78,10 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.PutAsJsonAsync($"api/enderecotutors/atualizar/enderecoresponsavel/{id_enderecoTutor}",enderecoTutorAtualizado);
 
             // Assert
+            var erro = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

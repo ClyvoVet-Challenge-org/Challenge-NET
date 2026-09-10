@@ -21,7 +21,7 @@ namespace challenge.IntegrationTests.Integration
         public async Task CreateClinica_DadosValidos_RetornaOk()
         {
             // Arrange
-            var id_clinica = 1;
+            var id_clinica = Random.Shared.Next(1, 100);
 
             //Essa questão foi colocada aqui para evitar precisa mudar os dados o tempo todos para ver se ta funcionando o testes.
             await _client.DeleteAsync($"api/clinicas/deleta/clinica/{id_clinica}");
@@ -29,7 +29,7 @@ namespace challenge.IntegrationTests.Integration
             var novaClinica = new
             {
                 Id_clinica = id_clinica,
-                Cnpj_clinica = "9876543210111",
+                Cnpj_clinica = "987654321010",
                 Nm_clinica = "PetSoule"
             };
 
@@ -37,6 +37,10 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.PostAsJsonAsync("api/clinicas/criar/clinica",novaClinica);
 
             // Assert
+            var erro = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode, $"Ocorrido da rejeicao: {erro}");
+
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -50,7 +54,7 @@ namespace challenge.IntegrationTests.Integration
         public async Task UpdateClinica_DadosValidos_RetornaSucesso()
         {
             // Arrange
-            var id_clinica = 1;
+            var id_clinica = 9984;
 
             var clinicaAtualizada = new
             {
@@ -63,6 +67,10 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.PutAsJsonAsync($"api/clinicas/atualizar/clinica/{id_clinica}",clinicaAtualizada);
 
             // Assert
+            var erro = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode, $"Ocorrido da rejeicao: {erro}");
+
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

@@ -20,12 +20,12 @@ namespace challenge.IntegrationTests.Integration
         public async Task CriarTutor_DadosValidos_RetornaOk()
         {
             // Arrange
-            var id_tutor = 2;
+            var id_tutor = Random.Shared.Next(1, 100);
 
             var novoTutor = new
             {
                 Id_tutor = id_tutor,
-                Cpf_tutor = "12356789",
+                Cpf_tutor = "12356799",
                 Nm_tutor = "Leticia",
                 Nr_telefone_tutor = "11987562335"
             };
@@ -34,12 +34,16 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.PostAsJsonAsync("api/tutor/criar/Tutor",novoTutor);
 
             // Assert
+            var erro = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var tutorCriado = await response.Content.ReadFromJsonAsync<Tutor>();
             Assert.NotNull(tutorCriado);
-            Assert.Equal("Leticia", tutorCriado.Nm_tutor);
+            Assert.Equal(id_tutor, tutorCriado.Id_tutor);
         }
 
         [Fact]
@@ -60,6 +64,10 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.PutAsJsonAsync($"api/tutor/atualizar/Tutor/{id_tutor}",tutorAtualizado);
 
             // Assert
+            var erro = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }

@@ -9,5 +9,9 @@ namespace challengeFiap.Domain.Interfaces
     {
         Task<Tutor> CreateTutorAsync(Tutor tutor);
         Task<Tutor> UpdateTutorAsync(int id_tutor, Tutor tutor);
+
+
+        Task<Tutor> GetTutorIdAsync(int id_Tutor);
+        Task<Tutor> DeleteTutorAsync(int id_Tutor);
     }
 }
