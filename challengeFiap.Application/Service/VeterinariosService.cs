@@ -76,5 +76,17 @@ namespace challengeFiap.Application.Service
 
             return updatedVeterinario;
         }
+        
+        public async Task<Veterinario> GetVeterinarioIdAsync(int id_Veterinario)
+        {
+        
+        }
+
+        public async Task<Veterinario> DeleteVeterinarioAsync(int id_Veterinario)
+        {
+        
+        }
+
+
     }
 }
