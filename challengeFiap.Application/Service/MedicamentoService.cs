@@ -76,5 +76,15 @@ namespace challengeFiap.Application.Service
 
             return updatedMedicamento;
         }
+        public async Task<Medicamento> GetMedicamentoIdAsync(int id_Medicamento)
+        {
+        
+        }
+
+        public async Task<Medicamento> DeleteMedicamentoAsync(int id_Medicamento)
+        {
+        
+        }
+
     }
 }
