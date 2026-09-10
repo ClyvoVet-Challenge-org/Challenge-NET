@@ -5,6 +5,8 @@ using System.Net.Http.Json;
 
 namespace challenge.IntegrationTests.Integration
 {
+    //Atenção!!! Tanto o create quanto o update precisam ter cuidado com os dados que serão adicionados, porque, se não, pode dar erro.          
+    //Recomendação faz um a cada vez, não faz eles tudo junto
     [Collection("ApiCollection")]
     public class _3EnderecoClinicaControllerIntegrationTests
     {
@@ -19,28 +21,11 @@ namespace challenge.IntegrationTests.Integration
         public async Task CriarEnderecoClinica_DadosValidos_RetornaOk()
         {
             // Arrange
-
-            //Essa questão foi colocada aqui para evitar precisa mudar os dados o tempo todos para ver se ta funcionando o testes.
-            await _client.DeleteAsync("api/clinicas/deleta/clinica/9984");
-
-            var novaClinica = new
-            {
-                Id_clinica = 9984,
-                Cnpj_clinica = "9876543210111",
-                Nm_clinica = "PetSoule"
-            };
-
-            var respostaClinica = await _client.PostAsJsonAsync("api/clinicas/criar/clinica",novaClinica);
-
-            respostaClinica.EnsureSuccessStatusCode();
-
-            // Remove o endereço anterior, caso exista
-            await _client.DeleteAsync(
-                "api/enderecoclinicas/deleta/enderecoclinica/9997");
+            var id_endereco_clinica = 1;
 
             var novoEnderecoClinica = new
             {
-                Id_endereco_clinica = 9997,
+                Id_endereco_clinica = id_endereco_clinica,
                 Pais = "Brasil",
                 Estado = "São Paulo",
                 Cidade = "São Paulo",
@@ -49,21 +34,18 @@ namespace challenge.IntegrationTests.Integration
                 Nr_rua = "1263",
                 Complemento = "1212",
                 Cep = "123456",
-                Id_clinica = 9984
+                Id_clinica = 1
             };
 
             // Act
-            var response = await _client.PostAsJsonAsync(
-                "api/enderecoclinicas/criar/enderecoclinica",
-                novoEnderecoClinica);
+            var response = await _client.PostAsJsonAsync("api/enderecoclinicas/criar/enderecoclinica",novoEnderecoClinica);
 
             // Assert
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            var enderecoCriado =
-                await response.Content.ReadFromJsonAsync<EnderecoClinica>();
+            var enderecoCriado = await response.Content.ReadFromJsonAsync<EnderecoClinica>();
 
             Assert.NotNull(enderecoCriado);
             Assert.Equal("São Paulo", enderecoCriado.Cidade);
@@ -74,65 +56,24 @@ namespace challenge.IntegrationTests.Integration
         {
             // Arrange
 
-            // Garante que a clínica exista
-            await _client.DeleteAsync(
-                "api/clinicas/deleta/clinica/9984");
+            var id_endereco_clinica = 1;
 
-            var novaClinica = new
+            var EnderecoClinicaAtualizado = new
             {
-                Id_clinica = 9984,
-                Cnpj_clinica = "9876543210111",
-                Nm_clinica = "PetSoule"
-            };
-
-            var respostaClinica = await _client.PostAsJsonAsync(
-                "api/clinicas/criar/clinica",
-                novaClinica);
-
-            respostaClinica.EnsureSuccessStatusCode();
-
-            // Garante que o endereço exista
-            await _client.DeleteAsync(
-                "api/enderecoclinicas/deleta/enderecoclinica/9997");
-
-            var novoEndereco = new
-            {
-                Id_endereco_clinica = 9997,
+                Id_endereco_clinica = id_endereco_clinica,
                 Pais = "Brasil",
                 Estado = "São Paulo",
                 Cidade = "São Paulo",
-                Bairro = "Bairro Roxo",
+                Bairro = "Bairro Rosa",
                 Logradouro_rua = "Dom Cachorro",
                 Nr_rua = "1263",
                 Complemento = "1212",
                 Cep = "123456",
-                Id_clinica = 9984
+                Id_clinica = 1
             };
-
-            var respostaEndereco = await _client.PostAsJsonAsync(
-                "api/enderecoclinicas/criar/enderecoclinica",
-                novoEndereco);
-
-            respostaEndereco.EnsureSuccessStatusCode();
-
-            var enderecoAtualizado = new
-            {
-                Id_endereco_clinica = 9997,
-                Pais = "Brasil",
-                Estado = "São Paulo",
-                Cidade = "São Paulo",
-                Bairro = "Bairro Roxo",
-                Logradouro_rua = "Rua Atualizada",
-                Nr_rua = "1263",
-                Complemento = "1212",
-                Cep = "123456",
-                Id_clinica = 9984
-            };
-
             // Act
             var response = await _client.PutAsJsonAsync(
-                "api/enderecoclinicas/atualizar/enderecoclinica/9997",
-                enderecoAtualizado);
+                $"api/enderecoclinicas/atualizar/enderecoclinica/{id_endereco_clinica}",EnderecoClinicaAtualizado);
 
             // Assert
             response.EnsureSuccessStatusCode();

@@ -5,6 +5,8 @@ using System.Net.Http.Json;
 
 namespace challenge.IntegrationTests.Integration
 {
+    //Atenção!!! Tanto o create quanto o update precisam ter cuidado com os dados que serão adicionados, porque, se não, pode dar erro.          
+    //Recomendação faz um a cada vez, não faz eles tudo junto
     [Collection("ApiCollection")]
     public class _5TutorControllerIntegrationTests
     {
@@ -20,9 +22,6 @@ namespace challenge.IntegrationTests.Integration
             // Arrange
             var id_tutor = 2;
 
-            //Essa questão foi colocada aqui para evitar precisa mudar os dados o tempo todos para ver se ta funcionando o testes.
-            await _client.DeleteAsync($"api/tutor/deleta/Tutor/{id_tutor}");
-
             var novoTutor = new
             {
                 Id_tutor = id_tutor,
@@ -32,17 +31,13 @@ namespace challenge.IntegrationTests.Integration
             };
 
             // Act
-            var response = await _client.PostAsJsonAsync(
-                "api/tutor/criar/Tutor",
-                novoTutor);
+            var response = await _client.PostAsJsonAsync("api/tutor/criar/Tutor",novoTutor);
 
             // Assert
             response.EnsureSuccessStatusCode();
-
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var tutorCriado = await response.Content.ReadFromJsonAsync<Tutor>();
-
             Assert.NotNull(tutorCriado);
             Assert.Equal("Leticia", tutorCriado.Nm_tutor);
         }

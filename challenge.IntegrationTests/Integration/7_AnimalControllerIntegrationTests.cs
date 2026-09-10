@@ -1,13 +1,13 @@
 ﻿using challenge.IntegrationTests.FactoryFixture;
 using challengeFiap.Domain.Entities;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http.Json;
-using System.Text;
 
 namespace challenge.IntegrationTests.Integration
 {
+    //Atenção!!! Tanto o create quanto o update precisam ter cuidado com os dados que serão adicionados, porque, se não, pode dar erro.          
+    //Recomendação faz um a cada vez, não faz eles tudo junto
     [Collection("ApiCollection")]
     public class _7AnimalControllerIntegrationTests
     {
@@ -22,9 +22,10 @@ namespace challenge.IntegrationTests.Integration
         public async Task CreateAnimal_DadosValidos_RetornaCreated()
         {
             // Arrange
+            var id_animal = 999;
             var novoAnimal = new
             {
-                Id_animal = 999,
+                Id_animal = id_animal,
                 Rg_animal = "987654321",
                 Nr_microchip_animal = "987654321",
                 Nm_animal = "Rex",
@@ -36,9 +37,7 @@ namespace challenge.IntegrationTests.Integration
             };
 
             // Act
-            var response = await _client.PostAsJsonAsync(
-                "/api/animals/criar/animal",
-                novoAnimal);
+            var response = await _client.PostAsJsonAsync("/api/animals/criar/animal",novoAnimal);
 
             // Assert
             response.EnsureSuccessStatusCode();
@@ -70,9 +69,7 @@ namespace challenge.IntegrationTests.Integration
             };
 
             // Act
-            var response = await _client.PutAsJsonAsync(
-                $"/api/animals/atualizar/animal/{id_animal}",
-                animalAtualizado);
+            var response = await _client.PutAsJsonAsync($"/api/animals/atualizar/animal/{id_animal}",animalAtualizado);
 
             // Assert
             response.EnsureSuccessStatusCode();

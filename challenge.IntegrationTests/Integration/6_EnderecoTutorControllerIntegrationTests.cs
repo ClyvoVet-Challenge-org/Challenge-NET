@@ -5,6 +5,8 @@ using System.Net.Http.Json;
 
 namespace challenge.IntegrationTests.Integration
 {
+    //Atenção!!! Tanto o create quanto o update precisam ter cuidado com os dados que serão adicionados, porque, se não, pode dar erro.          
+    //Recomendação faz um a cada vez, não faz eles tudo junto
     [Collection("ApiCollection")]
     public class _6EnderecoTutorControllerIntegrationTests
     {
@@ -20,8 +22,6 @@ namespace challenge.IntegrationTests.Integration
         {
             // Arrange
             var id_endereco_tutor = 2;
-            //Essa questão foi colocada aqui para evitar precisa mudar os dados o tempo todos para ver se ta funcionando o testes.
-            await _client.DeleteAsync($"api/enderecotutors/deleta/enderecoresponsavel/{id_endereco_tutor}");
 
             var novoEnderecoTutor = new
             {
@@ -38,9 +38,7 @@ namespace challenge.IntegrationTests.Integration
             };
 
             // Act
-            var response = await _client.PostAsJsonAsync(
-                "api/enderecotutors/criar/enderecoresponsavel",
-                novoEnderecoTutor);
+            var response = await _client.PostAsJsonAsync("api/enderecotutors/criar/enderecoresponsavel",novoEnderecoTutor);
 
             // Assert
             response.EnsureSuccessStatusCode();
@@ -48,9 +46,7 @@ namespace challenge.IntegrationTests.Integration
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var enderecoTutorCriado = await response.Content.ReadFromJsonAsync<EnderecoTutor>();
-
             Assert.NotNull(enderecoTutorCriado);
-
             Assert.Equal(2,enderecoTutorCriado.Id_endereco_tutor);
         }
 
@@ -58,7 +54,7 @@ namespace challenge.IntegrationTests.Integration
         public async Task UpdateEnderecoTutor_DadosValidos_RetornaSucesso()
         {
             // Arrange
-            var id_enderecoTutor = 1;
+            var id_enderecoTutor = 2;
 
             var enderecoTutorAtualizado = new
             {

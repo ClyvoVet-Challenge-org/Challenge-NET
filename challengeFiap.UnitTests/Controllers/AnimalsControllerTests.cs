@@ -16,19 +16,21 @@ namespace challengeFiap.UnitTests.Controllers
     {
         private readonly Mock<IAnimalService> _animalServiceMock;
         private readonly AnimalsController _controller;
-        private readonly Mock<ILogger<AnimalsController>> _loggerMock;
-        private readonly Mock<AppDbContext> _contextMock;
+        private readonly ILogger<AnimalsController> _logger;
+        private readonly AppDbContext _context;
 
         public AnimalsControllerTests()
         {
             _animalServiceMock = new Mock<IAnimalService>();
-            _loggerMock = new Mock<ILogger<AnimalsController>>();
+            var loggMock = new Mock<ILogger<AnimalsController>>();
+            _logger = loggMock.Object;
 
-            // Mock do DbContext usando um DbContextOptions básico para evitar NullReferenceException
-            var options = new DbContextOptionsBuilder<AppDbContext>().Options;
-            _contextMock = new Mock<AppDbContext>(options);
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _context = new AppDbContext(options);
 
-            _controller = new AnimalsController(_contextMock.Object, _loggerMock.Object, _animalServiceMock.Object);
+            _controller = new AnimalsController(_context, _logger, _animalServiceMock.Object);
         }
 
         //Criação
@@ -53,7 +55,7 @@ namespace challengeFiap.UnitTests.Controllers
             // Act
             var result = await _controller.PostAnimal(animal);
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
             var returnedAnimal = Assert.IsType<Animal>(okResult.Value);
             Assert.NotNull(returnedAnimal);
         }
@@ -76,6 +78,9 @@ namespace challengeFiap.UnitTests.Controllers
                 Raca_animal = "Labrador",
                 Id_tutor = 1
             };
+
+            _context.Animals.Add(animal);
+            await _context.SaveChangesAsync();
 
             _animalServiceMock.Setup(service => service.UpdateAnimalAsync(id_animal, animal))
                 .ReturnsAsync(animal);

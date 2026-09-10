@@ -14,6 +14,7 @@ namespace challengeFiap.Infrastruture
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
             services.AddScoped<IAnimalService, AnimalService>();
+            services.AddScoped<ICarteiraVacinalService, CateiraVacinalService>();
             services.AddScoped<IConsultaService, ConsultaService>();
             services.AddScoped<IClinicaService, ClinicaService>();
             services.AddScoped<IenderecoAnimalService, EnderecoAnimalService>();

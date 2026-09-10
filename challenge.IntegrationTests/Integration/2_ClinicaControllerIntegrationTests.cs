@@ -5,6 +5,8 @@ using System.Net.Http.Json;
 
 namespace challenge.IntegrationTests.Integration
 {
+    //Atenção!!! Tanto o create quanto o update precisam ter cuidado com os dados que serão adicionados, porque, se não, pode dar erro.          
+    //Recomendação faz um a cada vez, não faz eles tudo junto
     [Collection("ApiCollection")]
     public class _2ClinicaControllerIntegrationTests
     {
@@ -19,7 +21,7 @@ namespace challenge.IntegrationTests.Integration
         public async Task CreateClinica_DadosValidos_RetornaOk()
         {
             // Arrange
-            var id_clinica = 9984;
+            var id_clinica = 1;
 
             //Essa questão foi colocada aqui para evitar precisa mudar os dados o tempo todos para ver se ta funcionando o testes.
             await _client.DeleteAsync($"api/clinicas/deleta/clinica/{id_clinica}");
@@ -40,7 +42,6 @@ namespace challenge.IntegrationTests.Integration
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var clinicaCriada = await response.Content.ReadFromJsonAsync<Clinica>();
-
             Assert.NotNull(clinicaCriada);
             Assert.Equal("PetSoule", clinicaCriada.Nm_clinica);
         }
@@ -49,21 +50,7 @@ namespace challenge.IntegrationTests.Integration
         public async Task UpdateClinica_DadosValidos_RetornaSucesso()
         {
             // Arrange
-            var id_clinica = 9998;
-
-            // Remove o cadastro anterior, caso exista
-            await _client.DeleteAsync($"api/clinicas/deleta/clinica/{id_clinica}");
-
-            var novaClinica = new
-            {
-                Id_clinica = id_clinica,
-                Cnpj_clinica = "98765432100002",
-                Nm_clinica = "ClinicaTeste"
-            };
-
-            var createResponse = await _client.PostAsJsonAsync("api/clinicas/criar/clinica",novaClinica);
-
-            createResponse.EnsureSuccessStatusCode();
+            var id_clinica = 1;
 
             var clinicaAtualizada = new
             {

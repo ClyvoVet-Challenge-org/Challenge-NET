@@ -3,6 +3,7 @@ using challengeFiap.Domain.Interfaces;
 using challengeFiap.Infrastruture.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
@@ -23,6 +24,14 @@ namespace challengeFiap.UnitTests.Controllers
         public enderecoClinicasControllerTests()
         {
             _enderecoClinicaServiceMock = new Mock<IenderecoClinicaService>();
+            var loggMock = new Mock<ILogger<EnderecoClinicasController>>();
+            _logger = loggMock.Object;
+
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _context = new AppDbContext(options);
+
             _controller = new EnderecoClinicasController(_context, _logger, _enderecoClinicaServiceMock.Object);
         }
 
@@ -31,9 +40,20 @@ namespace challengeFiap.UnitTests.Controllers
         public async Task Create_enderecoClinica_RetornaOK()
         {
             // Arrange
+            var Clinica = new Clinica
+            {
+                Id_clinica = 1,
+                Cnpj_clinica = "123456789",
+                Nm_clinica = "PetSoule"
+            };
+
+            _context.Clinicas.Add(Clinica);
+            await _context.SaveChangesAsync();
+
+            var id_endereco_clinica = 1;
             var enderecoClinica = new EnderecoClinica
             {
-                Id_endereco_clinica = 1,
+                Id_endereco_clinica = id_endereco_clinica,
                 Pais = "brasil",
                 Estado = "são paulo",
                 Cidade = "são paulo",
@@ -48,8 +68,8 @@ namespace challengeFiap.UnitTests.Controllers
                 .ReturnsAsync(enderecoClinica);
             // Act
             var result = await _controller.PostEnderecoClinica(enderecoClinica);
-            // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
+            //Assert
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
             var returnedenderecoClinica = Assert.IsType<EnderecoClinica>(okResult.Value);
             Assert.NotNull(returnedenderecoClinica);
         }
@@ -73,6 +93,9 @@ namespace challengeFiap.UnitTests.Controllers
                 Cep = "123456",
                 Id_clinica = 1,
             };
+
+            _context.EnderecoClinicas.Add(enderecoClinica);
+            await _context.SaveChangesAsync();
 
             _enderecoClinicaServiceMock.Setup(service => service.UpdateEnderecoClinicaAsync(id_enderecoClinica, enderecoClinica))
                 .ReturnsAsync(enderecoClinica);

@@ -3,6 +3,7 @@ using challengeFiap.Domain.Interfaces;
 using challengeFiap.Infrastruture.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
@@ -23,6 +24,14 @@ namespace challengeFiap.UnitTests.Controllers
         public ClinicaControllerTests()
         {
             _ClinicaServiceMock = new Mock<IClinicaService>();
+            var loggMock = new Mock<ILogger<ClinicasController>>();
+            _logger = loggMock.Object;
+
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _context = new AppDbContext(options);
+
             _controller = new ClinicasController(_context, _logger, _ClinicaServiceMock.Object);
         }
 
@@ -42,8 +51,9 @@ namespace challengeFiap.UnitTests.Controllers
             // Act
             var result = await _controller.PostClinica(Clinica);
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
             var returnedClinica = Assert.IsType<Clinica>(okResult.Value);
+
             Assert.NotNull(returnedClinica);
         }
 
@@ -59,6 +69,9 @@ namespace challengeFiap.UnitTests.Controllers
                 Cnpj_clinica = "123456789",
                 Nm_clinica = "PetSoule"
             };
+
+            _context.Clinicas.Add(Clinica);
+            await _context.SaveChangesAsync();
 
             _ClinicaServiceMock.Setup(service => service.UpdateClinicaAsync(id_Clinica, Clinica))
                 .ReturnsAsync(Clinica);

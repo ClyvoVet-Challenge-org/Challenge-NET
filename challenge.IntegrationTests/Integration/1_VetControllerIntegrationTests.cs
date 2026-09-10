@@ -5,6 +5,8 @@ using System.Net.Http.Json;
 
 namespace challenge.IntegrationTests.Integration
 {
+    //Atenção!!! Tanto o create quanto o update precisam ter cuidado com os dados que serão adicionados, porque, se não, pode dar erro.          
+    //Recomendação faz um a cada vez, não faz eles tudo junto
     [Collection("ApiCollection")]
     public class _1VetControllerIntegrationTests
     {
@@ -19,11 +21,8 @@ namespace challenge.IntegrationTests.Integration
         public async Task CreateVeterinario_DadosValidos_RetornaOk()
         {
             // Arrange
-            var id_vet = 9999;
+            var id_vet = 1;
             
-            //Essa questão foi colocada aqui para evitar precisa mudar os dados o tempo todos para ver se ta funcionando o testes.
-            await _client.DeleteAsync($"api/veterinarios/deleta/veterinario/{id_vet}");
-
             var novoVeterinario = new
             {
                 Id_vet = id_vet,
@@ -35,9 +34,7 @@ namespace challenge.IntegrationTests.Integration
             };
 
             // Act
-            var response = await _client.PostAsJsonAsync(
-                "api/veterinarios/criar/veterinario",
-                novoVeterinario);
+            var response = await _client.PostAsJsonAsync("api/veterinarios/criar/veterinario",novoVeterinario);
 
             // Assert
             response.EnsureSuccessStatusCode();
@@ -45,7 +42,6 @@ namespace challenge.IntegrationTests.Integration
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var veterinarioCriado = await response.Content.ReadFromJsonAsync<Veterinario>();
-
             Assert.NotNull(veterinarioCriado);
             Assert.Equal("lual", veterinarioCriado.Nm_vet);
         }

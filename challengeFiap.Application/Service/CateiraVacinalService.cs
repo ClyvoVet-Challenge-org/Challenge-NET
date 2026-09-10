@@ -58,8 +58,7 @@ namespace challengeFiap.Application.Service
         {
 
             using var activity = ActivitySource.StartActivity("UpdateCarteiraVacinalAsync");
-            activity.SetTag("carteira_vacinal.id", id_carteira);
-
+            activity?.SetTag("carteira_vacinal.id", id_carteira);
 
             var updatedCarteiraVacinal = new CarteiraVacinal
             {

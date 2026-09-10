@@ -1,13 +1,15 @@
 ﻿using challenge.IntegrationTests.FactoryFixture;
 using challengeFiap.Domain.Entities;
+using challengeFiap.Domain.Enums;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http.Json;
-using System.Text;
 
 namespace challenge.IntegrationTests.Integration
 {
+    //Atenção!!! Tanto o create quanto o update precisam ter cuidado com os dados que serão adicionados, porque, se não, pode dar erro.          
+    //Recomendação faz um a cada vez, não faz eles tudo junto
+    [Collection("ApiCollection")]
     public class _9CarteiraVacinalControllerIntegrationTests
     {
         private readonly HttpClient _client;
@@ -16,52 +18,64 @@ namespace challenge.IntegrationTests.Integration
         {
             _client = factory.CreateClient();
         }
+
         [Fact]
-        public async Task GetcarteiraVacinal_Dados_RetornaCreated()
+        public async Task CriarCarteiraVacinal_DadosValidos_RetornaCreated()
         {
             //Arrange
-            var novocarteiraVacinal = new
+            var id_carteiraVacinal = 2;
+
+            var novaCarteiraVacinal = new
             {
-                Id_carteiraVacinal = 2,
+                Id_carteiraVacinal = id_carteiraVacinal,
                 Nm_vacina = "raiva",
-                Dt_vacina_efetuada = DateTime.Now,
-                Dt_vacina_prevista = new DateTime(2026, 9, 9),
-                St_vacina = challengeFiap.Domain.Enums.StatusVacinacao.EFETUADA,
-                Id_animal = 1,
+                Dt_vacina_prevista = new DateTime(2027, 9, 9),
+                Dt_vacina_efetuada = new DateTime(2026, 9, 9),
+                St_vacina = StatusVacinacao.EFETUADA,
+                Id_animal = 1
             };
+
             //Act
-            var response = await _client.PostAsJsonAsync("api/carteiravacinals/criar/carteiravacinal", novocarteiraVacinal);
+            var response = await _client.PostAsJsonAsync("api/carteiravacinals/criar/carteiravacinal",novaCarteiraVacinal);
 
             //Assert
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
-            var carteiraVacinalCriado = await response.Content.ReadFromJsonAsync<CarteiraVacinal>();
-            Assert.NotNull(carteiraVacinalCriado);
-            Assert.Equal(1, carteiraVacinalCriado.Id_carteiraVacinal);
+            var carteiraVacinalCriada = await response.Content.ReadFromJsonAsync<CarteiraVacinal>();
+
+            Assert.NotNull(carteiraVacinalCriada);
+
+            Assert.Equal(id_carteiraVacinal,carteiraVacinalCriada.Id_carteiraVacinal);
         }
 
         [Fact]
-        public async Task UpdatecarteiraVacinal_DadosValidos_RetornaSucesso()
+        public async Task AtualizarCarteiraVacinal_DadosValidos_RetornaOk()
         {
-            //Arrange
-            var id_carteiraVacinal = 1;
-            var carteiraVacinalAtualizado = new
+            // Arrange
+            var id_carteiraVacinal = 2;
+
+            var carteiraVacinalAtualizada = new
             {
                 Id_carteiraVacinal = id_carteiraVacinal,
                 Nm_vacina = "semanal",
-                Dt_vacina_efetuada = DateTime.Now,
-                Dt_vacina_prevista = new DateTime(2026, 9, 9),
-                St_vacina = challengeFiap.Domain.Enums.StatusVacinacao.EFETUADA,
+                Dt_vacina_prevista = new DateTime(2027, 9, 9),
+                Dt_vacina_efetuada = new DateTime(2026, 9, 9),
+                St_vacina = StatusVacinacao.EFETUADA,
                 Id_animal = 1
             };
-            //Act
-            var response = await _client.PutAsJsonAsync($"api/carteiravacinals/atualizar/carteiravacinal/{id_carteiraVacinal}", carteiraVacinalAtualizado);
 
-            //Assert
+            // Act
+            var response = await _client.PutAsJsonAsync($"api/carteiravacinals/atualizar/carteiravacinal/{id_carteiraVacinal}",carteiraVacinalAtualizada);
+
+            // Assert
+            var erro = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode,$"Status: {response.StatusCode} - Erro: {erro}");
+
             response.EnsureSuccessStatusCode();
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK,response.StatusCode);
         }
     }
 }
