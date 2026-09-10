@@ -3,6 +3,7 @@ using challengeFiap.Domain.Interfaces;
 using challengeFiap.Infrastruture.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
@@ -23,6 +24,16 @@ namespace challengeFiap.UnitTests.Controllers
         public TutorControllerTests()
         {
             _TutorServiceMock = new Mock<ItutorService>();
+
+            var loggMock = new Mock<ILogger<TutorController>>();
+            _logger = loggMock.Object;
+
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _context = new AppDbContext(options);
+
+
             _controller = new TutorController(_context, _logger, _TutorServiceMock.Object);
         }
 
@@ -31,9 +42,10 @@ namespace challengeFiap.UnitTests.Controllers
         public async Task Create_Tutor_RetornaOK()
         {
             // Arrange
+            var id_tutor = 1;
             var tutor = new Tutor
             {
-                Id_tutor =1,
+                Id_tutor = id_tutor,
                 Cpf_tutor = "123456789",
                 Nm_tutor = "Leticia",
                 Nr_telefone_tutor = "11987562335"
@@ -43,7 +55,7 @@ namespace challengeFiap.UnitTests.Controllers
             // Act
             var result = await _controller.PostTutor(tutor);
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
             var returnedTutor = Assert.IsType<Tutor>(okResult.Value);
             Assert.NotNull(returnedTutor);
         }
@@ -61,6 +73,8 @@ namespace challengeFiap.UnitTests.Controllers
                 Nm_tutor = "Leticia",
                 Nr_telefone_tutor = "11987562335"
             };
+            _context.Tutor.Add(Tutor);
+            await _context.SaveChangesAsync();
 
             _TutorServiceMock.Setup(service => service.UpdateTutorAsync(id_Tutor, Tutor))
                 .ReturnsAsync(Tutor);

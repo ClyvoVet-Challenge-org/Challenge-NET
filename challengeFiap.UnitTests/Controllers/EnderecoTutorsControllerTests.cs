@@ -3,6 +3,7 @@ using challengeFiap.Domain.Interfaces;
 using challengeFiap.Infrastruture.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
@@ -23,6 +24,13 @@ namespace challengeFiap.UnitTests.Controllers
         public EnderecoTutorsControllerTests()
         {
             _enderecoTutorServiceMock = new Mock<IenderecoTutorService>();
+            var loggMock = new Mock<ILogger<EnderecoTutorsController>>();
+            _logger = loggMock.Object;
+
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _context = new AppDbContext(options);
             _controller = new EnderecoTutorsController(_context, _logger, _enderecoTutorServiceMock.Object);
         }
 
@@ -31,9 +39,20 @@ namespace challengeFiap.UnitTests.Controllers
         public async Task Create_enderecoTutor_RetornaOK()
         {
             // Arrange
+            var tutor = new Tutor
+            {
+                Id_tutor = 1,
+                Cpf_tutor = "123456789",
+                Nm_tutor = "Leticia",
+                Nr_telefone_tutor = "11987562335"
+            };
+            _context.Tutor.Add(tutor);
+            await _context.SaveChangesAsync();
+
+            var id_endereco_tutor = 1;
             var enderecoTutor = new EnderecoTutor
             {
-                Id_endereco_tutor = 1,
+                Id_endereco_tutor = id_endereco_tutor,
                 Pais = "brasil",
                 Estado = "são paulo",
                 Cidade = "são paulo",
@@ -49,7 +68,7 @@ namespace challengeFiap.UnitTests.Controllers
             // Act
             var result = await _controller.PostEnderecoResponsavel(enderecoTutor);
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
             var returnedenderecoTutor = Assert.IsType<EnderecoTutor>(okResult.Value);
             Assert.NotNull(returnedenderecoTutor);
         }
@@ -73,6 +92,9 @@ namespace challengeFiap.UnitTests.Controllers
                 Cep = "123456",
                 Id_tutor = 1,
             };
+
+            _context.EnderecoTutors.Add(enderecoTutor);
+            await _context.SaveChangesAsync();
 
             _enderecoTutorServiceMock.Setup(service => service.UpdateEnderecoTutorAsync(id_enderecoTutor, enderecoTutor))
                 .ReturnsAsync(enderecoTutor);

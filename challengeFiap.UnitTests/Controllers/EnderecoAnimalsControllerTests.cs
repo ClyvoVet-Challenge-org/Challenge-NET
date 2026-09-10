@@ -3,6 +3,7 @@ using challengeFiap.Domain.Interfaces;
 using challengeFiap.Infrastruture.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
@@ -23,6 +24,14 @@ namespace challengeFiap.UnitTests.Controllers
         public EnderecoenderecoAnimalsControllerTests()
         {
             _enderecoAnimalServiceMock = new Mock<IenderecoAnimalService>();
+            var loggMock = new Mock<ILogger<EnderecoAnimalsController>>();
+            _logger = loggMock.Object;
+
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _context = new AppDbContext(options);
+
             _controller = new EnderecoAnimalsController(_context, _logger, _enderecoAnimalServiceMock.Object);
         }
 
@@ -31,6 +40,21 @@ namespace challengeFiap.UnitTests.Controllers
         public async Task Create_enderecoAnimal_RetornaOK()
         {
             // Arrange
+            var animal = new Animal
+            {
+                Id_animal = 1,
+                Rg_animal = "123456789",
+                Nr_microchip_animal = "123123123",
+                Nm_animal = "Rex",
+                Dt_nascimento_animal = DateTime.Now,
+                Peso_animal = 1,
+                Especie_animal = "Cachorro",
+                Raca_animal = "Labrador",
+                Id_tutor = 1
+            };
+            _context.Animals.Add(animal);
+            await _context.SaveChangesAsync();
+
             var enderecoAnimal = new EnderecoAnimal
             {
                 Id_endereco_animal = 1,
@@ -49,7 +73,7 @@ namespace challengeFiap.UnitTests.Controllers
             // Act
             var result = await _controller.PostEnderecoAnimal(enderecoAnimal);
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
             var returnedenderecoAnimal = Assert.IsType<EnderecoAnimal>(okResult.Value);
             Assert.NotNull(returnedenderecoAnimal);
         }
@@ -73,6 +97,8 @@ namespace challengeFiap.UnitTests.Controllers
                 Cep = "123456",
                 Id_animal = 1,
             };
+            _context.EnderecoAnimals.Add(enderecoAnimal);
+            await _context.SaveChangesAsync();
 
             _enderecoAnimalServiceMock.Setup(service => service.UpdateEnderecoAnimalAsync(id_enderecoAnimal, enderecoAnimal))
                 .ReturnsAsync(enderecoAnimal);

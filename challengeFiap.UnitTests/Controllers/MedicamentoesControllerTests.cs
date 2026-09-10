@@ -3,6 +3,7 @@ using challengeFiap.Domain.Interfaces;
 using challengeFiap.Infrastruture.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
@@ -23,6 +24,14 @@ namespace challengeFiap.UnitTests.Controllers
         public MedicamentoesControllerTests()
         {
             _MedicamentoServiceMock = new Mock<IMedicamentoService>();
+            var loggMock = new Mock<ILogger<MedicamentoesController>>();
+            _logger = loggMock.Object;
+
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _context = new AppDbContext(options);
+
             _controller = new MedicamentoesController(_context, _logger, _MedicamentoServiceMock.Object);
         }
 
@@ -31,9 +40,21 @@ namespace challengeFiap.UnitTests.Controllers
         public async Task Create_Medicamento_RetornaOK()
         {
             // Arrange
+            var Prescricaos = new Prescricao
+            {
+                Id_prescricao = 1,
+                Dt_emissao = DateTime.Now,
+                Dt_expiracao = new DateTime(2026, 09, 10),
+                Id_consulta = 1,
+                Observacoes_gerais = "Paciente esta bem"
+            };
+            _context.Prescricaos.Add(Prescricaos);
+            await _context.SaveChangesAsync();
+
+            var id_medicamento = 1;
             var Medicamento = new Medicamento
             {
-                Id_medicamento = 1,
+                Id_medicamento = id_medicamento,
                 Id_prescricao = 1,
                 Nm_medicamento = "AJUDA",
                 Dosagem_medicamento = "GOTA",
@@ -45,7 +66,7 @@ namespace challengeFiap.UnitTests.Controllers
             // Act
             var result = await _controller.PostMedicamento(Medicamento);
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
             var returnedMedicamento = Assert.IsType<Medicamento>(okResult.Value);
             Assert.NotNull(returnedMedicamento);
         }
@@ -65,6 +86,9 @@ namespace challengeFiap.UnitTests.Controllers
                 Frequencia = "2 vezes",
                 Qtd_dias = 1
             };
+
+            _context.Medicamentos.Add(Medicamento);
+            await _context.SaveChangesAsync();
 
             _MedicamentoServiceMock.Setup(service => service.UpdateMedicamentoAsync(id_Medicamento, Medicamento))
                 .ReturnsAsync(Medicamento);

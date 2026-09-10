@@ -38,6 +38,16 @@ namespace challengeFiap.UnitTests.Controllers
         public async Task Create_Animal_RetornaOK()
         {
             // Arrange
+            var tutor = new Tutor
+            {
+                Id_tutor = 1,
+                Cpf_tutor = "123456789",
+                Nm_tutor = "Leticia",
+                Nr_telefone_tutor = "11987562335"
+            };
+            _context.Tutor.Add(tutor);
+            await _context.SaveChangesAsync();
+
             var animal = new Animal
             {
                 Id_animal = 1,

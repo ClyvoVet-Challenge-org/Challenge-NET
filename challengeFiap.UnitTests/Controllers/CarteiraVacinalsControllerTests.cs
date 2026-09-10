@@ -3,6 +3,7 @@ using challengeFiap.Domain.Interfaces;
 using challengeFiap.Infrastruture.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
@@ -23,6 +24,14 @@ namespace challengeFiap.UnitTests.Controllers
         public CarteiraVacinalsControllerTests()
         {
             _CarteiraVacinalServiceMock = new Mock<ICarteiraVacinalService>();
+            var loggMock = new Mock<ILogger<CarteiraVacinalsController>>();
+            _logger = loggMock.Object;
+
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _context = new AppDbContext(options);
+
             _controller = new CarteiraVacinalsController(_context, _logger, _CarteiraVacinalServiceMock.Object);
         }
 
@@ -31,9 +40,25 @@ namespace challengeFiap.UnitTests.Controllers
         public async Task Create_CarteiraVacinal_RetornaOK()
         {
             // Arrange
+            var animal = new Animal
+            {
+                Id_animal = 1,
+                Rg_animal = "123456789",
+                Nr_microchip_animal = "123123123",
+                Nm_animal = "Rex",
+                Dt_nascimento_animal = DateTime.Now,
+                Peso_animal = 1,
+                Especie_animal = "Cachorro",
+                Raca_animal = "Labrador",
+                Id_tutor = 1
+            };
+            _context.Animals.Add(animal);
+            await _context.SaveChangesAsync();
+
+            var id_carteiraVacinal = 1;
             var CarteiraVacinal = new CarteiraVacinal
             {
-                Id_carteiraVacinal = 1,
+                Id_carteiraVacinal = id_carteiraVacinal,
                 Nm_vacina = "raiva",
                 Dt_vacina_efetuada = DateTime.Now,
                 Dt_vacina_prevista = new DateTime(2026,9,9),
@@ -45,8 +70,9 @@ namespace challengeFiap.UnitTests.Controllers
             // Act
             var result = await _controller.PostCarteiraVacinal(CarteiraVacinal);
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedCarteiraVacinal = Assert.IsType<CarteiraVacinal>(okResult.Value);
+            var createdResult = Assert.IsType<CreatedAtActionResult>(result.Result);
+            var returnedCarteiraVacinal = Assert.IsType<CarteiraVacinal>(createdResult.Value);
+            
             Assert.NotNull(returnedCarteiraVacinal);
         }
 
@@ -65,6 +91,9 @@ namespace challengeFiap.UnitTests.Controllers
                 St_vacina = Domain.Enums.StatusVacinacao.EFETUADA,
                 Id_animal = 1
             };
+
+            _context.CarteiraVacinals.Add(CarteiraVacinal);
+            await _context.SaveChangesAsync();
 
             _CarteiraVacinalServiceMock.Setup(service => service.UpdateCarteiraVacinalAsync(id_CarteiraVacinal, CarteiraVacinal))
                 .ReturnsAsync(CarteiraVacinal);

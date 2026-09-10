@@ -3,6 +3,7 @@ using challengeFiap.Domain.Interfaces;
 using challengeFiap.Infrastruture.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
@@ -23,6 +24,13 @@ namespace challengeFiap.UnitTests.Controllers
         public ConsultasControllerTests()
         {
             _ConsultaserviceMock = new Mock<IConsultaService>();
+            var loggMock = new Mock<ILogger<ConsultasController>>();
+            _logger = loggMock.Object;
+
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            _context = new AppDbContext(options);
             _controller = new ConsultasController(_context, _logger, _ConsultaserviceMock.Object);
         }
 
@@ -31,9 +39,37 @@ namespace challengeFiap.UnitTests.Controllers
         public async Task Create_consulta_RetornaOK()
         {
             // Arrange
+            var veterinario = new Veterinario
+            {
+                Id_vet = 1,
+                Nm_vet = "lual",
+                Cpf_vet = "123123123",
+                Crmv_vet = "12345556",
+                Email_vet = "sagafdf@gmail.com",
+                Senha_vet = "21358"
+            };
+            _context.Veterinarios.Add(veterinario);
+            await _context.SaveChangesAsync();
+
+            var animal = new Animal
+            {
+                Id_animal = 1,
+                Rg_animal = "123456789",
+                Nr_microchip_animal = "123123123",
+                Nm_animal = "Rex",
+                Dt_nascimento_animal = DateTime.Now,
+                Peso_animal = 1,
+                Especie_animal = "Cachorro",
+                Raca_animal = "Labrador",
+                Id_tutor = 1
+            };
+            _context.Animals.Add(animal);
+            await _context.SaveChangesAsync();
+
+            var id_consulta=1;
             var consulta = new Consulta
             {
-                Id_consulta = 1,
+                Id_consulta = id_consulta,
                 Historico_consulta = "Foi bom o resultado",
                 St_consulta = Domain.Enums.StatusConsulta.passada,
                 Dt_consulta = DateTime.Now,
@@ -46,7 +82,7 @@ namespace challengeFiap.UnitTests.Controllers
             // Act
             var result = await _controller.PostConsulta(consulta);
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
             var returnedconsulta = Assert.IsType<Consulta>(okResult.Value);
             Assert.NotNull(returnedconsulta);
         }
@@ -66,6 +102,9 @@ namespace challengeFiap.UnitTests.Controllers
                 Id_vet = 1,
                 Id_animal = 1,
             };
+
+            _context.Consultas.Add(consulta);
+            await _context.SaveChangesAsync();
 
             _ConsultaserviceMock.Setup(service => service.UpdateConsultaAsync(id_consulta, consulta))
                 .ReturnsAsync(consulta);
