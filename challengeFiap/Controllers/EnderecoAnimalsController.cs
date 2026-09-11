@@ -68,7 +68,14 @@ public class EnderecoAnimalsController : ControllerBase
 
         try
         {
-            var enderecoanimal = await _context.EnderecoAnimals.FirstOrDefaultAsync(e => e.Id_endereco_animal == id_endereco_animal);
+             var enderecoanimal = await _context.EnderecoAnimals.FindAsync(id_endereco_animal);
+
+            if (enderecoanimal == null)
+            {
+                _logger.LogWarning("Endereço animal não encontrou o id esta vazio");
+
+                return NotFound("Endereço animal não encontrado.");
+            }
             
             _logger.LogInformation("Endereço animal encontrado com sucesso.");
 
@@ -206,8 +213,14 @@ public class EnderecoAnimalsController : ControllerBase
 
         try
         {
-            var enderecoanimal = await _context.EnderecoAnimals.FirstOrDefaultAsync(e => e.Id_endereco_animal == id_endereco_animal);
-            _context.EnderecoAnimals.Remove(enderecoanimal);
+            var enderecoanimal = await _context.EnderecoAnimals.FindAsync(id_endereco_animal);
+
+            if (enderecoanimal == null)
+            {
+                _logger.LogWarning("Id oferecido esta diferente ao id presente principal.");
+
+                return NotFound("Id não encontrado");
+            }
 
             await _context.SaveChangesAsync();
 
