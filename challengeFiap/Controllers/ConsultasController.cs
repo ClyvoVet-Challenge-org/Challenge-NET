@@ -68,14 +68,7 @@ public class ConsultasController : ControllerBase
 
         try
         {
-            var consulta = await _context.Consultas.FindAsync(id_consulta);
-
-            if (consulta == null)
-            {
-                _logger.LogWarning("Id Consulta não encontrado. ID: {IdConsulta}",id_consulta);
-
-                return NotFound("Id Consulta não encontrado");
-            }
+            var consulta = await _consultaService.GetConsultaIdAsync(id_consulta);
 
             _logger.LogInformation("Consulta do id: {IdConsulta} foi encontrada com sucesso.",id_consulta);
 
@@ -211,14 +204,7 @@ public class ConsultasController : ControllerBase
 
         try
         {
-            var consulta = await _context.Consultas.FindAsync(id_consulta);
-
-            if (consulta == null)
-            {
-                _logger.LogWarning("Consulta esta vazia.");
-
-                return NotFound("Consulta não encontrado.");
-            }
+            var consulta = await _consultaService.DeleteConsultaAsync(id_consulta);
 
             _context.Consultas.Remove(consulta);
 
@@ -230,7 +216,6 @@ public class ConsultasController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Erro encontrado em deletar consulta. ID: {IdConsulta}");
 
             return BadRequest($"Erro em deletar: {ex.Message}");
         }

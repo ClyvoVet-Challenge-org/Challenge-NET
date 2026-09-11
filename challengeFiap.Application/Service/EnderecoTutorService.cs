@@ -19,6 +19,9 @@ namespace challengeFiap.Application.Service
 
         private readonly Counter<int> _enderecoTutorCreateCounter;
 
+        private readonly List<EnderecoTutor> _GetEnderecoTutor = new();
+
+
         public EnderecoTutorService(ILogger<EnderecoTutorService> logger, IMeterFactory meterFactory)
         {
             _logger = logger;
@@ -87,6 +90,36 @@ namespace challengeFiap.Application.Service
             _enderecoTutorCreateCounter.Add(1, new KeyValuePair<string, object?>("endereco_tutor.id", updatedEnderecoTutor.Id_endereco_tutor), new KeyValuePair<string, object?>("endereco_tutor.id_tutor", updatedEnderecoTutor.Id_tutor));
 
             return updatedEnderecoTutor;
+        }
+
+        public async Task<EnderecoTutor> GetEnderecoTutorIdAsync(int id_EnderecoTutor)
+        {
+            var enderecoTutor = _GetEnderecoTutor.FirstOrDefault(c => c.Id_endereco_tutor == id_EnderecoTutor);
+            if (enderecoTutor == null)
+            {
+                _logger.LogWarning("Id não existe");
+
+                throw new Exception("Id  não foi encontrada");
+            }
+            return enderecoTutor;
+        }
+
+        public async Task<EnderecoTutor> DeleteEnderecoTutorAsync(int id_EnderecoTutor)
+        {
+            var enderecoTutorDelete = _GetEnderecoTutor.FirstOrDefault(c => c.Id_endereco_tutor == id_EnderecoTutor);
+            if (enderecoTutorDelete != null)
+            {
+                _GetEnderecoTutor.Remove(enderecoTutorDelete);
+                _logger.LogInformation("Deletado");
+
+                return enderecoTutorDelete;
+            }
+            else
+            {
+                _logger.LogWarning("Id de endereco tutor não foi encontrado. ");
+
+                throw new Exception("Id não existente presente");
+            }
         }
     }
 }

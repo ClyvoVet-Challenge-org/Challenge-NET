@@ -62,13 +62,7 @@ public class EnderecoTutorsController : ControllerBase
 
         try
         {
-            var enderecoresponsavel = await _context.EnderecoTutors.FindAsync(id_endereco_responsavel);
-
-            if (enderecoresponsavel == null)
-            {
-                _logger.LogWarning("Endereço responsavel não encontrado para o ID {IdEnderecoResponsavel}", id_endereco_responsavel);
-                return NotFound("Id não encontrado");
-            }
+            var enderecoresponsavel = await _enderecoTutorService.GetEnderecoTutorIdAsync(id_endereco_responsavel);
 
             _logger.LogInformation("Endereço responsavel encontrado com sucesso para o ID {IdEnderecoResponsavel}", id_endereco_responsavel);
             return Ok(enderecoresponsavel);
@@ -198,13 +192,7 @@ public class EnderecoTutorsController : ControllerBase
 
         try
         {
-            var enderecoresponsavel = await _context.EnderecoTutors.FindAsync(id_endereco_responsavel);
-
-            if (enderecoresponsavel == null)
-            {
-                _logger.LogWarning("Endereço responsavel não encontrado para exclusão. ID: {IdEnderecoResponsavel}", id_endereco_responsavel);
-                return NotFound("Id não encontrado");
-            }
+            var enderecoresponsavel = await _enderecoTutorService.DeleteEnderecoTutorAsync(id_endereco_responsavel);
 
             _context.EnderecoTutors.Remove(enderecoresponsavel);
             await _context.SaveChangesAsync();

@@ -19,6 +19,9 @@ namespace challengeFiap.Application.Service
 
         private readonly Counter<int> _medicamentoCreateCounter;
 
+        private readonly List<Medicamento> _GetMedicamento = new();
+
+
         public MedicamentoService(ILogger<MedicamentoService> logger, IMeterFactory meterFactory)
         {
             _logger = logger;
@@ -78,12 +81,32 @@ namespace challengeFiap.Application.Service
         }
         public async Task<Medicamento> GetMedicamentoIdAsync(int id_Medicamento)
         {
-        
+            var medicamento = _GetMedicamento.FirstOrDefault(c => c.Id_medicamento == id_Medicamento);
+            if (medicamento == null)
+            {
+                _logger.LogWarning("Id não existe");
+
+                throw new Exception("Id  não foi encontrada");
+            }
+            return medicamento;
         }
 
         public async Task<Medicamento> DeleteMedicamentoAsync(int id_Medicamento)
         {
-        
+            var medicamentoDelete = _GetMedicamento.FirstOrDefault(c => c.Id_medicamento == id_Medicamento);
+            if (medicamentoDelete != null)
+            {
+                _GetMedicamento.Remove(medicamentoDelete);
+                _logger.LogInformation("Deletado");
+
+                return medicamentoDelete;
+            }
+            else
+            {
+                _logger.LogWarning("Id de Medicamento não foi encontrado. ");
+
+                throw new Exception("Id não existente presente");
+            }
         }
 
     }

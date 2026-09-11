@@ -18,6 +18,8 @@ namespace challengeFiap.Application.Service
 
         private readonly Counter<int> _tutorCreateCounter;
 
+        private readonly List<Tutor> _GetTutor = new();
+
         public TutorService(ILogger<TutorService> logger, IMeterFactory meterFactory)
         {
             _logger = logger;
@@ -68,6 +70,36 @@ namespace challengeFiap.Application.Service
             _tutorCreateCounter.Add(1, new KeyValuePair<string, object?>("tutor.id", updatedTutor.Id_tutor));
 
             return updatedTutor;
+        }
+
+        public async Task<Tutor> GetTutorIdAsync(int id_Tutor)
+        {
+            var tutor = _GetTutor.FirstOrDefault(c => c.Id_tutor == id_Tutor);
+            if (tutor == null)
+            {
+                _logger.LogWarning("Id não existe");
+
+                throw new Exception("Id  não foi encontrada");
+            }
+            return tutor;
+        }
+
+        public async Task<Tutor> DeleteTutorAsync(int id_Tutor)
+        {
+            var tutorDelete = _GetTutor.FirstOrDefault(c => c.Id_tutor == id_Tutor);
+            if (tutorDelete != null)
+            {
+                _GetTutor.Remove(tutorDelete);
+                _logger.LogInformation("Deletado");
+
+                return tutorDelete;
+            }
+            else
+            {
+                _logger.LogWarning("Id de tutor não foi encontrado. ");
+
+                throw new Exception("Id não existente presente");
+            }
         }
     }
 }

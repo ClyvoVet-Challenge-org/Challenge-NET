@@ -18,6 +18,9 @@ namespace challengeFiap.Application.Service
 
         private readonly Counter<int> _enderecoAnimalCreateCounter;
 
+        private readonly List<EnderecoAnimal> _GetEnderecoAnimal = new();
+
+
         public EnderecoAnimalService(ILogger<EnderecoAnimalService> logger, IMeterFactory meterFactory)
         {
             _logger = logger;
@@ -93,6 +96,38 @@ namespace challengeFiap.Application.Service
             _enderecoAnimalCreateCounter.Add(1,new KeyValuePair<string, object>("status", "success"));
 
             return updatedEnderecoAnimal;
+        }
+
+        public async Task<EnderecoAnimal> GetEnderecoAnimalIdAsync(int id_EnderecoAnimal)
+        {
+            var enderecoAnimal = _GetEnderecoAnimal.FirstOrDefault(c => c.Id_endereco_animal == id_EnderecoAnimal);
+            if (enderecoAnimal == null)
+            {
+                _logger.LogWarning("Id não existe");
+
+                throw new Exception("Id  não foi encontrada");
+            }
+            return enderecoAnimal;
+        }
+
+
+        public Task<EnderecoAnimal> DeleteEnderecoAnimalAsync(int id_EnderecoAnimal)
+        {
+            var enderecoAnimalDelete = _GetEnderecoAnimal.FirstOrDefault(c => c.Id_endereco_animal == id_EnderecoAnimal);
+
+            if (enderecoAnimalDelete != null)
+            {
+                _GetEnderecoAnimal.Remove(enderecoAnimalDelete);
+                _logger.LogInformation("Deletado");
+
+                return Task.FromResult(enderecoAnimalDelete);
+            }
+            else
+            {
+                _logger.LogWarning("Id de Endereco animal não foi encontrado. ");
+
+                throw new Exception("Id não existente presente");
+            }
         }
     }
 }

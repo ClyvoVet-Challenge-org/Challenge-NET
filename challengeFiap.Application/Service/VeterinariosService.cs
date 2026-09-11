@@ -18,6 +18,7 @@ namespace challengeFiap.Application.Service
 
         private readonly Counter<int> _veterinarioCreateCounter;
 
+        private readonly List<Veterinario> _GetVeterinario = new();
 
         public VeterinariosService(ILogger<VeterinariosService> logger, IMeterFactory meterFactory)
         {
@@ -79,12 +80,32 @@ namespace challengeFiap.Application.Service
         
         public async Task<Veterinario> GetVeterinarioIdAsync(int id_Veterinario)
         {
-        
+            var veterinarios = _GetVeterinario.FirstOrDefault(c => c.Id_vet == id_Veterinario);
+            if (veterinarios == null)
+            {
+                _logger.LogWarning("Id não existe");
+
+                throw new Exception("Id  não foi encontrada");
+            }
+            return veterinarios;
         }
 
         public async Task<Veterinario> DeleteVeterinarioAsync(int id_Veterinario)
         {
-        
+            var veterinariosDelete = _GetVeterinario.FirstOrDefault(c => c.Id_vet == id_Veterinario);
+            if (veterinariosDelete != null)
+            {
+                _GetVeterinario.Remove(veterinariosDelete);
+                _logger.LogInformation("Deletado");
+
+                return veterinariosDelete;
+            }
+            else
+            {
+                _logger.LogWarning("Id de vet não foi encontrado. ");
+
+                throw new Exception("Id não existente presente");
+            }
         }
 
 

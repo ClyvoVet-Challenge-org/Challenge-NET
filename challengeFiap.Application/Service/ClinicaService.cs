@@ -19,6 +19,7 @@ namespace challengeFiap.Application.Service
 
         private readonly Counter<int> _clinicaCreateCounter;
 
+        private readonly List<Clinica> _GetClinica = new();
 
 
         public ClinicaService(ILogger<ClinicaService> logger, IMeterFactory meterFactory)
@@ -68,11 +69,31 @@ namespace challengeFiap.Application.Service
         }
         public async Task<Clinica> GetClinicaIdAsync(int id_Clinica)
         {
-        
+            var GetClinica = _GetClinica.FirstOrDefault(c => c.Id_clinica == id_Clinica);
+            if (GetClinica == null)
+            {
+                _logger.LogWarning("Id não existe");
+
+                throw new Exception("Id  não foi encontrada");
+            }
+            return GetClinica;
         }
         public async Task<Clinica> DeleteClinicaAsync(int id_Clinica)
         {
-        
+            var clinicaDelete = _GetClinica.FirstOrDefault(c => c.Id_clinica == id_Clinica);
+            if (clinicaDelete != null)
+            {
+                _GetClinica.Remove(clinicaDelete);
+                _logger.LogInformation("Deletado");
+
+                return clinicaDelete;
+            }
+            else
+            {
+                _logger.LogWarning("Id de clinica não foi encontrado. ");
+
+                throw new Exception("Id não existente presente");
+            }
         }
 
     }

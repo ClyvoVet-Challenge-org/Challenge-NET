@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Net.Http.Headers;
 
 namespace challengeFiap.Application.Service
 {
@@ -17,12 +18,14 @@ namespace challengeFiap.Application.Service
 
         private readonly Counter<int> _CarteiraVacinalCreateCounter;
 
+        private readonly List<CarteiraVacinal> _GetCarteiraVacinal = new();
+
 
         public CateiraVacinalService(ILogger<CateiraVacinalService> logger, IMeterFactory meterFactory)
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
-            _CarteiraVacinalCreateCounter = meter.CreateCounter<int>("carteira_vacinal.create", description: "Total criado");
+            _CarteiraVacinalCreateCounter = meter.CreateCounter<int>("carteira_vacinal.create");
 
         }
         public async Task<CarteiraVacinal> CreateCarteiraVacinalAsync(CarteiraVacinal carteiraVacinal)
@@ -79,13 +82,35 @@ namespace challengeFiap.Application.Service
 
         public async Task<CarteiraVacinal> GetCarteiraVacinalIdAsync(int id_CarteiraVacinal)
         {
-        
+            var carteiraVacinal = _GetCarteiraVacinal.FirstOrDefault(c => c.Id_carteiraVacinal == id_CarteiraVacinal);
+            if (carteiraVacinal == null)
+            {
+                _logger.LogWarning("Id não existe");
+
+                throw new Exception("Id  não foi encontrada");
+            }
+
+            return carteiraVacinal;
         }
 
         public async Task<CarteiraVacinal> DeleteCarteiraVacinalAsync(int id_CarteiraVacinal)
         {
-        
+            var carteiraVacinalDelete = _GetCarteiraVacinal.FirstOrDefault(c=> c.Id_carteiraVacinal==id_CarteiraVacinal);
+            if(carteiraVacinalDelete != null)
+            {
+                _GetCarteiraVacinal.Remove(carteiraVacinalDelete);
+                _logger.LogInformation("Deletado");
+
+                return carteiraVacinalDelete;
+            }
+            else
+            {
+                _logger.LogWarning("Id de carteira vacinal não foi encontrado. ");
+
+                throw new Exception("Id não existente presente");
+            }
         }
+
 
     }
 }

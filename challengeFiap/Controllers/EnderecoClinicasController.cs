@@ -63,14 +63,8 @@ public class EnderecoClinicasController : ControllerBase
 
         try
         {
-            var enderecoclinica = await _context.EnderecoClinicas.FindAsync(id_endereco_clinica);
+            var enderecoclinica = await _enderecoClinicaService.GetEnderecoClinicaIdAsync(id_endereco_clinica);
 
-            if (enderecoclinica == null)
-            {
-                _logger.LogWarning("Id não encontrado presente no sistema de inserir");
-
-                return NotFound("Id não encontrado.");
-            }
 
             _logger.LogInformation("Endereço clinica encontrado com sucesso.");
 
@@ -211,13 +205,7 @@ public class EnderecoClinicasController : ControllerBase
 
         try
         {
-            var enderecoclinica = await _context.EnderecoClinicas.FindAsync(id_endereco_clinica);
-            if (enderecoclinica == null)
-            {
-                _logger.LogWarning("Id clinica endereço não encontrado. ID: {IdEnderecoClinica}", id_endereco_clinica);
-
-                return NotFound("Id clinica endereço não encontrado");
-            }
+            var enderecoclinica = await _enderecoClinicaService.DeleteEnderecoClinicaAsync(id_endereco_clinica);
 
             _context.EnderecoClinicas.Remove(enderecoclinica);
             await _context.SaveChangesAsync();

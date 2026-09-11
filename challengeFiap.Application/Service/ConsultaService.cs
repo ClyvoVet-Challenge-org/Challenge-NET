@@ -18,6 +18,8 @@ namespace challengeFiap.Application.Service
 
         private readonly Counter<int> _consultaCreateCounter;
 
+        private readonly List<Consulta> _GetConsulta = new();
+
         public ConsultaService(ILogger<ConsultaService> logger, IMeterFactory meterFactory)
         {
             _logger = logger;
@@ -78,11 +80,31 @@ namespace challengeFiap.Application.Service
         }
         public async Task<Consulta> GetConsultaIdAsync(int id_Consulta)
         {
-        
+            var consulta = _GetConsulta.FirstOrDefault(c => c.Id_consulta == id_Consulta);
+            if (consulta == null)
+            {
+                _logger.LogWarning("Id não existe");
+
+                throw new Exception("Id  não foi encontrada");
+            }
+            return consulta;
         }
         public async Task<Consulta> DeleteConsultaAsync(int id_Consulta)
         {
-        
+            var consultaDelete = _GetConsulta.FirstOrDefault(c => c.Id_consulta == id_Consulta);
+            if (consultaDelete != null)
+            {
+                _GetConsulta.Remove(consultaDelete);
+                _logger.LogInformation("Deletado");
+
+                return consultaDelete;
+            }
+            else
+            {
+                _logger.LogWarning("Id de consulta não foi encontrado. ");
+
+                throw new Exception("Id não existente presente");
+            }
         }
 
 

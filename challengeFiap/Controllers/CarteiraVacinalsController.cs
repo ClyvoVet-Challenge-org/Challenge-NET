@@ -67,13 +67,7 @@ public class CarteiraVacinalsController : ControllerBase
         _logger.LogInformation("busca de carteira vacinal com ID: {IdCarteiraVacinal}",id_carteiravacinal);
         try
         {
-            var carteiravacinal = await _context.CarteiraVacinals.FindAsync(id_carteiravacinal);
-
-            if (carteiravacinal == null)
-            {
-                _logger.LogWarning("Carteira vacinal, ID: {IdCarteiraVacinal}, nao foi encontrada.",id_carteiravacinal);
-                return NotFound($"Id carteira vacinal não encontrada");
-            }
+            var carteiravacinal = await _carteiraVacinalService.GetCarteiraVacinalIdAsync(id_carteiravacinal);
 
             _logger.LogInformation("Carteira Vacinal encontrada com sucesso,");
 
@@ -213,13 +207,7 @@ public class CarteiraVacinalsController : ControllerBase
 
         try
         {
-            var carteiraVacinalExiste = await _context.CarteiraVacinals.FirstOrDefaultAsync(e => e.Id_carteiraVacinal == id_carteiravacinal);
-
-            if (carteiraVacinalExiste==null)
-            {
-                _logger.LogWarning("Carteira Vacinal não encontrada. ID: {IdCarteiraVacinal}", id_carteiravacinal);
-                return NotFound("Carteira Vacinal não encontrada");
-            }
+            var carteiraVacinalExiste = await _carteiraVacinalService.DeleteCarteiraVacinalAsync(id_carteiravacinal);
 
             _context.CarteiraVacinals.Remove(carteiraVacinalExiste);
             await _context.SaveChangesAsync();

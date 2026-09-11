@@ -71,5 +71,37 @@ namespace challenge.IntegrationTests.Integration
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
+
+        [Fact]
+        public async Task GetTutor_dados_RetornaOk()
+        {
+            //Arrage
+            var id_Tutor = 1;
+
+            //Act
+            var response = await _client.GetAsync($"api/tutor/relatorio/Tutor/{id_Tutor}");
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var Tutor = await response.Content.ReadFromJsonAsync<Tutor>();
+
+            Assert.NotNull(Tutor);
+            Assert.Equal(id_Tutor, Tutor.Id_tutor);
+        }
+
+        [Fact]
+        public async Task DeleteTutor_dados_RetornaOk()
+        {
+            // Arrange
+            var id_Tutor = 1;
+
+            // Act
+            var response = await _client.DeleteAsync($"api/tutor/deleta/Tutor/{id_Tutor}");
+            
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
     }
 }

@@ -71,13 +71,7 @@ public class ClinicasController : ControllerBase
 
         try
         {
-            var clinica = await _context.Clinicas.FindAsync(id_clinica);
-
-            if(clinica == null)
-            {
-                _logger.LogWarning("Id clinica não encontrado. ID: {IdClinica}",id_clinica);
-                return NotFound("Id clinica não encontrado");
-            }
+            var clinica = await _clinicaService.GetClinicaIdAsync(id_clinica);
 
             _logger.LogInformation("Clinica encontrada com sucesso. ID: {IdClinica}", id_clinica);
 
@@ -214,14 +208,8 @@ public class ClinicasController : ControllerBase
 
         try
         {
-            var clinica = await _context.Clinicas.FirstOrDefaultAsync(e => e.Id_clinica == id_clinica);
+            var clinica = await _clinicaService.DeleteClinicaAsync(id_clinica);
 
-            if (clinica == null)
-            {
-                _logger.LogWarning("Clinica {IdClinica}, não encontrada.",id_clinica);
-
-                return NotFound("Clinica não encontrada");
-            }
             _context.Clinicas.Remove(clinica);
             await _context.SaveChangesAsync();
 

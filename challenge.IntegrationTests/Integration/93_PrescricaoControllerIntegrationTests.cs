@@ -75,6 +75,36 @@ namespace challenge.IntegrationTests.Integration
 
             Assert.Equal(HttpStatusCode.OK,response.StatusCode);
         }
+        [Fact]
+        public async Task GetPrescricao_dados_RetornaOk()
+        {
+            //Arrage
+            var id_Prescricao = 1;
+
+            //Act
+            var response = await _client.GetAsync($"api/prescricaos/relatorio/prescricao/{id_Prescricao}");
+            // Assert
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var Prescricao = await response.Content.ReadFromJsonAsync<Prescricao>();
+
+            Assert.NotNull(Prescricao);
+            Assert.Equal(id_Prescricao, Prescricao.Id_prescricao);
+        }
+
+        [Fact]
+        public async Task DeletePrescricao_dados_RetornaOk()
+        {
+            // Arrange
+            var id_Prescricao = 1;
+
+            // Act
+            var response = await _client.DeleteAsync($"api/prescricaos/deleta/prescricao/{id_Prescricao}");
+            
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
     }
 }
 

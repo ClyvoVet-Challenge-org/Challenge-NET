@@ -87,9 +87,16 @@ namespace challengeFiap.Application.Service
             return updatedAnimal;
         }
 
-        public async Task<Animal?> GetAnimalIdAsync(int id_animal)
+        public async Task<Animal> GetAnimalIdAsync(int id_animal)
         {
             var animalget = _AnimalGet.FirstOrDefault(a => a.Id_animal == id_animal);
+            if (animalget == null)
+            {
+                _logger.LogWarning("Id não existe");
+
+                throw new Exception("Id  não foi encontrada");
+            }
+
             return animalget;
         }
         public Task<Animal> DeleteAnimalAsync(int id_animal)
@@ -100,10 +107,14 @@ namespace challengeFiap.Application.Service
                 _AnimalGet.Remove(animalDelete);
                 _logger.LogInformation("Deletado");
 
-            }
-            _logger.LogInformation("Não deletado Deletado ");
+                return Task.FromResult(animalDelete);
 
-            return Task.FromResult(animalDelete);
+            } else
+            {
+                _logger.LogWarning("Id de animal  não foi encontrado. ");
+
+                throw new Exception("Id não existente presente");
+            }
         }
     }
 }

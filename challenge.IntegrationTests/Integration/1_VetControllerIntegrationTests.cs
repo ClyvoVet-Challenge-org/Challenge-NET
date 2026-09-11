@@ -77,5 +77,36 @@ namespace challenge.IntegrationTests.Integration
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
+        [Fact]
+        public async Task GetVet_dados_RetornaOk()
+        {
+            //Arrage
+            var id_veterinario = 1;
+
+            //Act
+            var response = await _client.GetAsync($"api/veterinarios/relatorio/veterinario/{id_veterinario}");
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK , response.StatusCode);
+            var vet = await response.Content.ReadFromJsonAsync<Veterinario>();
+
+            Assert.NotNull( vet );
+            Assert.Equal(id_veterinario, vet.Id_vet);
+        }
+
+        [Fact]
+        public async Task DeleteVet_dados_RetornaOk()
+        {
+            // Arrange
+            var id_veterinario = 1;
+
+            // Act
+            var response = await _client.DeleteAsync($"api/veterinarios/deleta/veterinario/{id_veterinario}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
     }
 }

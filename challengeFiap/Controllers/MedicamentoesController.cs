@@ -63,13 +63,7 @@ public class MedicamentoesController : ControllerBase
 
         try
         {
-            var medicamento = await _context.Medicamentos.FindAsync(id_medicamento);
-
-            if (medicamento == null)
-            {
-                _logger.LogWarning("Medicamento não encontrado para o ID {IdMedicamento}", id_medicamento);
-                return NotFound("Id não encontrado");
-            }
+            var medicamento = await _medicamentoService.GetMedicamentoIdAsync(id_medicamento);
 
             _logger.LogInformation("Medicamento encontrado com sucesso para o ID {IdMedicamento}", id_medicamento);
             return Ok(medicamento);
@@ -199,13 +193,7 @@ public class MedicamentoesController : ControllerBase
 
         try
         {
-            var medicamento = await _context.Medicamentos.FindAsync(id_medicamento);
-
-            if (medicamento == null)
-            {
-                _logger.LogWarning("Medicamento não encontrado para exclusão. ID: {IdMedicamento}", id_medicamento);
-                return NotFound("Id não encontrado.");
-            }
+            var medicamento = await _medicamentoService.DeleteMedicamentoAsync(id_medicamento);
 
             _context.Medicamentos.Remove(medicamento);
             await _context.SaveChangesAsync();

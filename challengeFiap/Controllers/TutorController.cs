@@ -63,13 +63,7 @@ public class TutorController : ControllerBase
 
         try
         {
-            var Tutor = await _context.Tutor.FindAsync(id_Tutor);
-
-            if (Tutor == null)
-            {
-                _logger.LogWarning("Tutor não encontrado para o ID {IdTutor}", id_Tutor);
-                return NotFound("Id Tutor não encontrado");
-            }
+            var Tutor = await _tutorService.GetTutorIdAsync(id_Tutor);
 
             _logger.LogInformation("Tutor encontrado com sucesso para o ID {IdTutor}", id_Tutor);
             return Ok(Tutor);
@@ -210,13 +204,7 @@ public class TutorController : ControllerBase
 
         try
         {
-            var Tutor = await _context.Tutor.FindAsync(id_Tutor);
-
-            if (Tutor == null)
-            {
-                _logger.LogWarning("Tutor não encontrado para exclusão. ID: {IdTutor}", id_Tutor);
-                return NotFound("Id nao encontrado");
-            }
+            var Tutor = await _tutorService.DeleteTutorAsync(id_Tutor);
 
             _context.Tutor.Remove(Tutor);
             await _context.SaveChangesAsync();

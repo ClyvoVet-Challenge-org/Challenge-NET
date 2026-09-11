@@ -81,5 +81,35 @@ namespace challenge.IntegrationTests.Integration
 
             Assert.Equal(HttpStatusCode.OK,response.StatusCode);
         }
+        [Fact]
+        public async Task GetMedicamento_dados_RetornaOk()
+        {
+            //Arrage
+            var id_Medicamento = 1;
+
+            //Act
+            var response = await _client.GetAsync($"api/medicamentoes/relatorio/medicamento/{id_Medicamento}");
+            
+            // Assert
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var Medicamento = await response.Content.ReadFromJsonAsync<Medicamento>();
+
+            Assert.NotNull(Medicamento);
+            Assert.Equal(id_Medicamento, Medicamento.Id_medicamento);
+        }
+
+        [Fact]
+        public async Task DeleteMedicamento_dados_RetornaOk()
+        {
+            // Arrange
+            var id_Medicamento = 1;
+
+            // Act
+            var response = await _client.DeleteAsync($"api/medicamentoes/deleta/medicamento/{id_Medicamento}");
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
     }
 }

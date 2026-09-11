@@ -72,5 +72,36 @@ namespace challenge.IntegrationTests.Integration
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
+
+        [Fact]
+        public async Task GetVetClinica_dados_RetornaOk()
+        {
+            //Arrage
+            var id_Vetclinica = 1;
+
+            //Act
+            var response = await _client.GetAsync($"api/vetclinicas/relatorio/vetclinica/{id_Vetclinica}");
+            // Assert
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var vetClinica = await response.Content.ReadFromJsonAsync<VetClinica>();
+
+            Assert.NotNull(vetClinica);
+            Assert.Equal(id_Vetclinica, vetClinica.Id_clinica_vet);
+        }
+
+        [Fact]
+        public async Task DeleteVetClinica_dados_RetornaOk()
+        {
+            // Arrange
+            var id_Vetclinica = 1;
+
+            // Act
+            var response = await _client.DeleteAsync($"api/vetclinicas/deleta/vetclinica/{id_Vetclinica}");
+            
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
     }
 }

@@ -18,6 +18,9 @@ namespace challengeFiap.Application.Service
 
         private readonly Counter<int> _enderecoClinicaCreateCounter;
 
+        private readonly List<EnderecoClinica> _GetEndereco = new();
+
+
         public EnderecoClinicaService(ILogger<EnderecoClinicaService> logger, IMeterFactory meterFactory)
         {
             _logger = logger;
@@ -87,6 +90,36 @@ namespace challengeFiap.Application.Service
             _enderecoClinicaCreateCounter.Add(1, new KeyValuePair<string, object?>("endereco_clinica.id", updatedEnderecoClinica.Id_endereco_clinica), new KeyValuePair<string, object?>("endereco_clinica.id_clinica", updatedEnderecoClinica.Id_clinica));
 
             return updatedEnderecoClinica;
+        }
+
+        public async Task<EnderecoClinica> GetEnderecoClinicaIdAsync(int id_EnderecoClinica)
+        {
+            var endereoClinica = _GetEndereco.FirstOrDefault(c => c.Id_endereco_clinica == id_EnderecoClinica);
+            if (endereoClinica == null)
+            {
+                _logger.LogWarning("Id não existe");
+
+                throw new Exception("Id  não foi encontrada");
+            }
+            return endereoClinica;
+        }
+
+        public async Task<EnderecoClinica> DeleteEnderecoClinicaAsync(int id_EnderecoClinica)
+        {
+            var enderecoClinicaDelete = _GetEndereco.FirstOrDefault(c => c.Id_endereco_clinica == id_EnderecoClinica);
+            if (enderecoClinicaDelete != null)
+            {
+                _GetEndereco.Remove(enderecoClinicaDelete);
+                _logger.LogInformation("Deletado");
+
+                return enderecoClinicaDelete;
+            }
+            else
+            {
+                _logger.LogWarning("Id de endereco clinica não foi encontrado. ");
+
+                throw new Exception("Id não existente presente");
+            }
         }
     }
 }

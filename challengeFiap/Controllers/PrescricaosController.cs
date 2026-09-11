@@ -62,13 +62,8 @@ public class PrescricaosController : ControllerBase
 
         try
         {
-            var prescricao = await _context.Prescricaos.FindAsync(id_prescricao);
+            var prescricao = await _prescricaoService.GetPrescricaoIdAsync(id_prescricao);
 
-            if (prescricao == null)
-            {
-                _logger.LogWarning("Prescrição não encontrada para o ID {IdPrescricao}", id_prescricao);
-                return NotFound("Id de prescrição não encontrado");
-            }
 
             _logger.LogInformation("Prescrição encontrada com sucesso para o ID {IdPrescricao}", id_prescricao);
             return Ok(prescricao);
@@ -200,13 +195,7 @@ public class PrescricaosController : ControllerBase
 
         try
         {
-            var prescricao = await _context.Prescricaos.FindAsync(id_prescricao);
-
-            if (prescricao == null)
-            {
-                _logger.LogWarning("Prescrição não encontrada para exclusão. ID: {IdPrescricao}", id_prescricao);
-                return NotFound("Id prescrição não encontrado");
-            }
+            var prescricao = await _prescricaoService.DeletePrescricaoAsync(id_prescricao);
 
             _context.Prescricaos.Remove(prescricao);
             await _context.SaveChangesAsync();

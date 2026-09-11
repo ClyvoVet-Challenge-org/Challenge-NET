@@ -63,13 +63,7 @@ public class VetClinicasController : ControllerBase
 
         try
         {
-            var vetclinica = await _context.VetClinicas.FindAsync(id_clinica_vet);
-
-            if (vetclinica == null)
-            {
-                _logger.LogWarning("Vet clínica não encontrada para o ID {IdClinicaVet}", id_clinica_vet);
-                return NotFound("Id vet clinica não encontrado");
-            }
+            var vetclinica = await _vetClinica.GetVetClinicaIdAsync(id_clinica_vet);
 
             _logger.LogInformation("Vet clínica encontrada com sucesso para o ID {IdClinicaVet}", id_clinica_vet);
             return Ok(vetclinica);
@@ -212,13 +206,7 @@ public class VetClinicasController : ControllerBase
 
         try
         {
-            var vetclinica = await _context.VetClinicas.FindAsync(id_clinica_vet);
-
-            if (vetclinica == null)
-            {
-                _logger.LogWarning("Vet clínica não encontrada para exclusão. ID: {IdClinicaVet}", id_clinica_vet);
-                return NotFound("Id vet clinica não encontrado");
-            }
+            var vetclinica = await _vetClinica.DeleteVetClinicaAsync(id_clinica_vet);
 
             _context.VetClinicas.Remove(vetclinica);
             await _context.SaveChangesAsync();

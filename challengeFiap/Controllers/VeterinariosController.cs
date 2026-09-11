@@ -63,13 +63,7 @@ public class VeterinariosController : ControllerBase
 
         try
         {
-            var veterinario = await _context.Veterinarios.FindAsync(id_vet);
-
-            if (veterinario == null)
-            {
-                _logger.LogWarning("Veterinario com ID {IdVet} não encontrado", id_vet);
-                return NotFound("Id não encontrado.");
-            }
+            var veterinario = await _veterinarioService.GetVeterinarioIdAsync(id_vet);
 
             _logger.LogInformation("Veterinario com ID {IdVet} encontrado com sucesso", id_vet);
             return Ok(veterinario);
@@ -206,14 +200,7 @@ public class VeterinariosController : ControllerBase
 
         try
         {
-            var veterinario = await _context.Veterinarios.FindAsync(id_vet);
-
-            if (veterinario == null)
-            {
-                _logger.LogWarning("Veterinario com ID {IdVet} não encontrado para exclusão", id_vet);
-                return NotFound("Id não encontrado de vet");
-            }
-
+            var veterinario = await _veterinarioService.DeleteVeterinarioAsync(id_vet);
             _context.Veterinarios.Remove(veterinario);
             await _context.SaveChangesAsync();
 
