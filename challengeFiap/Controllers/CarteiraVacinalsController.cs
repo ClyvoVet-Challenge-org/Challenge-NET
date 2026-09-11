@@ -67,7 +67,13 @@ public class CarteiraVacinalsController : ControllerBase
         _logger.LogInformation("busca de carteira vacinal com ID: {IdCarteiraVacinal}",id_carteiravacinal);
         try
         {
-            var carteiravacinal = await _context.CarteiraVacinals.FirstOrDefaultAsync(c => c.Id_carteiraVacinal == id_carteiravacinal);
+            var carteiravacinal = await _context.CarteiraVacinals.FindAsync(id_carteiravacinal);
+
+            if (carteiravacinal == null)
+            {
+                _logger.LogWarning("Carteira vacinal nao foi encontrada.");
+                return NotFound($"Id carteira vacinal não encontrada");
+            }
            
             _logger.LogInformation("Carteira Vacinal encontrada com sucesso,");
 
@@ -208,16 +214,23 @@ public class CarteiraVacinalsController : ControllerBase
         try
         {
             var carteiraVacinalExiste = await _context.CarteiraVacinals.FirstOrDefaultAsync(e => e.Id_carteiraVacinal == id_carteiravacinal);
+
+            if (carteiraVacinalExiste==null)
+            {
+                _logger.LogWarning("Carteira Vacinal não encontrada. ID: {IdCarteiraVacinal}", id_carteiravacinal);
+                return NotFound("Carteira Vacinal não encontrada");
+            }
+            var carteiraVacinalExiste = await _carteiraVacinalService.DeleteCarteiraVacinalAsync(id_carteiravacinal);
             
             _context.CarteiraVacinals.Remove(carteiraVacinalExiste);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Remoção da carteira vacinal concluída com sucesso. ID: {IdCarteiraVacinal}",id_carteiravacinal);
+            _logger.LogInformation("Foi deletado");
 
             return NoContent();
         }catch (Exception ex)
         {
-            _logger.LogError(ex,"Erro ao deletar a carteira vacinal. ID: {IdCarteiraVacinal}",id_carteiravacinal);
+            _logger.LogError(ex,"Erro ao deletar a carteira vacinal.");
 
             return BadRequest($"Erro ao deletar : {ex.Message}");
         }
