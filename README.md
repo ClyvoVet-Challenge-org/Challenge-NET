@@ -201,6 +201,12 @@ https://localhost:{PORTA}/swagger
 - **Oracle Database**
 - **Swagger / OpenAPI**
 
+
+---
+<h4> informações sobres os testes e como fazer eles</ha4>
+
+- **Test unit**: esse aqui e o mais de boas de realizar, vai fazer um teste sem precisa do banco de dados
+- **Test int**: !!!ATENÇÃO!!! para o created e o update funcionar precisa colocad os dados correror porque esse esta conectado com o banco e sim precisa fazer prineiro o created e depois o update
 ---
 *Desenvolvido com 💙 pela equipe CLYVO — FIAP 2026*
 
