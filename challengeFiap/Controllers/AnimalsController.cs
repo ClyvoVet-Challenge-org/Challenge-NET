@@ -172,19 +172,19 @@ public class AnimalsController : ControllerBase
                 _context.Animals.Add(animalCriado);
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation("Criação do animal, {nm_animal}, concluída com sucesso", animal.Nm_animal);
+                _logger.LogInformation("Criação do {nm_animal} realizada com sucesso", animal.Nm_animal);
 
                 return Ok(animalCriado);
             }
             else
             {
-                _logger.LogWarning("O tutor com o id {IdTutor} não foi encontrado", animal.Id_tutor);
+                _logger.LogWarning("O tutor com o id tutor não foi encontrado");
                 return BadRequest("Id Tutor não encontrado");
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao criar o animal com ID: {IdAnimal}", animal.Id_animal);
+            _logger.LogError(ex, "Erro ao criar o animal com ID");
 
             return BadRequest($"Erro ao salvar os dados: {ex.Message}");
         }
@@ -212,13 +212,13 @@ public class AnimalsController : ControllerBase
             _context.Animals.Remove(animalExistente);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Deletar o id animal: {IdAnimal} feito com sucesso", id_animal);
+            _logger.LogInformation("Foi deletado");
 
             return NoContent();
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Erro ao remover o animal {IdAnimal}", id_animal);
+            _logger.LogError(e, "Erro a remover ");
 
             return BadRequest($"Erro em deletar: {e.Message}");
         }
