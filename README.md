@@ -203,10 +203,18 @@ https://localhost:{PORTA}/swagger
 
 
 ---
-<h4> informações sobres os testes e como fazer eles</ha4>
+<h4> Informações sobres os testes e como fazer eles</ha4>
 
 - **Test unit**: esse aqui e o mais de boas de realizar, vai fazer um teste sem precisa do banco de dados
 - **Test int**: !!!ATENÇÃO!!! para o created e o update funcionar precisa colocad os dados correror porque esse esta conectado com o banco e sim precisa fazer prineiro o created e depois o update
+
+<h5>Como testar: </h5>
+
+Para testa eles deve seleciona aonde eles pelo botão direito e apos selecionar a opção de teste e assim vai começar o processamento.
+
+Quando voce tiver la, vai esta na tela de processamento e se dar certo vai aparece em verde e se errado em vermelho.
+
+
 ---
 *Desenvolvido com 💙 pela equipe CLYVO — FIAP 2026*
 
