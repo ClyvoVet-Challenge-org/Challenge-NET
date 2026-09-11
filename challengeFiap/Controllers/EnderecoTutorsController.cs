@@ -62,7 +62,13 @@ public class EnderecoTutorsController : ControllerBase
 
         try
         {
-            var enderecoresponsavel = await _context.EnderecoTutors.FirstOrDefaultAsync(e => e.Id_endereco_tutor == id_endereco_responsavel);
+            var enderecoresponsavel = await _context.EnderecoTutors.FindAsync(id_endereco_responsavel);
+
+            if (enderecoresponsavel == null)
+            {
+                _logger.LogWarning("Endereço responsavel não encontrado para o ID {IdEnderecoResponsavel}", id_endereco_responsavel);
+                return NotFound("Id não encontrado");
+            }
 
             _logger.LogInformation("Endereço responsavel encontrado com sucesso para o ID {IdEnderecoResponsavel}", id_endereco_responsavel);
             return Ok(enderecoresponsavel);
@@ -192,16 +198,23 @@ public class EnderecoTutorsController : ControllerBase
 
         try
         {
-            var enderecoresponsavel = await _context.EnderecoTutors.FirstOrDefaultAsync(e => e.Id_endereco_tutor == id_endereco_responsavel);
+             var enderecoresponsavel = await _context.EnderecoTutors.FindAsync(id_endereco_responsavel);
+
+            if (enderecoresponsavel == null)
+            {
+                _logger.LogWarning("Endereço tutor não encontrado para deletar.");
+                return NotFound("Id não encontrado");
+            }
+            
             _context.EnderecoTutors.Remove(enderecoresponsavel);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Endereço responsavel com ID {IdEnderecoResponsavel} excluído com sucesso", id_endereco_responsavel);
+            _logger.LogInformation("Endereço responsavel selecionando foi deletado com sucesso");
             return NoContent();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao deletar endereço responsavel com ID {IdEnderecoResponsavel}", id_endereco_responsavel);
+            _logger.LogError(ex, "Erro ao deletar endereço responsavel");
             return BadRequest($"Erro em deletar: {ex.Message}");
         }
 
