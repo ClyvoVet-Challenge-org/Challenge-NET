@@ -68,9 +68,16 @@ public class ConsultasController : ControllerBase
 
         try
         {
-            var consulta = await _context.Consultas.FirstOrDefaultAsync(c => c.Id_consulta == id_consulta);
+             var consulta = await _context.Consultas.FindAsync(id_consulta);
+
+            if (consulta == null)
+            {
+                _logger.LogWarning(" não foi encontrado o id {IdConsulta}",id_consulta);
+
+                return NotFound("Id Consulta não encontrado");
+            }
             
-            _logger.LogInformation("Consulta do id: {IdConsulta} foi encontrada com sucesso.",id_consulta);
+            _logger.LogInformation("foi encontrada com sucesso.");
 
             return Ok(consulta);
         }
@@ -204,7 +211,14 @@ public class ConsultasController : ControllerBase
 
         try
         {
-            var consulta = await _context.Consultas.FirstOrDefaultAsync(e => e.Id_consulta == id_consulta);
+            var consulta = await _context.Consultas.FindAsync(id_consulta);
+
+            if (consulta == null)
+            {
+                _logger.LogWarning("Consulta esta vazia.");
+
+                return NotFound("Consulta não encontrado.");
+            }
 
             _context.Consultas.Remove(consulta);
 
