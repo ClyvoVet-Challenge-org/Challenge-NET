@@ -71,15 +71,21 @@ public class ClinicasController : ControllerBase
 
         try
         {
-            var clinica = await _context.Clinicas.FirstOrDefaultAsync(c => c.Id_clinica == id_clinica);
+            var clinica = await _context.Clinicas.FindAsync(id_clinica);
+
+            if(clinica == null)
+            {
+                _logger.LogWarning("Id clinica não encontrado. ID: {IdClinica}",id_clinica);
+                return NotFound("Id clinica não encontrado");
+            }
             
-            _logger.LogInformation("Clinica encontrada com sucesso. ID: {IdClinica}", id_clinica);
+            _logger.LogInformation("Clinica encontrada com sucesso.");
 
             return Ok(clinica);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Erro no processamento da buscar pela clinica. ID: {IdClinica}",id_clinica);
+            _logger.LogError(ex,"Erro no processamento da buscar}");
 
             return BadRequest($"Erro em processar a buscar pela clinica: {ex.Message}");
         }
@@ -209,6 +215,13 @@ public class ClinicasController : ControllerBase
         try
         {
             var clinica = await _context.Clinicas.FirstOrDefaultAsync(e => e.Id_clinica == id_clinica);
+
+            if (clinica == null)
+            {
+                _logger.LogWarning("Clinica {IdClinica}, não encontrada.",id_clinica);
+
+                return NotFound("Clinica não encontrada");
+            }
             
             _context.Clinicas.Remove(clinica);
             await _context.SaveChangesAsync();
