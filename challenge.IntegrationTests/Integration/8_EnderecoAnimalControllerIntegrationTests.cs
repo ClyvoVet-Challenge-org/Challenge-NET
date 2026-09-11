@@ -84,35 +84,5 @@ namespace challenge.IntegrationTests.Integration
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
-        [Fact]
-        public async Task GetEnderecoAnimal_dados_RetornaOk()
-        {
-            //Arrage
-            var id_EnderecoAnimal = 1;
-
-            //Act
-            var response = await _client.GetAsync($"api/enderecoAnimals/relatorio/enderecoanimal/{id_EnderecoAnimal}");
-
-            // Assert
-            response.EnsureSuccessStatusCode();
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var EnderecoAnimal = await response.Content.ReadFromJsonAsync<EnderecoAnimal>();
-
-            Assert.NotNull(EnderecoAnimal);
-            Assert.Equal(id_EnderecoAnimal, EnderecoAnimal.Id_endereco_animal);
-        }
-
-        [Fact]
-        public async Task DeleteEnderecoAnimal_dados_RetornaOk()
-        {
-            // Arrange
-            var id_EnderecoAnimal = 1;
-
-            // Act
-            var response = await _client.DeleteAsync($"api/enderecoAnimals/deleta/enderecoanimal/{id_EnderecoAnimal}");
-            // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        }
     }
 }

@@ -67,8 +67,14 @@ public class AnimalsController : ControllerBase
         _logger.LogInformation($"Começando a buscar pelo animal por seu id: {id_animal}");
         try
         {
-            var animal = await _animalService.GetAnimalIdAsync(id_animal);
+            var animal = await _context.Animals.FindAsync(id_animal);
 
+            if (animal == null)
+            {
+                _logger.LogWarning("Id não inseridor");
+
+                return NotFound("Id Animal não encontrada");
+            }
             _logger.LogInformation("Busca do animal com id_animal -> {IdAnimal} realizada com sucesso", id_animal);
 
             return Ok(animal);
@@ -201,8 +207,8 @@ public class AnimalsController : ControllerBase
         _logger.LogInformation("Processo de deletar do animal");
         try
         {
-            var animalExistente = await _animalService.DeleteAnimalAsync(id_animal);
-
+            var animalExistente = await _context.Animals.FirstOrDefaultAsync(e => e.Id_animal == id_animal);
+            
             _context.Animals.Remove(animalExistente);
             await _context.SaveChangesAsync();
 

@@ -62,7 +62,7 @@ public class EnderecoTutorsController : ControllerBase
 
         try
         {
-            var enderecoresponsavel = await _enderecoTutorService.GetEnderecoTutorIdAsync(id_endereco_responsavel);
+            var enderecoresponsavel = await _context.EnderecoTutors.FirstOrDefaultAsync(e => e.Id_endereco_tutor == id_endereco_responsavel);
 
             _logger.LogInformation("Endereço responsavel encontrado com sucesso para o ID {IdEnderecoResponsavel}", id_endereco_responsavel);
             return Ok(enderecoresponsavel);
@@ -192,8 +192,7 @@ public class EnderecoTutorsController : ControllerBase
 
         try
         {
-            var enderecoresponsavel = await _enderecoTutorService.DeleteEnderecoTutorAsync(id_endereco_responsavel);
-
+            var enderecoresponsavel = await _context.EnderecoTutors.FirstOrDefaultAsync(e => e.Id_endereco_tutor == id_endereco_responsavel);
             _context.EnderecoTutors.Remove(enderecoresponsavel);
             await _context.SaveChangesAsync();
 

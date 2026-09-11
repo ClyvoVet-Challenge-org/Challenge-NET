@@ -11,7 +11,5 @@ namespace challengeFiap.Domain.Interfaces
         Task<EnderecoTutor> UpdateEnderecoTutorAsync(int id_endereco, EnderecoTutor enderecoTutor);
 
 
-        Task<EnderecoTutor> GetEnderecoTutorIdAsync(int id_EnderecoTutor);
-        Task<EnderecoTutor> DeleteEnderecoTutorAsync(int id_EnderecoTutor);
     }
 }

@@ -63,7 +63,7 @@ public class TutorController : ControllerBase
 
         try
         {
-            var Tutor = await _tutorService.GetTutorIdAsync(id_Tutor);
+            var Tutor = await _context.Tutor.FirstOrDefaultAsync(t => t.Id_tutor == id_Tutor);
 
             _logger.LogInformation("Tutor encontrado com sucesso para o ID {IdTutor}", id_Tutor);
             return Ok(Tutor);
@@ -204,8 +204,8 @@ public class TutorController : ControllerBase
 
         try
         {
-            var Tutor = await _tutorService.DeleteTutorAsync(id_Tutor);
-
+            var Tutor = await _context.Tutor.FirstOrDefaultAsync(e => e.Id_tutor == id_Tutor);
+            
             _context.Tutor.Remove(Tutor);
             await _context.SaveChangesAsync();
 

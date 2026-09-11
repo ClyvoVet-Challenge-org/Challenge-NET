@@ -92,18 +92,6 @@ namespace challengeFiap.Application.Service
             return updatedEnderecoClinica;
         }
 
-        public async Task<EnderecoClinica> GetEnderecoClinicaIdAsync(int id_EnderecoClinica)
-        {
-            var endereoClinica = _GetEndereco.FirstOrDefault(c => c.Id_endereco_clinica == id_EnderecoClinica);
-            if (endereoClinica == null)
-            {
-                _logger.LogWarning("Id não existe");
-
-                throw new Exception("Id  não foi encontrada");
-            }
-            return endereoClinica;
-        }
-
         public async Task<EnderecoClinica> DeleteEnderecoClinicaAsync(int id_EnderecoClinica)
         {
             var enderecoClinicaDelete = _GetEndereco.FirstOrDefault(c => c.Id_endereco_clinica == id_EnderecoClinica);

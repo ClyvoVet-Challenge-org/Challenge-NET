@@ -78,17 +78,7 @@ namespace challengeFiap.Application.Service
 
             return updatedConsulta;
         }
-        public async Task<Consulta> GetConsultaIdAsync(int id_Consulta)
-        {
-            var consulta = _GetConsulta.FirstOrDefault(c => c.Id_consulta == id_Consulta);
-            if (consulta == null)
-            {
-                _logger.LogWarning("Id não existe");
 
-                throw new Exception("Id  não foi encontrada");
-            }
-            return consulta;
-        }
         public async Task<Consulta> DeleteConsultaAsync(int id_Consulta)
         {
             var consultaDelete = _GetConsulta.FirstOrDefault(c => c.Id_consulta == id_Consulta);

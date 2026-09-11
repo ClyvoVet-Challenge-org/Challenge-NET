@@ -10,7 +10,5 @@ namespace challengeFiap.Domain.Interfaces
         Task<EnderecoClinica> CreateEnderecoClinicaAsync(EnderecoClinica enderecoClinica);
         Task<EnderecoClinica> UpdateEnderecoClinicaAsync(int id_endereco_clinica, EnderecoClinica enderecoClinica);
 
-        Task<EnderecoClinica> GetEnderecoClinicaIdAsync(int id_EnderecoClinica);
-        Task<EnderecoClinica> DeleteEnderecoClinicaAsync(int id_EnderecoClinica);
     }
 }

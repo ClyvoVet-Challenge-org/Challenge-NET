@@ -79,20 +79,6 @@ namespace challengeFiap.Application.Service
 
             return updatedCarteiraVacinal;
         }
-
-        public async Task<CarteiraVacinal> GetCarteiraVacinalIdAsync(int id_CarteiraVacinal)
-        {
-            var carteiraVacinal = _GetCarteiraVacinal.FirstOrDefault(c => c.Id_carteiraVacinal == id_CarteiraVacinal);
-            if (carteiraVacinal == null)
-            {
-                _logger.LogWarning("Id não existe");
-
-                throw new Exception("Id  não foi encontrada");
-            }
-
-            return carteiraVacinal;
-        }
-
         public async Task<CarteiraVacinal> DeleteCarteiraVacinalAsync(int id_CarteiraVacinal)
         {
             var carteiraVacinalDelete = _GetCarteiraVacinal.FirstOrDefault(c=> c.Id_carteiraVacinal==id_CarteiraVacinal);

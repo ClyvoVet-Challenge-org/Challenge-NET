@@ -68,8 +68,8 @@ public class EnderecoAnimalsController : ControllerBase
 
         try
         {
-            var enderecoanimal = await _enderecoAnimalService.GetEnderecoAnimalIdAsync(id_endereco_animal);
-
+            var enderecoanimal = await _context.EnderecoAnimals.FirstOrDefaultAsync(e => e.Id_endereco_animal == id_endereco_animal);
+            
             _logger.LogInformation("Endereço animal encontrado com sucesso.");
 
             return Ok(enderecoanimal);
@@ -206,8 +206,7 @@ public class EnderecoAnimalsController : ControllerBase
 
         try
         {
-            var enderecoanimal = await _enderecoAnimalService.DeleteEnderecoAnimalAsync(id_endereco_animal);
-
+            var enderecoanimal = await _context.EnderecoAnimals.FirstOrDefaultAsync(e => e.Id_endereco_animal == id_endereco_animal);
             _context.EnderecoAnimals.Remove(enderecoanimal);
 
             await _context.SaveChangesAsync();

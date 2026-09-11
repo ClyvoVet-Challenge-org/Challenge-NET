@@ -71,8 +71,8 @@ public class ClinicasController : ControllerBase
 
         try
         {
-            var clinica = await _clinicaService.GetClinicaIdAsync(id_clinica);
-
+            var clinica = await _context.Clinicas.FirstOrDefaultAsync(c => c.Id_clinica == id_clinica);
+            
             _logger.LogInformation("Clinica encontrada com sucesso. ID: {IdClinica}", id_clinica);
 
             return Ok(clinica);
@@ -208,8 +208,8 @@ public class ClinicasController : ControllerBase
 
         try
         {
-            var clinica = await _clinicaService.DeleteClinicaAsync(id_clinica);
-
+            var clinica = await _context.Clinicas.FirstOrDefaultAsync(e => e.Id_clinica == id_clinica);
+            
             _context.Clinicas.Remove(clinica);
             await _context.SaveChangesAsync();
 

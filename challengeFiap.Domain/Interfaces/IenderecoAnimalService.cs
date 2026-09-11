@@ -11,7 +11,5 @@ namespace challengeFiap.Domain.Interfaces
         Task<EnderecoAnimal> UpdateEnderecoAnimalAsync(int id_endereco, EnderecoAnimal enderecoAnimal);
 
 
-        Task<EnderecoAnimal> GetEnderecoAnimalIdAsync(int id_EnderecoAnimal);
-        Task<EnderecoAnimal> DeleteEnderecoAnimalAsync(int id_EnderecoAnimal);
     }
 }

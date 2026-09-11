@@ -92,18 +92,6 @@ namespace challengeFiap.Application.Service
             return updatedEnderecoTutor;
         }
 
-        public async Task<EnderecoTutor> GetEnderecoTutorIdAsync(int id_EnderecoTutor)
-        {
-            var enderecoTutor = _GetEnderecoTutor.FirstOrDefault(c => c.Id_endereco_tutor == id_EnderecoTutor);
-            if (enderecoTutor == null)
-            {
-                _logger.LogWarning("Id não existe");
-
-                throw new Exception("Id  não foi encontrada");
-            }
-            return enderecoTutor;
-        }
-
         public async Task<EnderecoTutor> DeleteEnderecoTutorAsync(int id_EnderecoTutor)
         {
             var enderecoTutorDelete = _GetEnderecoTutor.FirstOrDefault(c => c.Id_endereco_tutor == id_EnderecoTutor);

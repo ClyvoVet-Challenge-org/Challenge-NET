@@ -98,19 +98,6 @@ namespace challengeFiap.Application.Service
             return updatedEnderecoAnimal;
         }
 
-        public async Task<EnderecoAnimal> GetEnderecoAnimalIdAsync(int id_EnderecoAnimal)
-        {
-            var enderecoAnimal = _GetEnderecoAnimal.FirstOrDefault(c => c.Id_endereco_animal == id_EnderecoAnimal);
-            if (enderecoAnimal == null)
-            {
-                _logger.LogWarning("Id não existe");
-
-                throw new Exception("Id  não foi encontrada");
-            }
-            return enderecoAnimal;
-        }
-
-
         public Task<EnderecoAnimal> DeleteEnderecoAnimalAsync(int id_EnderecoAnimal)
         {
             var enderecoAnimalDelete = _GetEnderecoAnimal.FirstOrDefault(c => c.Id_endereco_animal == id_EnderecoAnimal);

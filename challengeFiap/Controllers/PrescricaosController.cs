@@ -62,8 +62,7 @@ public class PrescricaosController : ControllerBase
 
         try
         {
-            var prescricao = await _prescricaoService.GetPrescricaoIdAsync(id_prescricao);
-
+            var prescricao = await _context.Prescricaos.FirstOrDefaultAsync(p => p.Id_prescricao == id_prescricao);
 
             _logger.LogInformation("Prescrição encontrada com sucesso para o ID {IdPrescricao}", id_prescricao);
             return Ok(prescricao);
@@ -195,8 +194,8 @@ public class PrescricaosController : ControllerBase
 
         try
         {
-            var prescricao = await _prescricaoService.DeletePrescricaoAsync(id_prescricao);
-
+            var prescricao = await _context.Prescricaos.FirstOrDefaultAsync(e => e.Id_prescricao == id_prescricao);
+            
             _context.Prescricaos.Remove(prescricao);
             await _context.SaveChangesAsync();
 

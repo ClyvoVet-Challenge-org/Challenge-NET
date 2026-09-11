@@ -86,35 +86,5 @@ namespace challengeFiap.Application.Service
             _animalUpdateCounter.Add(1,new KeyValuePair<string, object?>("animal.id", updatedAnimal.Id_animal));
             return updatedAnimal;
         }
-
-        public async Task<Animal> GetAnimalIdAsync(int id_animal)
-        {
-            var animalget = _AnimalGet.FirstOrDefault(a => a.Id_animal == id_animal);
-            if (animalget == null)
-            {
-                _logger.LogWarning("Id não existe");
-
-                throw new Exception("Id  não foi encontrada");
-            }
-
-            return animalget;
-        }
-        public Task<Animal> DeleteAnimalAsync(int id_animal)
-        {
-            var animalDelete = _AnimalGet.FirstOrDefault(a => a.Id_animal == id_animal);
-            if (animalDelete != null) {
-
-                _AnimalGet.Remove(animalDelete);
-                _logger.LogInformation("Deletado");
-
-                return Task.FromResult(animalDelete);
-
-            } else
-            {
-                _logger.LogWarning("Id de animal  não foi encontrado. ");
-
-                throw new Exception("Id não existente presente");
-            }
-        }
     }
 }

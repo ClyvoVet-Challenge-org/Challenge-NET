@@ -63,8 +63,7 @@ public class EnderecoClinicasController : ControllerBase
 
         try
         {
-            var enderecoclinica = await _enderecoClinicaService.GetEnderecoClinicaIdAsync(id_endereco_clinica);
-
+            var enderecoclinica = await _context.EnderecoClinicas.FirstOrDefaultAsync(e => e.Id_endereco_clinica == id_endereco_clinica);
 
             _logger.LogInformation("Endereço clinica encontrado com sucesso.");
 
@@ -205,8 +204,7 @@ public class EnderecoClinicasController : ControllerBase
 
         try
         {
-            var enderecoclinica = await _enderecoClinicaService.DeleteEnderecoClinicaAsync(id_endereco_clinica);
-
+            var enderecoclinica = await _context.EnderecoClinicas.FirstOrDefaultAsync(e => e.Id_endereco_clinica == id_endereco_clinica);
             _context.EnderecoClinicas.Remove(enderecoclinica);
             await _context.SaveChangesAsync();
 

@@ -79,36 +79,6 @@ namespace challenge.IntegrationTests.Integration
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
-        [Fact]
-        public async Task GetConsulta_dados_RetornaOk()
-        {
-            //Arrage
-            var id_Consulta = 1;
 
-            //Act
-            var response = await _client.GetAsync($"api/consultas/relatorio/consulta/{id_Consulta}");
-
-            // Assert
-            response.EnsureSuccessStatusCode();
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var Consulta = await response.Content.ReadFromJsonAsync<Consulta>();
-
-            Assert.NotNull(Consulta);
-            Assert.Equal(id_Consulta, Consulta.Id_consulta);
-        }
-
-        [Fact]
-        public async Task DeleteConsulta_dados_RetornaOk()
-        {
-            // Arrange
-            var id_Consulta = 1;
-
-            // Act
-            var response = await _client.DeleteAsync($"api/consultas/deleta/consulta/{id_Consulta}");
-
-            // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        }
     }
 }

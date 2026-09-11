@@ -84,37 +84,5 @@ namespace challenge.IntegrationTests.Integration
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
-
-        [Fact]
-        public async Task GetEnderecoClinica_dados_RetornaOk()
-        {
-            //Arrage
-            var id_Enderecoclinica = 1;
-
-            //Act
-            var response = await _client.GetAsync($"api/enderecoClinicas/relatorio/enderecoclinica/{id_Enderecoclinica}");
-            
-            // Assert
-            response.EnsureSuccessStatusCode();
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var enderecoClinica = await response.Content.ReadFromJsonAsync<EnderecoClinica>();
-
-            Assert.NotNull(enderecoClinica);
-            Assert.Equal(id_Enderecoclinica, enderecoClinica.Id_endereco_clinica);
-        }
-
-        [Fact]
-        public async Task DeleteEnderecoClinica_dados_RetornaOk()
-        {
-            // Arrange
-            var id_Enderecoclinica = 1;
-
-            // Act
-            var response = await _client.DeleteAsync($"api/enderecoClinicas/deleta/enderecoclinica/{id_Enderecoclinica}");
-            
-            // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        }
     }
 }

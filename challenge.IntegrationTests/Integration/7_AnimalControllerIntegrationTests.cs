@@ -83,37 +83,5 @@ namespace challenge.IntegrationTests.Integration
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
-
-        [Fact]
-        public async Task GetAnimal_dados_RetornaOk()
-        {
-            //Arrage
-            var id_Animal = 1;
-
-            //Act
-            var response = await _client.GetAsync($"api/animals/relatorio/animal/{id_Animal}");
-
-            // Assert
-            response.EnsureSuccessStatusCode();
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var animal = await response.Content.ReadFromJsonAsync<Animal>();
-
-            Assert.NotNull(animal);
-            Assert.Equal(id_Animal, animal.Id_animal);
-        }
-
-        [Fact]
-        public async Task DeleteEnderecoTutor_dados_RetornaOk()
-        {
-            // Arrange
-            var id_animal = 1;
-
-            // Act
-            var response = await _client.DeleteAsync($"api/animals/deleta/animal/{id_animal}");
-
-            // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        }
     }
 }

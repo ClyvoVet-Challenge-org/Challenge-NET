@@ -11,7 +11,5 @@ namespace challengeFiap.Domain.Interfaces
         Task<VetClinica> UpdateVetClinicaAsync(int id_VetClinica, VetClinica VetClinica);
 
 
-        Task<VetClinica> GetVetClinicaIdAsync(int id_VetClinica);
-        Task<VetClinica> DeleteVetClinicaAsync(int id_VetClinica);
     }
 }

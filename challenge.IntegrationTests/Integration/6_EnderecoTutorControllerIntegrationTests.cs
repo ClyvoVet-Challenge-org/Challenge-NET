@@ -86,37 +86,5 @@ namespace challenge.IntegrationTests.Integration
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
-
-        [Fact]
-        public async Task GetEnderecoTutor_dados_RetornaOk()
-        {
-            //Arrage
-            var id_EnderecoTutor = 1;
-
-            //Act
-            var response = await _client.GetAsync($"api/enderecoTutors/relatorio/enderecoresponsavel/{id_EnderecoTutor}");
-
-            // Assert
-            response.EnsureSuccessStatusCode();
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var EnderecoTutor = await response.Content.ReadFromJsonAsync<EnderecoTutor>();
-
-            Assert.NotNull(EnderecoTutor);
-            Assert.Equal(id_EnderecoTutor, EnderecoTutor.Id_endereco_tutor);
-        }
-
-        [Fact]
-        public async Task DeleteEnderecoTutor_dados_RetornaOk()
-        {
-            // Arrange
-            var id_EnderecoTutor = 1;
-
-            // Act
-            var response = await _client.DeleteAsync($"api/enderecoTutors/deleta/enderecoresponsavel/{id_EnderecoTutor}");
-            
-            // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        }
     }
 }

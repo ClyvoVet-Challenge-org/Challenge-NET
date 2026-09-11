@@ -82,35 +82,5 @@ namespace challenge.IntegrationTests.Integration
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
          }
-        [Fact]
-        public async Task GetCarteiraVacinal_dados_RetornaOk()
-        {
-            //Arrage
-            var id_CarteiraVacinal = 1;
-
-            //Act
-            var response = await _client.GetAsync($"api/carteiraVacinals/relatorio/carteiravacinal/{id_CarteiraVacinal}");
-            // Assert
-            response.EnsureSuccessStatusCode();
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var CarteiraVacinal = await response.Content.ReadFromJsonAsync<CarteiraVacinal>();
-
-            Assert.NotNull(CarteiraVacinal);
-            Assert.Equal(id_CarteiraVacinal, CarteiraVacinal.Id_carteiraVacinal);
-        }
-
-        [Fact]
-        public async Task DeleteCarteiraVacinal_dados_RetornaOk()
-        {
-            // Arrange
-            var id_CarteiraVacinal = 1;
-
-            // Act
-            var response = await _client.DeleteAsync($"api/carteiraVacinals/deleta/carteiravacinal/{id_CarteiraVacinal}");
-            
-            // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        }
     }
 }

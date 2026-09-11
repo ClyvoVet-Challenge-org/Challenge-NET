@@ -63,8 +63,8 @@ public class VeterinariosController : ControllerBase
 
         try
         {
-            var veterinario = await _veterinarioService.GetVeterinarioIdAsync(id_vet);
-
+            var veterinario = await _context.Veterinarios.FirstOrDefaultAsync(v => v.Id_vet == id_vet);
+            
             _logger.LogInformation("Veterinario com ID {IdVet} encontrado com sucesso", id_vet);
             return Ok(veterinario);
         }
@@ -200,7 +200,7 @@ public class VeterinariosController : ControllerBase
 
         try
         {
-            var veterinario = await _veterinarioService.DeleteVeterinarioAsync(id_vet);
+            var veterinario = await _context.Veterinarios.FirstOrDefaultAsync(e => e.Id_vet == id_vet);
             _context.Veterinarios.Remove(veterinario);
             await _context.SaveChangesAsync();
 

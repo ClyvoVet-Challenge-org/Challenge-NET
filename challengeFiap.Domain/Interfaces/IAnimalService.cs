@@ -9,8 +9,5 @@ namespace challengeFiap.Domain.Interfaces
     {
         Task<Animal> CreateAnimalAsync(Animal animal);
         Task<Animal> UpdateAnimalAsync(int id_animal, Animal animal);
-
-        Task<Animal> GetAnimalIdAsync(int id_animal);
-        Task<Animal> DeleteAnimalAsync(int id_animal);
     }
 }

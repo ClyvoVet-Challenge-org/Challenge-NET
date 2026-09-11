@@ -68,8 +68,8 @@ public class ConsultasController : ControllerBase
 
         try
         {
-            var consulta = await _consultaService.GetConsultaIdAsync(id_consulta);
-
+            var consulta = await _context.Consultas.FirstOrDefaultAsync(c => c.Id_consulta == id_consulta);
+            
             _logger.LogInformation("Consulta do id: {IdConsulta} foi encontrada com sucesso.",id_consulta);
 
             return Ok(consulta);
@@ -204,7 +204,7 @@ public class ConsultasController : ControllerBase
 
         try
         {
-            var consulta = await _consultaService.DeleteConsultaAsync(id_consulta);
+            var consulta = await _context.Consultas.FirstOrDefaultAsync(e => e.Id_consulta == id_consulta);
 
             _context.Consultas.Remove(consulta);
 

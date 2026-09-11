@@ -67,17 +67,7 @@ namespace challengeFiap.Application.Service
         
             return updatedClinica;
         }
-        public async Task<Clinica> GetClinicaIdAsync(int id_Clinica)
-        {
-            var GetClinica = _GetClinica.FirstOrDefault(c => c.Id_clinica == id_Clinica);
-            if (GetClinica == null)
-            {
-                _logger.LogWarning("Id não existe");
 
-                throw new Exception("Id  não foi encontrada");
-            }
-            return GetClinica;
-        }
         public async Task<Clinica> DeleteClinicaAsync(int id_Clinica)
         {
             var clinicaDelete = _GetClinica.FirstOrDefault(c => c.Id_clinica == id_Clinica);

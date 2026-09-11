@@ -10,7 +10,5 @@ namespace challengeFiap.Domain.Interfaces
         Task<Prescricao> CreatePrescricaoAsync(Prescricao prescricao);
         Task<Prescricao> UpdatePrescricaoAsync(int id_prescricao, Prescricao prescricao);
 
-        Task<Prescricao> GetPrescricaoIdAsync(int id_Prescricao);
-        Task<Prescricao> DeletePrescricaoAsync(int id_Prescricao);
     }
 }

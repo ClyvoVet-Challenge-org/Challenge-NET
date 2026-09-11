@@ -79,18 +79,6 @@ namespace challengeFiap.Application.Service
 
             return updatedMedicamento;
         }
-        public async Task<Medicamento> GetMedicamentoIdAsync(int id_Medicamento)
-        {
-            var medicamento = _GetMedicamento.FirstOrDefault(c => c.Id_medicamento == id_Medicamento);
-            if (medicamento == null)
-            {
-                _logger.LogWarning("Id não existe");
-
-                throw new Exception("Id  não foi encontrada");
-            }
-            return medicamento;
-        }
-
         public async Task<Medicamento> DeleteMedicamentoAsync(int id_Medicamento)
         {
             var medicamentoDelete = _GetMedicamento.FirstOrDefault(c => c.Id_medicamento == id_Medicamento);

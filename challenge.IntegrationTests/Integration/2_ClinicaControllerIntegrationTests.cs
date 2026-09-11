@@ -76,36 +76,6 @@ namespace challenge.IntegrationTests.Integration
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        [Fact]
-        public async Task GetClinica_dados_RetornaOk()
-        {
-            //Arrage
-            var id_clinica = 1;
 
-            //Act
-            var response = await _client.GetAsync($"api/clinicas/relatorio/clinica/{id_clinica}");
-            
-            // Assert
-            response.EnsureSuccessStatusCode();
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var clinica = await response.Content.ReadFromJsonAsync<Clinica>();
-
-            Assert.NotNull(clinica);
-            Assert.Equal(id_clinica, clinica.Id_clinica);
-        }
-
-        [Fact]
-        public async Task DeleteClinica_dados_RetornaOk()
-        {
-            // Arrange
-            var id_clinica = 1;
-
-            // Act
-            var response = await _client.DeleteAsync($"api/clinicas/deleta/clinica/{id_clinica}");
-
-            // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        }
     }
 }

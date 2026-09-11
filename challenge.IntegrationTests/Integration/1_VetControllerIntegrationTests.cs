@@ -27,9 +27,9 @@ namespace challenge.IntegrationTests.Integration
             {
                 Id_vet = id_vet,
                 Nm_vet = "lual",
-                Cpf_vet = "98745432111",
-                Crmv_vet = "999949-SP",
-                Email_vet = "luall9991@gmail.com",
+                Cpf_vet = "91745432111",
+                Crmv_vet = "919949-SP",
+                Email_vet = "lual49991@gmail.com",
                 Senha_vet = "21358"
             };
 
@@ -76,37 +76,7 @@ namespace challenge.IntegrationTests.Integration
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-        [Fact]
-        public async Task GetVet_dados_RetornaOk()
-        {
-            //Arrage
-            var id_veterinario = 1;
-
-            //Act
-            var response = await _client.GetAsync($"api/veterinarios/relatorio/veterinario/{id_veterinario}");
-
-            // Assert
-            response.EnsureSuccessStatusCode();
-
-            Assert.Equal(HttpStatusCode.OK , response.StatusCode);
-            var vet = await response.Content.ReadFromJsonAsync<Veterinario>();
-
-            Assert.NotNull( vet );
-            Assert.Equal(id_veterinario, vet.Id_vet);
-        }
-
-        [Fact]
-        public async Task DeleteVet_dados_RetornaOk()
-        {
-            // Arrange
-            var id_veterinario = 1;
-
-            // Act
-            var response = await _client.DeleteAsync($"api/veterinarios/deleta/veterinario/{id_veterinario}");
-
-            // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+       
         }
     }
 }

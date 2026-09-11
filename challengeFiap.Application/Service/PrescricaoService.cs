@@ -75,18 +75,6 @@ namespace challengeFiap.Application.Service
             return updatedPrescricao;
         }
 
-        public async Task<Prescricao> GetPrescricaoIdAsync(int id_Prescricao)
-        {
-            var prescricao = _GetPrescricao.FirstOrDefault(c => c.Id_prescricao == id_Prescricao);
-            if (prescricao == null)
-            {
-                _logger.LogWarning("Id não existe");
-
-                throw new Exception("Id  não foi encontrada");
-            }
-            return prescricao;
-        }
-
         public async Task<Prescricao> DeletePrescricaoAsync(int id_Prescricao)
         {
             var prescricaoDelete = _GetPrescricao.FirstOrDefault(c => c.Id_prescricao == id_Prescricao);

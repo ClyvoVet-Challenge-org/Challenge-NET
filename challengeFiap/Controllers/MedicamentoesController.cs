@@ -63,7 +63,7 @@ public class MedicamentoesController : ControllerBase
 
         try
         {
-            var medicamento = await _medicamentoService.GetMedicamentoIdAsync(id_medicamento);
+            var medicamento = await _context.Medicamentos.FirstOrDefaultAsync(m => m.Id_medicamento == id_medicamento);
 
             _logger.LogInformation("Medicamento encontrado com sucesso para o ID {IdMedicamento}", id_medicamento);
             return Ok(medicamento);
@@ -193,8 +193,7 @@ public class MedicamentoesController : ControllerBase
 
         try
         {
-            var medicamento = await _medicamentoService.DeleteMedicamentoAsync(id_medicamento);
-
+            var medicamento = await _context.Medicamentos.FirstOrDefaultAsync(e => e.Id_medicamento == id_medicamento);
             _context.Medicamentos.Remove(medicamento);
             await _context.SaveChangesAsync();
 
