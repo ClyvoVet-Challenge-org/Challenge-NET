@@ -20,9 +20,7 @@ namespace challengeFiap.Application.Service
 
         private static readonly ActivitySource ActivitySource = new(TelemetryConstants.ServiceName);
 
-        private readonly Counter<int> _enderecoAnimalCreateCounter;
-
-        private readonly List<EnderecoAnimal> _GetEnderecoAnimal = new();
+        private readonly Counter<int> _enderecoAnimalTaxaErro;
 
         private readonly AppDbContext _context;
 
@@ -31,78 +29,92 @@ namespace challengeFiap.Application.Service
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
-            _enderecoAnimalCreateCounter = meter.CreateCounter<int>("endereco_animal.create", description: "Total criado");
+            _enderecoAnimalTaxaErro = meter.CreateCounter<int>("endereco_animal.error");
             _context = context;
         }
 
         public async Task<EnderecoAnimal> CreateEnderecoAnimalAsync(EnderecoAnimal enderecoAnimal)
         {
-            using var activity = ActivitySource.StartActivity("CreateEnderecoAnimalAsync");
-            activity?.SetTag("endereco_animal.id", enderecoAnimal.Id_endereco_animal);
-            activity?.SetTag("endereco_animal.pais", enderecoAnimal.Pais);
-            activity?.SetTag("endereco_animal.estado", enderecoAnimal.Estado);
-            activity?.SetTag("endereco_animal.cidade", enderecoAnimal.Cidade);
-            activity?.SetTag("endereco_animal.bairro", enderecoAnimal.Bairro);
-            activity?.SetTag("endereco_animal.logradouro", enderecoAnimal.Logradouro_rua);
-            activity?.SetTag("endereco_animal.nr_rua", enderecoAnimal.Nr_rua);
-            activity?.SetTag("endereco_animal.complemento", enderecoAnimal.Complemento);
-            activity?.SetTag("endereco_animal.cep", enderecoAnimal.Cep);
-            activity?.SetTag("endereco_animal.id_animal", enderecoAnimal.Id_animal);
-
-            await Task.Delay(100);
-
-            var createdEnderecoAnimal = new EnderecoAnimal
+            try
             {
-                Id_endereco_animal = enderecoAnimal.Id_endereco_animal,
-                Pais = enderecoAnimal.Pais,
-                Estado = enderecoAnimal.Estado,
-                Cidade = enderecoAnimal.Cidade,
-                Bairro = enderecoAnimal.Bairro,
-                Logradouro_rua = enderecoAnimal.Logradouro_rua,
-                Nr_rua = enderecoAnimal.Nr_rua,
-                Complemento = enderecoAnimal.Complemento,
-                Cep = enderecoAnimal.Cep,
-                Id_animal = enderecoAnimal.Id_animal
-            };
+                using var activity = ActivitySource.StartActivity("CreateEnderecoAnimalAsync");
+                activity?.SetTag("endereco_animal.id", enderecoAnimal.Id_endereco_animal);
+                activity?.SetTag("endereco_animal.pais", enderecoAnimal.Pais);
+                activity?.SetTag("endereco_animal.estado", enderecoAnimal.Estado);
+                activity?.SetTag("endereco_animal.cidade", enderecoAnimal.Cidade);
+                activity?.SetTag("endereco_animal.bairro", enderecoAnimal.Bairro);
+                activity?.SetTag("endereco_animal.logradouro", enderecoAnimal.Logradouro_rua);
+                activity?.SetTag("endereco_animal.nr_rua", enderecoAnimal.Nr_rua);
+                activity?.SetTag("endereco_animal.complemento", enderecoAnimal.Complemento);
+                activity?.SetTag("endereco_animal.cep", enderecoAnimal.Cep);
+                activity?.SetTag("endereco_animal.id_animal", enderecoAnimal.Id_animal);
 
-            _logger.LogInformation(
-                "EnderecoAnimal created with ID: {Id_endereco_animal}",
-                createdEnderecoAnimal.Id_endereco_animal);
+                await Task.Delay(100);
 
-            _enderecoAnimalCreateCounter.Add(1,new KeyValuePair<string, object>("status", "success"));
+                var createdEnderecoAnimal = new EnderecoAnimal
+                {
+                    Id_endereco_animal = enderecoAnimal.Id_endereco_animal,
+                    Pais = enderecoAnimal.Pais,
+                    Estado = enderecoAnimal.Estado,
+                    Cidade = enderecoAnimal.Cidade,
+                    Bairro = enderecoAnimal.Bairro,
+                    Logradouro_rua = enderecoAnimal.Logradouro_rua,
+                    Nr_rua = enderecoAnimal.Nr_rua,
+                    Complemento = enderecoAnimal.Complemento,
+                    Cep = enderecoAnimal.Cep,
+                    Id_animal = enderecoAnimal.Id_animal
+                };
 
-            return createdEnderecoAnimal;
+                _logger.LogInformation(
+                    "EnderecoAnimal created with ID: {Id_endereco_animal}",
+                    createdEnderecoAnimal.Id_endereco_animal);
+
+                return createdEnderecoAnimal;
+            }
+            catch (Exception ex)
+            {
+                _enderecoAnimalTaxaErro.Add(1);
+                _logger.LogError("Erro ao criar endereco animal: {erro}", ex);
+                throw;
+            }
         }
         public async Task<EnderecoAnimal> UpdateEnderecoAnimalAsync(
             int id_endereco,
             EnderecoAnimal enderecoAnimal)
         {
-            using var activity = ActivitySource.StartActivity("UpdateEnderecoAnimalAsync");
-            activity?.SetTag("endereco_animal.id", id_endereco);
-
-            _logger.LogInformation(
-                "Updating EnderecoAnimal with ID: {Id_endereco_animal}",
-                id_endereco);
-
-            var updatedEnderecoAnimal = new EnderecoAnimal
+            try
             {
-                Id_endereco_animal = id_endereco,
-                Pais = enderecoAnimal.Pais,
-                Estado = enderecoAnimal.Estado,
-                Cidade = enderecoAnimal.Cidade,
-                Bairro = enderecoAnimal.Bairro,
-                Logradouro_rua = enderecoAnimal.Logradouro_rua,
-                Nr_rua = enderecoAnimal.Nr_rua,
-                Complemento = enderecoAnimal.Complemento,
-                Cep = enderecoAnimal.Cep,
-                Id_animal = enderecoAnimal.Id_animal
-            };
+                using var activity = ActivitySource.StartActivity("UpdateEnderecoAnimalAsync");
+                activity?.SetTag("endereco_animal.id", id_endereco);
 
-            _logger.LogInformation("EnderecoAnimal updated with ID: {Id_endereco_animal}",updatedEnderecoAnimal.Id_endereco_animal);
+                _logger.LogInformation(
+                    "Updating EnderecoAnimal with ID: {Id_endereco_animal}",
+                    id_endereco);
 
-            _enderecoAnimalCreateCounter.Add(1,new KeyValuePair<string, object>("status", "success"));
+                var updatedEnderecoAnimal = new EnderecoAnimal
+                {
+                    Id_endereco_animal = id_endereco,
+                    Pais = enderecoAnimal.Pais,
+                    Estado = enderecoAnimal.Estado,
+                    Cidade = enderecoAnimal.Cidade,
+                    Bairro = enderecoAnimal.Bairro,
+                    Logradouro_rua = enderecoAnimal.Logradouro_rua,
+                    Nr_rua = enderecoAnimal.Nr_rua,
+                    Complemento = enderecoAnimal.Complemento,
+                    Cep = enderecoAnimal.Cep,
+                    Id_animal = enderecoAnimal.Id_animal
+                };
 
-            return updatedEnderecoAnimal;
+                _logger.LogInformation("EnderecoAnimal updated with ID: {Id_endereco_animal}",updatedEnderecoAnimal.Id_endereco_animal);
+
+                return updatedEnderecoAnimal;
+            }
+            catch (Exception ex)
+            {
+                _enderecoAnimalTaxaErro.Add(1);
+                _logger.LogError("Erro ao atualizar endereco animal: {erro}", ex);
+                throw;
+            }
         }
 
         public async Task<EnderecoAnimal> DeleteEnderecoAnimalAsync(int id_EnderecoAnimal)
@@ -112,6 +124,7 @@ namespace challengeFiap.Application.Service
             if (enderecoAnimal == null)
             {
                 _logger.LogWarning("endereco animal não encontrada para exclusão.");
+                _enderecoAnimalTaxaErro.Add(1);
                 throw new Exception("Nao foi inserido");
             }
             else
@@ -129,6 +142,7 @@ namespace challengeFiap.Application.Service
             if (endereco == null)
             {
                 _logger.LogWarning("Id não existe: {Id}", id_endereco);
+                _enderecoAnimalTaxaErro.Add(1);
                 throw new Exception("Id não foi encontrada");
             }
 

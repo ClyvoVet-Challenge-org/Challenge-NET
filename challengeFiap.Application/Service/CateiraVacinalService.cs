@@ -20,10 +20,7 @@ namespace challengeFiap.Application.Service
 
         private static readonly ActivitySource ActivitySource = new(TelemetryConstants.ServiceName);
 
-        private readonly Counter<int> _CarteiraVacinalCreateCounter;
-
-        private readonly List<CarteiraVacinal> _GetCarteiraVacinal = new();
-
+        private readonly Counter<int> _carteiraVacinalTaxaErro;
         private readonly AppDbContext _context;
 
 
@@ -31,60 +28,74 @@ namespace challengeFiap.Application.Service
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
-            _CarteiraVacinalCreateCounter = meter.CreateCounter<int>("carteira_vacinal.create");
+            _carteiraVacinalTaxaErro = meter.CreateCounter<int>("carteira_vacinal.error");
             _context = context;
 
         }
         public async Task<CarteiraVacinal> CreateCarteiraVacinalAsync(CarteiraVacinal carteiraVacinal)
         {
-            using var activity = ActivitySource.StartActivity("CreateCarteiraVacinalAsync");
-            activity?.SetTag("carteira_vacinal.id", carteiraVacinal.Id_carteiraVacinal);
-            activity?.SetTag("carteira_vacinal.name", carteiraVacinal.Nm_vacina);
-
-
-
-            await Task.Delay(100);
-
-            var createdCarteiraVacinal = new CarteiraVacinal
+            try
             {
-                Id_carteiraVacinal = carteiraVacinal.Id_carteiraVacinal,
-                Nm_vacina = carteiraVacinal.Nm_vacina,
-                Dt_vacina_prevista = carteiraVacinal.Dt_vacina_prevista,
-                Dt_vacina_efetuada = carteiraVacinal.Dt_vacina_efetuada,
-                St_vacina = carteiraVacinal.St_vacina,
-                Id_animal = carteiraVacinal.Id_animal,
-            };
+                using var activity = ActivitySource.StartActivity("CreateCarteiraVacinalAsync");
+                activity?.SetTag("carteira_vacinal.id", carteiraVacinal.Id_carteiraVacinal);
+                activity?.SetTag("carteira_vacinal.name", carteiraVacinal.Nm_vacina);
 
 
-            _logger.LogInformation("CarteiraVacinal criar: {CarteiraVacinalId} - {CarteiraVacinalName}", createdCarteiraVacinal.Id_carteiraVacinal, createdCarteiraVacinal.Nm_vacina);
 
-            _CarteiraVacinalCreateCounter.Add(1, new KeyValuePair<string, object?>("carteira_vacinal.id", createdCarteiraVacinal.Id_carteiraVacinal), new KeyValuePair<string, object?>("carteira_vacinal.name", createdCarteiraVacinal.Nm_vacina));
+                await Task.Delay(100);
 
-            return createdCarteiraVacinal;
+                var createdCarteiraVacinal = new CarteiraVacinal
+                {
+                    Id_carteiraVacinal = carteiraVacinal.Id_carteiraVacinal,
+                    Nm_vacina = carteiraVacinal.Nm_vacina,
+                    Dt_vacina_prevista = carteiraVacinal.Dt_vacina_prevista,
+                    Dt_vacina_efetuada = carteiraVacinal.Dt_vacina_efetuada,
+                    St_vacina = carteiraVacinal.St_vacina,
+                    Id_animal = carteiraVacinal.Id_animal,
+                };
+
+
+                _logger.LogInformation("CarteiraVacinal criar: {CarteiraVacinalId} - {CarteiraVacinalName}", createdCarteiraVacinal.Id_carteiraVacinal, createdCarteiraVacinal.Nm_vacina);
+
+
+                return createdCarteiraVacinal;
+            }
+            catch (Exception ex)
+            {
+                _carteiraVacinalTaxaErro.Add(1);
+                _logger.LogError("Erro ao criar carteira vacinal: {erro}", ex);
+                throw;
+            }
 
         }
 
         public async Task<CarteiraVacinal> UpdateCarteiraVacinalAsync(int id_carteira, CarteiraVacinal carteiraVacinal)
         {
-
-            using var activity = ActivitySource.StartActivity("UpdateCarteiraVacinalAsync");
-            activity?.SetTag("carteira_vacinal.id", id_carteira);
-
-            var updatedCarteiraVacinal = new CarteiraVacinal
+            try
             {
-                Id_carteiraVacinal = id_carteira,
-                Nm_vacina = carteiraVacinal.Nm_vacina,
-                Dt_vacina_prevista = carteiraVacinal.Dt_vacina_prevista,
-                Dt_vacina_efetuada = carteiraVacinal.Dt_vacina_efetuada,
-                St_vacina = carteiraVacinal.St_vacina,
-                Id_animal = carteiraVacinal.Id_animal,
-            };
+                using var activity = ActivitySource.StartActivity("UpdateCarteiraVacinalAsync");
+                activity?.SetTag("carteira_vacinal.id", id_carteira);
 
-            _logger.LogInformation("Carteira vacinal atualizar: {CarteiraVacinalId} - {CarteiraVacinalName}", updatedCarteiraVacinal.Id_carteiraVacinal, updatedCarteiraVacinal.Nm_vacina);
+                var updatedCarteiraVacinal = new CarteiraVacinal
+                {
+                    Id_carteiraVacinal = id_carteira,
+                    Nm_vacina = carteiraVacinal.Nm_vacina,
+                    Dt_vacina_prevista = carteiraVacinal.Dt_vacina_prevista,
+                    Dt_vacina_efetuada = carteiraVacinal.Dt_vacina_efetuada,
+                    St_vacina = carteiraVacinal.St_vacina,
+                    Id_animal = carteiraVacinal.Id_animal,
+                };
 
-            _CarteiraVacinalCreateCounter.Add(1, new KeyValuePair<string, object?>("carteira_vacinal.id", updatedCarteiraVacinal.Id_carteiraVacinal), new KeyValuePair<string, object?>("carteira_vacinal.name", updatedCarteiraVacinal.Nm_vacina));
+                _logger.LogInformation("Carteira vacinal atualizar: {CarteiraVacinalId} - {CarteiraVacinalName}", updatedCarteiraVacinal.Id_carteiraVacinal, updatedCarteiraVacinal.Nm_vacina);
 
-            return updatedCarteiraVacinal;
+                return updatedCarteiraVacinal;
+            }
+            catch (Exception ex)
+            {
+                _carteiraVacinalTaxaErro.Add(1);
+                _logger.LogError("Erro ao atualizar carteira vacinal: {erro}", ex);
+                throw;
+            }
         }
         public async Task<CarteiraVacinal> DeleteCarteiraVacinalAsync(int id_CarteiraVacinal)
         {
@@ -93,6 +104,7 @@ namespace challengeFiap.Application.Service
             if (carteiraVacinal == null)
             {
                 _logger.LogWarning("carteira vacinal não encontrada para exclusão.");
+                _carteiraVacinalTaxaErro.Add(1);
                 throw new Exception("Nao foi inserido");
             }
             else
@@ -111,6 +123,7 @@ namespace challengeFiap.Application.Service
             if (carteira == null)
             {
                 _logger.LogWarning("Id não existe: {Id}", id_CarteiraVacinal);
+                _carteiraVacinalTaxaErro.Add(1);
                 throw new Exception("Id não foi encontrada");
             }
 

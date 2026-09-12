@@ -32,16 +32,18 @@ namespace challenge.IntegrationTests.Integration
                 Nr_rua = "Dom Cachorro",
                 Complemento = "1212",
                 Cep = "123456",
-                Id_animal = 1
+                Id_animal = 80
             };
 
             // Act
             var response = await _client.PostAsJsonAsync("api/enderecoanimals/criar/enderecoanimal",novoEnderecoAnimal);
 
             // Assert
-            var erro = await response.Content.ReadAsStringAsync();
-
-            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+            if (!response.IsSuccessStatusCode)
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                Assert.Fail($"Não foi criado por: {erro}");
+            }
 
 
             response.EnsureSuccessStatusCode();
@@ -49,14 +51,14 @@ namespace challenge.IntegrationTests.Integration
 
             var enderecoAnimalCriado =await response.Content.ReadFromJsonAsync<EnderecoAnimal>();
             Assert.NotNull(enderecoAnimalCriado);
-            Assert.Equal(2,enderecoAnimalCriado.Id_endereco_animal);
+            Assert.Equal(id_endereco_animal,enderecoAnimalCriado.Id_endereco_animal);
         }
 
         [Fact]
         public async Task UpdateEnderecoAnimal_DadosValidos_RetornaSucesso()
         {
             // Arrange
-            var id_endereco_animal = 2;
+            var id_endereco_animal = 49;
 
             var enderecoAnimalAtualizado = new
             {
@@ -64,25 +66,88 @@ namespace challenge.IntegrationTests.Integration
                 Pais = "brasil",
                 Estado = "são paulo",
                 Cidade = "são paulo",
-                Bairro = "bairro roxo",
+                Bairro = "bairro azuk",
                 Logradouro_rua = "1263",
                 Nr_rua = "Dom Cachorro",
                 Complemento = "1212",
-                Cep = "123456",
-                Id_animal = 1
+                Cep = "45454",
+                Id_animal = 26
             };
 
             // Act
             var response = await _client.PutAsJsonAsync($"api/enderecoanimals/atualizar/enderecoanimal/{id_endereco_animal}",enderecoAnimalAtualizado);
             // Assert
-            var erro = await response.Content.ReadAsStringAsync();
-
-            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+            if (!response.IsSuccessStatusCode)
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                Assert.Fail($"Não foi atualizado por: {erro}");
+            }
 
 
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetEnderecoAnimal_dados_RetornaOk()
+        {
+            // Arrange
+            var id_endereco_animal = 11;
+
+            // Act
+            var response = await _client.GetAsync("api/enderecoanimals/relatorio/enderecoanimal/" + id_endereco_animal);
+
+            // Assert
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                Assert.Fail("Id nao encontrado");
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var endereco = await response.Content.ReadFromJsonAsync<EnderecoAnimal>();
+
+            Assert.NotNull(endereco);
+            Assert.Equal(id_endereco_animal, endereco.Id_endereco_animal);
+        }
+
+        [Fact]
+        public async Task GetAllEnderecoAnimal_dados_RetornarOk()
+        {
+            //Act
+            var response = await _client.GetAsync("api/enderecoanimals/relatorio/enderecoanimal");
+
+            //Assert
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var enderecos = await response.Content.ReadFromJsonAsync<List<EnderecoAnimal>>();
+
+            Assert.NotNull(enderecos);
+        }
+
+        [Fact]
+        public async Task DeleteEnderecoAnimal_dados_RetornaOk()
+        {
+            // Arrange
+            var id_endereco_animal = 49;
+
+            // Act
+            var response = await _client.DeleteAsync($"api/enderecoanimals/deleta/enderecoanimal/{id_endereco_animal}");
+
+            // Assert
+            if (!response.IsSuccessStatusCode)
+            {
+                var erroAchado = await response.Content.ReadAsStringAsync();
+
+                Assert.Fail($"Não foi deletado pelo morivo: {erroAchado}");
+            }
+
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
     }
 }

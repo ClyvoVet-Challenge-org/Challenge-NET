@@ -18,10 +18,7 @@ namespace challengeFiap.Application.Service
         private readonly ILogger<ClinicaService> _logger;
 
         private static readonly ActivitySource ActivitySource = new(TelemetryConstants.ServiceName);
-
-        private readonly Counter<int> _clinicaCreateCounter;
-
-        private readonly List<Clinica> _GetClinica = new();
+        private readonly Counter<int> _clinicaTaxaErro;
 
         private readonly AppDbContext _context;
 
@@ -30,47 +27,61 @@ namespace challengeFiap.Application.Service
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
-            _clinicaCreateCounter = meter.CreateCounter<int>("clinica.create", description: "Total criado");
+            _clinicaTaxaErro = meter.CreateCounter<int>("clinica.error");
             _context = context;
         }
 
         public async Task<Clinica> CreateadAsync(Clinica clinica)
         {
-            using var activity = ActivitySource.StartActivity("CreateClinicaAsync");
-            activity?.SetTag("clinica.id", clinica.Id_clinica);
-            activity?.SetTag("clinica.nome", clinica.Nm_clinica);
-
-            await Task.Delay(100);
-
-            var createdClinica = new Clinica
+            try
             {
-                Id_clinica = clinica.Id_clinica,
-                Cnpj_clinica = clinica.Cnpj_clinica,
-                Nm_clinica = clinica.Nm_clinica
-            };
+                using var activity = ActivitySource.StartActivity("CreateClinicaAsync");
+                activity?.SetTag("clinica.id", clinica.Id_clinica);
+                activity?.SetTag("clinica.nome", clinica.Nm_clinica);
 
-            _clinicaCreateCounter.Add(1, new KeyValuePair<string, object?>("clinica.id", createdClinica.Id_clinica), new KeyValuePair<string, object?>("clinica.nome", createdClinica.Nm_clinica));
+                await Task.Delay(100);
 
-            return createdClinica;
+                var createdClinica = new Clinica
+                {
+                    Id_clinica = clinica.Id_clinica,
+                    Cnpj_clinica = clinica.Cnpj_clinica,
+                    Nm_clinica = clinica.Nm_clinica
+                };
+
+                return createdClinica;
+            }
+            catch (Exception ex)
+            {
+                _clinicaTaxaErro.Add(1);
+                _logger.LogError("Erro ao criar clinica: {erro}", ex);
+                throw;
+            }
         }
 
         public async Task<Clinica> UpdateClinicaAsync(int id_clinica, Clinica clinica)
         {
-            using var activity = ActivitySource.StartActivity("UpdateClinicaAsync");
-            activity.SetTag("clinica.id", id_clinica);
-
-            var updatedClinica = new Clinica
+            try
             {
-                Id_clinica = id_clinica,
-                Cnpj_clinica = clinica.Cnpj_clinica,
-                Nm_clinica = clinica.Nm_clinica
-            };
+                using var activity = ActivitySource.StartActivity("UpdateClinicaAsync");
+                activity?.SetTag("clinica.id", id_clinica);
 
-            _logger.LogInformation("Clínica atualizada com sucesso: {ClinicaId}", id_clinica);
+                var updatedClinica = new Clinica
+                {
+                    Id_clinica = id_clinica,
+                    Cnpj_clinica = clinica.Cnpj_clinica,
+                    Nm_clinica = clinica.Nm_clinica
+                };
 
-            _clinicaCreateCounter.Add(1, new KeyValuePair<string, object?>("clinica.id", updatedClinica.Id_clinica), new KeyValuePair<string, object?>("clinica.nome", updatedClinica.Nm_clinica));
+                _logger.LogInformation("Clínica atualizada com sucesso: {ClinicaId}", id_clinica);
 
-            return updatedClinica;
+                return updatedClinica;
+            }
+            catch (Exception ex)
+            {
+                _clinicaTaxaErro.Add(1);
+                _logger.LogError("Erro ao atualizar clinica: {erro}", ex);
+                throw;
+            }
         }
 
         public async Task<Clinica> DeleteClinicaAsync(int id_Clinica)
@@ -80,6 +91,7 @@ namespace challengeFiap.Application.Service
             if (clinica == null)
             {
                 _logger.LogWarning("clinica não encontrada para exclusão.");
+                _clinicaTaxaErro.Add(1);
                 throw new Exception("Nao foi inserido");
             }
             else
@@ -98,6 +110,7 @@ namespace challengeFiap.Application.Service
             if (clinica == null)
             {
                 _logger.LogWarning("Id não existe: {Id}", id_Clinica);
+                _clinicaTaxaErro.Add(1);
                 throw new Exception("Id não foi encontrada");
             }
 

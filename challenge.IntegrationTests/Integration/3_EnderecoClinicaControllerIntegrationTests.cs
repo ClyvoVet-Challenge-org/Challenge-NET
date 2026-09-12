@@ -31,20 +31,21 @@ namespace challenge.IntegrationTests.Integration
                 Cidade = "São Paulo",
                 Bairro = "Bairro rosa",
                 Logradouro_rua = "Dom Cachorro",
-                Nr_rua = "1273",
-                Complemento = "1212",
-                Cep = "123456",
-                Id_clinica = 9999
+                Nr_rua = "11221",
+                Complemento = "454",
+                Cep = "454554",
+                Id_clinica = 3
             };
 
             // Act
             var response = await _client.PostAsJsonAsync("api/enderecoclinicas/criar/enderecoclinica",novoEnderecoClinica);
 
             // Assert
-            var erro = await response.Content.ReadAsStringAsync();
-            Assert.True(response.IsSuccessStatusCode, $"Ocorrido da rejeicao: {erro}");
-
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                Assert.Fail($"Não foi criado por: {erro}");
+            }
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -58,14 +59,14 @@ namespace challenge.IntegrationTests.Integration
         {
             // Arrange
 
-            var id_endereco_clinica = 39;
+            var id_endereco_clinica = 87;
 
             var EnderecoClinicaAtualizado = new
             {
                 Id_endereco_clinica = id_endereco_clinica,
                 Pais = "Brasil",
                 Estado = "São Paulo",
-                Cidade = "São Paulo",
+                Cidade = "campinhas",
                 Bairro = "Bairro Rosa",
                 Logradouro_rua = "Dom Cachorro",
                 Nr_rua = "1263",
@@ -77,12 +78,76 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.PutAsJsonAsync($"api/enderecoclinicas/atualizar/enderecoclinica/{id_endereco_clinica}",EnderecoClinicaAtualizado);
 
             // Assert
-            var erro = await response.Content.ReadAsStringAsync();
-            Assert.True(response.IsSuccessStatusCode, $"Ocorrido da rejeicao: {erro}");
+            if (!response.IsSuccessStatusCode)
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                Assert.Fail($"Não foi atualizado por: {erro}");
+            }
 
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetEnderecoClinica_dados_RetornaOk()
+        {
+            // Arrange
+            var id_endereco_clinica = 21;
+
+            // Act
+            var response = await _client.GetAsync($"api/enderecoclinicas/relatorio/enderecoclinica/{id_endereco_clinica}");
+
+            // Assert
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                Assert.Fail("Id nao encontrado");
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var endereco = await response.Content.ReadFromJsonAsync<EnderecoClinica>();
+
+            Assert.NotNull(endereco);
+            Assert.Equal(id_endereco_clinica, endereco.Id_endereco_clinica);
+        }
+
+        [Fact]
+        public async Task GetAllEnderecoClinica_dados_RetornarOk()
+        {
+            //Act
+            var response = await _client.GetAsync("api/enderecoclinicas/relatorio/enderecoclinica");
+
+            //Assert
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var enderecos = await response.Content.ReadFromJsonAsync<List<EnderecoClinica>>();
+
+            Assert.NotNull(enderecos);
+        }
+
+        [Fact]
+        public async Task DeleteEnderecoClinica_dados_RetornaOk()
+        {
+            // Arrange
+            var id_endereco_clinica = 99;
+
+            // Act
+            var response = await _client.DeleteAsync($"api/enderecoclinicas/deleta/enderecoclinica/{id_endereco_clinica}");
+
+            // Assert
+            if (!response.IsSuccessStatusCode)
+            {
+                var erroAchado = await response.Content.ReadAsStringAsync();
+
+                Assert.Fail($"Não foi deletado pelo morivo: {erroAchado}");
+            }
+
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
     }
 }

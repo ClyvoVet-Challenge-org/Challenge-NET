@@ -28,10 +28,10 @@ namespace challenge.IntegrationTests.Integration
             {
                 Id_consulta = id_consulta,
                 Historico_consulta = "Foi bom o resultado",
-                St_consulta = challengeFiap.Domain.Enums.StatusConsulta.passada,
-                Dt_consulta = new DateTime(2026, 9, 9),
-                Id_vet = 1,
-                Id_animal = 1
+                St_consulta = challengeFiap.Domain.Enums.StatusConsulta.futura,
+                Dt_consulta = new DateTime(2026, 8, 9),
+                Id_vet = 45,
+                Id_animal = 80
             };
 
             // Act
@@ -39,8 +39,10 @@ namespace challenge.IntegrationTests.Integration
 
             // Assert
             var erro = await response.Content.ReadAsStringAsync();
-
-            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+            if (!response.IsSuccessStatusCode)
+            {
+                Assert.Fail($"Não foi criado por: {erro}");
+            }
 
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -55,16 +57,16 @@ namespace challenge.IntegrationTests.Integration
         public async Task AtualizarConsulta_DadosValidos_RetornaOk()
         {
             // Arrange
-            var id_consulta = 2;
+            var id_consulta = 12;
 
             var consultaAtualizada = new
             {
                 Id_consulta = id_consulta,
                 Historico_consulta = "Foi bom o resultado",
-                St_consulta = challengeFiap.Domain.Enums.StatusConsulta.passada,
-                Dt_consulta = new DateTime(2026, 9, 9),
-                Id_vet = 1,
-                Id_animal = 1
+                St_consulta = challengeFiap.Domain.Enums.StatusConsulta.cancelada,
+                Dt_consulta = new DateTime(2026, 10, 12),
+                Id_vet = 45,
+                Id_animal = 80
             };
 
             // Act
@@ -72,12 +74,76 @@ namespace challenge.IntegrationTests.Integration
 
             // Assert
             var erro = await response.Content.ReadAsStringAsync();
-
-            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+            if (!response.IsSuccessStatusCode)
+            {
+                Assert.Fail($"Não foi atualizado por: {erro}");
+            }
 
 
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetConsulta_dados_RetornaOk()
+        {
+            // Arrange
+            var id_consulta = 61;
+
+            // Act
+            var response = await _client.GetAsync($"api/consultas/relatorio/consulta/{id_consulta}");
+
+            // Assert
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                Assert.Fail("Id nao encontrado");
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var consulta = await response.Content.ReadFromJsonAsync<Consulta>();
+
+            Assert.NotNull(consulta);
+            Assert.Equal(id_consulta, consulta.Id_consulta);
+        }
+
+        [Fact]
+        public async Task GetAllConsulta_dados_RetornarOk()
+        {
+            //Act
+            var response = await _client.GetAsync("api/consultas/relatorio/consulta");
+
+            //Assert
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var consultas = await response.Content.ReadFromJsonAsync<List<Consulta>>();
+
+            Assert.NotNull(consultas);
+        }
+
+        [Fact]
+        public async Task DeleteConsulta_dados_RetornaOk()
+        {
+            // Arrange
+            var id_consulta = 12;
+
+            // Act
+            var response = await _client.DeleteAsync($"api/consultas/deleta/consulta/{id_consulta}");
+
+            // Assert
+            if (!response.IsSuccessStatusCode)
+            {
+                var erroAchado = await response.Content.ReadAsStringAsync();
+
+                Assert.Fail($"Não foi deletado pelo morivo: {erroAchado}");
+            }
+
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
         }
 
     }

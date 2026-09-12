@@ -1,6 +1,7 @@
 ﻿using challenge.IntegrationTests.FactoryFixture;
 using challengeFiap.Domain.Entities;
 using challengeFiap.Domain.Enums;
+using System.Collections.Generic;
 using System;
 using System.Net;
 using System.Net.Http.Json;
@@ -30,9 +31,9 @@ namespace challenge.IntegrationTests.Integration
                 Id_carteiraVacinal = id_carteiraVacinal,
                 Nm_vacina = "raiva",
                 Dt_vacina_prevista = new DateTime(2027, 9, 9),
-                Dt_vacina_efetuada = new DateTime(2026, 9, 9),
-                St_vacina = StatusVacinacao.EFETUADA,
-                Id_animal = 1
+                Dt_vacina_efetuada = new DateTime(2026, 9, 20),
+                St_vacina = StatusVacinacao.PENDENTE,
+                Id_animal = 80
             };
 
             //Act
@@ -40,8 +41,10 @@ namespace challenge.IntegrationTests.Integration
 
             //Assert
             var erro = await response.Content.ReadAsStringAsync();
-
-            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+            if (!response.IsSuccessStatusCode)
+            {
+                Assert.Fail($"Não foi criado por: {erro}");
+            }
 
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
@@ -57,7 +60,7 @@ namespace challenge.IntegrationTests.Integration
         public async Task AtualizarCarteiraVacinal_DadosValidos_RetornaOk()
         {
             // Arrange
-            var id_carteiraVacinal = 2;
+            var id_carteiraVacinal = 34;
 
             var carteiraVacinalAtualizada = new
             {
@@ -66,7 +69,7 @@ namespace challenge.IntegrationTests.Integration
                 Dt_vacina_prevista = new DateTime(2027, 9, 9),
                 Dt_vacina_efetuada = new DateTime(2026, 9, 9),
                 St_vacina = StatusVacinacao.EFETUADA,
-                Id_animal = 1
+                Id_animal = 80
             };
 
             // Act
@@ -74,13 +77,70 @@ namespace challenge.IntegrationTests.Integration
 
             // Assert
             var erro = await response.Content.ReadAsStringAsync();
-
-            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+            if (!response.IsSuccessStatusCode)
+            {
+                Assert.Fail($"Não foi atualizado por: {erro}");
+            }
 
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
          }
+        [Fact]
+        public async Task GetCarteiraVacinal_dados_RetornaOk()
+        {
+            // Arrange
+            var id_carteiraVacinal = 34;
+
+            // Act
+            var response = await _client.GetAsync($"api/carteiravacinals/relatorio/carteiravacinal/{id_carteiraVacinal}");
+
+            // Assert
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                Assert.Fail("Id nao encontrado");
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var carteira = await response.Content.ReadFromJsonAsync<CarteiraVacinal>();
+
+            Assert.NotNull(carteira);
+            Assert.Equal(id_carteiraVacinal, carteira.Id_carteiraVacinal);
+        }
+
+        [Fact]
+        public async Task GetAll_dados_RetornarOk()
+        {
+            // Act
+            var response = await _client.GetAsync("api/carteiravacinals/relatorio/carteiravacinal");
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var lista = await response.Content.ReadFromJsonAsync<List<CarteiraVacinal>>();
+
+            Assert.NotNull(lista);
+        }
+
+        [Fact]
+        public async Task DeleteCarteiraVacinal_dados_RetornaOk()
+        {
+            // Arrange
+            var id_carteiraVacinal = 38;
+
+            // Act
+            var response = await _client.DeleteAsync($"api/carteiravacinals/deleta/carteiravacinal/{id_carteiraVacinal}");
+
+            // Assert
+            var erroAchado = await response.Content.ReadAsStringAsync();
+
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        }
     }
 }

@@ -27,23 +27,25 @@ namespace challenge.IntegrationTests.Integration
             {
                 Id_endereco_tutor = id_endereco_tutor,
                 Pais = "brasil",
-                Estado = "são paulo",
+                Estado = "rj",
                 Cidade = "são paulo",
                 Bairro = "bairro roxo",
                 Logradouro_rua = "1263",
                 Nr_rua = "Dom Cachorro",
                 Complemento = "1212",
                 Cep = "123456",
-                Id_tutor = 1
+                Id_tutor = 2
             };
 
             // Act
             var response = await _client.PostAsJsonAsync("api/enderecotutors/criar/enderecoresponsavel",novoEnderecoTutor);
 
             // Assert
-            var erro = await response.Content.ReadAsStringAsync();
-
-            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+            if (!response.IsSuccessStatusCode)
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                Assert.Fail($"Não foi criado por: {erro}");
+            }
 
             response.EnsureSuccessStatusCode();
 
@@ -51,40 +53,104 @@ namespace challenge.IntegrationTests.Integration
 
             var enderecoTutorCriado = await response.Content.ReadFromJsonAsync<EnderecoTutor>();
             Assert.NotNull(enderecoTutorCriado);
-            Assert.Equal(2,enderecoTutorCriado.Id_endereco_tutor);
+            Assert.Equal(id_endereco_tutor,enderecoTutorCriado.Id_endereco_tutor);
         }
 
         [Fact]
         public async Task UpdateEnderecoTutor_DadosValidos_RetornaSucesso()
         {
             // Arrange
-            var id_enderecoTutor = 2;
+            var id_enderecoTutor = 35;
 
             var enderecoTutorAtualizado = new
             {
                 Id_endereco_tutor = id_enderecoTutor,
                 Pais = "brasil",
                 Estado = "são paulo",
-                Cidade = "são paulo",
+                Cidade = "nao sei",
                 Bairro = "bairro roxo",
                 Logradouro_rua = "1263",
                 Nr_rua = "Dom Cachorro",
                 Complemento = "1212",
                 Cep = "123456",
-                Id_tutor = 1
+                Id_tutor = 2
             };
 
             // Act
             var response = await _client.PutAsJsonAsync($"api/enderecotutors/atualizar/enderecoresponsavel/{id_enderecoTutor}",enderecoTutorAtualizado);
 
             // Assert
-            var erro = await response.Content.ReadAsStringAsync();
-
-            Assert.True(response.IsSuccessStatusCode, $"Status: {response.StatusCode} | Ocorrido da rejeicao: {erro}");
+            if (!response.IsSuccessStatusCode)
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                Assert.Fail($"Não foi atualizado por: {erro}");
+            }
 
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetEnderecoTutor_dados_RetornaOk()
+        {
+            // Arrange
+            var id_endereco_tutor = 35;
+
+            // Act
+            var response = await _client.GetAsync($"api/enderecotutors/relatorio/enderecoresponsavel/{id_endereco_tutor}");
+
+            // Assert
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                Assert.Fail("Id nao encontrado");
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var endereco = await response.Content.ReadFromJsonAsync<EnderecoTutor>();
+
+            Assert.NotNull(endereco);
+            Assert.Equal(id_endereco_tutor, endereco.Id_endereco_tutor);
+        }
+
+        [Fact]
+        public async Task GetAllEnderecoTutor_dados_RetornarOk()
+        {
+            //Act
+            var response = await _client.GetAsync("api/enderecotutors/relatorio/enderecoresponsavel");
+
+            //Assert
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var enderecos = await response.Content.ReadFromJsonAsync<List<EnderecoTutor>>();
+
+            Assert.NotNull(enderecos);
+        }
+
+        [Fact]
+        public async Task DeleteEnderecoTutor_dados_RetornaOk()
+        {
+            // Arrange
+            var id_endereco_tutor = 62;
+
+            // Act
+            var response = await _client.DeleteAsync($"api/enderecotutors/deleta/enderecoresponsavel/{id_endereco_tutor}");
+
+            // Assert
+            if (!response.IsSuccessStatusCode)
+            {
+                var erroAchado = await response.Content.ReadAsStringAsync();
+
+                Assert.Fail($"Não foi deletado pelo morivo: {erroAchado}");
+            }
+
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
         }
     }
 }

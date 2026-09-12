@@ -18,8 +18,7 @@ namespace challengeFiap.Application.Service
 
         private static readonly ActivitySource ActivitySource = new(TelemetryConstants.ServiceName);
 
-        private readonly Counter<int> _animalCreateCounter;
-        private readonly Counter<int> _animalUpdateCounter;
+        private readonly Counter<int> _animalTaxaErro;
 
         private readonly AppDbContext _context;
 
@@ -28,65 +27,77 @@ namespace challengeFiap.Application.Service
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
-            _animalCreateCounter = meter.CreateCounter<int>("animal.create", description: "Total criado");
-            _animalUpdateCounter = meter.CreateCounter<int>("animal.update", description: "Total de animais atualizados");
+            _animalTaxaErro = meter.CreateCounter<int>("animal.error");
             _context = context;
         }
 
         public async Task<Animal> CreateAnimalAsync(Animal animal)
         {
-            using var activity = ActivitySource.StartActivity("CreateAnimalAsync");
-            activity?.SetTag("animal.id", animal.Id_animal);
-            activity?.SetTag("animal.name", animal.Nm_animal);
-            activity?.SetTag("animal.especies", animal.Especie_animal);
-            activity?.SetTag("animal.raca", animal.Raca_animal);
-
-            await Task.Delay(100);
-
-            var createdAnimal = new Animal
+            try
             {
-                Id_animal = animal.Id_animal,
-                Rg_animal = animal.Rg_animal,
-                Nr_microchip_animal = animal.Nr_microchip_animal,
-                Nm_animal = animal.Nm_animal,
-                Dt_nascimento_animal = animal.Dt_nascimento_animal,
-                Peso_animal = animal.Peso_animal,
-                Especie_animal = animal.Especie_animal,
-                Raca_animal = animal.Raca_animal,
-                Id_tutor = animal.Id_tutor,
-            };
+                using var activity = ActivitySource.StartActivity("CreateAnimalAsync");
+                activity?.SetTag("animal.id", animal.Id_animal);
+                activity?.SetTag("animal.name", animal.Nm_animal);
+                activity?.SetTag("animal.especies", animal.Especie_animal);
+                activity?.SetTag("animal.raca", animal.Raca_animal);
 
-            _logger.LogInformation("Animal criado: id_animal -> {animal.id} nm_animal -> {animal.name}", createdAnimal.Id_animal, createdAnimal.Nm_animal);
+                await Task.Delay(100);
 
-            _animalCreateCounter.Add(1, new KeyValuePair<string, object?>("animal.id", createdAnimal.Id_animal), new KeyValuePair<string, object?>("animal.name", createdAnimal.Nm_animal));
+                var createdAnimal = new Animal
+                {
+                    Id_animal = animal.Id_animal,
+                    Rg_animal = animal.Rg_animal,
+                    Nr_microchip_animal = animal.Nr_microchip_animal,
+                    Nm_animal = animal.Nm_animal,
+                    Dt_nascimento_animal = animal.Dt_nascimento_animal,
+                    Peso_animal = animal.Peso_animal,
+                    Especie_animal = animal.Especie_animal,
+                    Raca_animal = animal.Raca_animal,
+                    Id_tutor = animal.Id_tutor,
+                };
 
-            return createdAnimal;
+                _logger.LogInformation("Animal criado: id_animal -> {animal.id} nm_animal -> {animal.name}", createdAnimal.Id_animal, createdAnimal.Nm_animal);
 
+                return createdAnimal;
+            }
+            catch (Exception ex)
+            {
+                _animalTaxaErro.Add(1);
+                _logger.LogError("Erro ao criar animal: {erro}", ex);
+                throw;
+            }
         }
 
         public async Task<Animal> UpdateAnimalAsync(int id_animal, Animal animal)
         {
-            using var activity = ActivitySource.StartActivity("UpdateAnimalAsync");
-            activity?.SetTag("animal.id", id_animal);
-
-
-            var updatedAnimal = new Animal
+            try
             {
-                Id_animal = id_animal,
-                Rg_animal = animal.Rg_animal,
-                Nr_microchip_animal = animal.Nr_microchip_animal,
-                Nm_animal = animal.Nm_animal,
-                Dt_nascimento_animal = animal.Dt_nascimento_animal,
-                Peso_animal = animal.Peso_animal,
-                Especie_animal = animal.Especie_animal,
-                Raca_animal = animal.Raca_animal,
-                Id_tutor = animal.Id_tutor,
-            };
+                using var activity = ActivitySource.StartActivity("UpdateAnimalAsync");
+                activity?.SetTag("animal.id", id_animal);
 
-            _logger.LogInformation("Animal atualizando com sucesso: {Animal} - {AnimalName}", updatedAnimal.Id_animal, updatedAnimal.Nm_animal);
+                var updatedAnimal = new Animal
+                {
+                    Id_animal = id_animal,
+                    Rg_animal = animal.Rg_animal,
+                    Nr_microchip_animal = animal.Nr_microchip_animal,
+                    Nm_animal = animal.Nm_animal,
+                    Dt_nascimento_animal = animal.Dt_nascimento_animal,
+                    Peso_animal = animal.Peso_animal,
+                    Especie_animal = animal.Especie_animal,
+                    Raca_animal = animal.Raca_animal,
+                    Id_tutor = animal.Id_tutor,
+                };
 
-            _animalUpdateCounter.Add(1, new KeyValuePair<string, object?>("animal.id", updatedAnimal.Id_animal));
-            return updatedAnimal;
+                _logger.LogInformation("Animal atualizando com sucesso: {Animal} - {AnimalName}", updatedAnimal.Id_animal, updatedAnimal.Nm_animal);
+
+                return updatedAnimal;
+            }
+            catch (Exception ex)
+            {
+                _animalTaxaErro.Add(1);
+                _logger.LogError("Erro ao atualizar animal: {erro}", ex);
+                throw;
+            }
         }
 
         public async Task<Animal> DeleteAnimalAsync(int id_animal)
@@ -96,6 +107,7 @@ namespace challengeFiap.Application.Service
             if (animal == null)
             {
                 _logger.LogWarning("animal não encontrada para exclusão: {Id}", id_animal);
+                _animalTaxaErro.Add(1);
                 throw new Exception("Nao foi inserido");
             }
             else
@@ -113,6 +125,7 @@ namespace challengeFiap.Application.Service
             if (animal == null)
             {
                 _logger.LogWarning("Id não existe: {Id}", id_animal);
+                _animalTaxaErro.Add(1);
                 throw new Exception("Id não foi encontrada");
             }
 

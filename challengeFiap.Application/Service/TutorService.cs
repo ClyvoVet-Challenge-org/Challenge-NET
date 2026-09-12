@@ -19,64 +19,74 @@ namespace challengeFiap.Application.Service
         private readonly ILogger<TutorService> _logger;
 
         private static readonly ActivitySource ActivitySource = new(TelemetryConstants.ServiceName);
-
-        private readonly Counter<int> _tutorCreateCounter;
-
-        private readonly List<Tutor> _GetTutor = new();
-
+        private readonly Counter<int> _tutorTaxaErro;
         private readonly AppDbContext _context;
 
         public TutorService(ILogger<TutorService> logger, IMeterFactory meterFactory, AppDbContext context)
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
-            _tutorCreateCounter = meter.CreateCounter<int>("tutor.create", description: "Total criado");
+            _tutorTaxaErro = meter.CreateCounter<int>("tutor.error");
             _context = context;
         }
 
         public async Task<Tutor> CreateTutorAsync(Tutor tutor)
         {
-            using var activity = ActivitySource.StartActivity("CreateTutorAsync");
-            activity?.SetTag("tutor.id", tutor.Id_tutor);
-            activity?.SetTag("tutor.cpf", tutor.Cpf_tutor);
-            activity?.SetTag("tutor.nome", tutor.Nm_tutor);
-            activity?.SetTag("tutor.telefone", tutor.Nr_telefone_tutor);
-
-            await Task.Delay(100);
-
-            var createdTutor = new Tutor
+            try
             {
-                Id_tutor = tutor.Id_tutor,
-                Cpf_tutor = tutor.Cpf_tutor,
-                Nm_tutor = tutor.Nm_tutor,
-                Nr_telefone_tutor = tutor.Nr_telefone_tutor
-            };
+                using var activity = ActivitySource.StartActivity("CreateTutorAsync");
+                activity?.SetTag("tutor.id", tutor.Id_tutor);
+                activity?.SetTag("tutor.cpf", tutor.Cpf_tutor);
+                activity?.SetTag("tutor.nome", tutor.Nm_tutor);
+                activity?.SetTag("tutor.telefone", tutor.Nr_telefone_tutor);
 
-            _logger.LogInformation("Tutor criado com sucesso: {TutorId}", createdTutor.Id_tutor);
+                await Task.Delay(100);
 
-            _tutorCreateCounter.Add(1, new KeyValuePair<string, object?>("tutor.id", createdTutor.Id_tutor));
+                var createdTutor = new Tutor
+                {
+                    Id_tutor = tutor.Id_tutor,
+                    Cpf_tutor = tutor.Cpf_tutor,
+                    Nm_tutor = tutor.Nm_tutor,
+                    Nr_telefone_tutor = tutor.Nr_telefone_tutor
+                };
 
-            return createdTutor;
+                _logger.LogInformation("Tutor criado com sucesso: {TutorId}", createdTutor.Id_tutor);
+
+                return createdTutor;
+            }
+            catch (Exception ex)
+            {
+                _tutorTaxaErro.Add(1);
+                _logger.LogError("Erro ao criar tutor: {erro}", ex);
+                throw;
+            }
         }
 
         public async Task<Tutor> UpdateTutorAsync(int id_tutor, Tutor tutor)
         {
-            using var activity = ActivitySource.StartActivity("UpdateTutorAsync");
-            activity?.SetTag("tutor.id", id_tutor);
-
-            var updatedTutor = new Tutor
+            try
             {
-                Id_tutor = id_tutor,
-                Cpf_tutor = tutor.Cpf_tutor,
-                Nm_tutor = tutor.Nm_tutor,
-                Nr_telefone_tutor = tutor.Nr_telefone_tutor
-            };
+                using var activity = ActivitySource.StartActivity("UpdateTutorAsync");
+                activity?.SetTag("tutor.id", id_tutor);
 
-            _logger.LogInformation("Tutor atualizado com sucesso: {TutorId}", id_tutor);
+                var updatedTutor = new Tutor
+                {
+                    Id_tutor = id_tutor,
+                    Cpf_tutor = tutor.Cpf_tutor,
+                    Nm_tutor = tutor.Nm_tutor,
+                    Nr_telefone_tutor = tutor.Nr_telefone_tutor
+                };
 
-            _tutorCreateCounter.Add(1, new KeyValuePair<string, object?>("tutor.id", updatedTutor.Id_tutor));
+                _logger.LogInformation("Tutor atualizado com sucesso: {TutorId}", id_tutor);
 
-            return updatedTutor;
+                return updatedTutor;
+            }
+            catch (Exception ex)
+            {
+                _tutorTaxaErro.Add(1);
+                _logger.LogError("Erro ao atualizar tutor: {erro}", ex);
+                throw;
+            }
         }
 
         public async Task<Tutor> GetTutorIdAsync(int id_tutor)

@@ -21,6 +21,9 @@ try
 
     var builder = WebApplication.CreateBuilder(args);
 
+    // Integrar Serilog com o host
+    builder.Host.UseSerilog();
+
     //Parte de Banco de dados
 
     var connectionString = builder.Configuration.GetConnectionString("OracleConnection");
@@ -91,15 +94,19 @@ try
 
     app.UseHttpsRedirection();
 
+    // Request logging estruturado com Serilog
+    app.UseSerilogRequestLogging();
+
     app.MapHealthChecks("/health/live", new HealthCheckOptions
     {
-        Predicate = check => check.Tags.Contains("live")
+        Predicate = check => check.Tags.Contains("live"),
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+
     });
 
     app.MapHealthChecks("/health/ready", new HealthCheckOptions
     {
-        Predicate = check => check.Tags.Contains("ready"),
-
+        Predicate = check => check.Tags.Contains("ready")
     });
 
     app.MapControllers();

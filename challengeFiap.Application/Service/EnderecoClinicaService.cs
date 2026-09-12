@@ -20,9 +20,7 @@ namespace challengeFiap.Application.Service
 
         private static readonly ActivitySource ActivitySource = new(TelemetryConstants.ServiceName);
 
-        private readonly Counter<int> _enderecoClinicaCreateCounter;
-
-        private readonly List<EnderecoClinica> _GetEndereco = new();
+        private readonly Counter<int> _enderecoClinicaTaxaErro;
 
         private readonly AppDbContext _context;
 
@@ -31,72 +29,86 @@ namespace challengeFiap.Application.Service
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
-            _enderecoClinicaCreateCounter = meter.CreateCounter<int>("endereco_clinica.create", description: "Total criado");
+            _enderecoClinicaTaxaErro = meter.CreateCounter<int>("endereco_clinica.error");
             _context = context;
         }
 
         public async Task<EnderecoClinica> CreateEnderecoClinicaAsync(EnderecoClinica enderecoClinica)
         {
-            using var activity = ActivitySource.StartActivity("CreateEnderecoClinicaAsync");
-            activity?.SetTag("endereco_clinica.id", enderecoClinica.Id_endereco_clinica);
-            activity?.SetTag("endereco_clinica.pais", enderecoClinica.Pais);
-            activity?.SetTag("endereco_clinica.estado", enderecoClinica.Estado);
-            activity?.SetTag("endereco_clinica.cidade", enderecoClinica.Cidade);
-            activity?.SetTag("endereco_clinica.bairro", enderecoClinica.Bairro);
-            activity?.SetTag("endereco_clinica.logradouro", enderecoClinica.Logradouro_rua);
-            activity?.SetTag("endereco_clinica.nr_rua", enderecoClinica.Nr_rua);
-            activity?.SetTag("endereco_clinica.complemento", enderecoClinica.Complemento);
-            activity?.SetTag("endereco_clinica.cep", enderecoClinica.Cep);
-            activity?.SetTag("endereco_clinica.id_clinica", enderecoClinica.Id_clinica);
-
-            await Task.Delay(100);
-
-            var createdEnderecoClinica = new EnderecoClinica
+            try
             {
-                Id_endereco_clinica = enderecoClinica.Id_endereco_clinica,
-                Pais = enderecoClinica.Pais,
-                Estado = enderecoClinica.Estado,
-                Cidade = enderecoClinica.Cidade,
-                Bairro = enderecoClinica.Bairro,
-                Logradouro_rua = enderecoClinica.Logradouro_rua,
-                Nr_rua = enderecoClinica.Nr_rua,
-                Complemento = enderecoClinica.Complemento,
-                Cep = enderecoClinica.Cep,
-                Id_clinica = enderecoClinica.Id_clinica
-            };
+                using var activity = ActivitySource.StartActivity("CreateEnderecoClinicaAsync");
+                activity?.SetTag("endereco_clinica.id", enderecoClinica.Id_endereco_clinica);
+                activity?.SetTag("endereco_clinica.pais", enderecoClinica.Pais);
+                activity?.SetTag("endereco_clinica.estado", enderecoClinica.Estado);
+                activity?.SetTag("endereco_clinica.cidade", enderecoClinica.Cidade);
+                activity?.SetTag("endereco_clinica.bairro", enderecoClinica.Bairro);
+                activity?.SetTag("endereco_clinica.logradouro", enderecoClinica.Logradouro_rua);
+                activity?.SetTag("endereco_clinica.nr_rua", enderecoClinica.Nr_rua);
+                activity?.SetTag("endereco_clinica.complemento", enderecoClinica.Complemento);
+                activity?.SetTag("endereco_clinica.cep", enderecoClinica.Cep);
+                activity?.SetTag("endereco_clinica.id_clinica", enderecoClinica.Id_clinica);
+
+                await Task.Delay(100);
+
+                var createdEnderecoClinica = new EnderecoClinica
+                {
+                    Id_endereco_clinica = enderecoClinica.Id_endereco_clinica,
+                    Pais = enderecoClinica.Pais,
+                    Estado = enderecoClinica.Estado,
+                    Cidade = enderecoClinica.Cidade,
+                    Bairro = enderecoClinica.Bairro,
+                    Logradouro_rua = enderecoClinica.Logradouro_rua,
+                    Nr_rua = enderecoClinica.Nr_rua,
+                    Complemento = enderecoClinica.Complemento,
+                    Cep = enderecoClinica.Cep,
+                    Id_clinica = enderecoClinica.Id_clinica
+                };
 
 
-            _logger.LogInformation("Endereço da clínica criado com sucesso: {EnderecoClinicaId}", createdEnderecoClinica.Id_endereco_clinica);
+                _logger.LogInformation("Endereço da clínica criado com sucesso: {EnderecoClinicaId}", createdEnderecoClinica.Id_endereco_clinica);
 
-            _enderecoClinicaCreateCounter.Add(1, new KeyValuePair<string, object?>("endereco_clinica.id", createdEnderecoClinica.Id_endereco_clinica), new KeyValuePair<string, object?>("endereco_clinica.id_clinica", createdEnderecoClinica.Id_clinica));
-
-            return createdEnderecoClinica;
+                return createdEnderecoClinica;
+            }
+            catch (Exception ex)
+            {
+                _enderecoClinicaTaxaErro.Add(1);
+                _logger.LogError("Erro ao criar endereco clinica: {erro}", ex);
+                throw;
+            }
         }
 
         public async Task<EnderecoClinica> UpdateEnderecoClinicaAsync(int id_endereco_clinica, EnderecoClinica enderecoClinica)
         {
-            using var activity = ActivitySource.StartActivity("UpdateEnderecoClinicaAsync");
-            activity?.SetTag("endereco_clinica.id", id_endereco_clinica);
-
-            var updatedEnderecoClinica = new EnderecoClinica
+            try
             {
-                Id_endereco_clinica = id_endereco_clinica,
-                Pais = enderecoClinica.Pais,
-                Estado = enderecoClinica.Estado,
-                Cidade = enderecoClinica.Cidade,
-                Bairro = enderecoClinica.Bairro,
-                Logradouro_rua = enderecoClinica.Logradouro_rua,
-                Nr_rua = enderecoClinica.Nr_rua,
-                Complemento = enderecoClinica.Complemento,
-                Cep = enderecoClinica.Cep,
-                Id_clinica = enderecoClinica.Id_clinica
-            };
+                using var activity = ActivitySource.StartActivity("UpdateEnderecoClinicaAsync");
+                activity?.SetTag("endereco_clinica.id", id_endereco_clinica);
 
-            _logger.LogInformation("Endereço da clínica atualizado com sucesso: {EnderecoClinicaId}", id_endereco_clinica);
+                var updatedEnderecoClinica = new EnderecoClinica
+                {
+                    Id_endereco_clinica = id_endereco_clinica,
+                    Pais = enderecoClinica.Pais,
+                    Estado = enderecoClinica.Estado,
+                    Cidade = enderecoClinica.Cidade,
+                    Bairro = enderecoClinica.Bairro,
+                    Logradouro_rua = enderecoClinica.Logradouro_rua,
+                    Nr_rua = enderecoClinica.Nr_rua,
+                    Complemento = enderecoClinica.Complemento,
+                    Cep = enderecoClinica.Cep,
+                    Id_clinica = enderecoClinica.Id_clinica
+                };
 
-            _enderecoClinicaCreateCounter.Add(1, new KeyValuePair<string, object?>("endereco_clinica.id", updatedEnderecoClinica.Id_endereco_clinica), new KeyValuePair<string, object?>("endereco_clinica.id_clinica", updatedEnderecoClinica.Id_clinica));
+                _logger.LogInformation("Endereço da clínica atualizado com sucesso: {EnderecoClinicaId}", id_endereco_clinica);
 
-            return updatedEnderecoClinica;
+                return updatedEnderecoClinica;
+            }
+            catch (Exception ex)
+            {
+                _enderecoClinicaTaxaErro.Add(1);
+                _logger.LogError("Erro ao atualizar endereco clinica: {erro}", ex);
+                throw;
+            }
         }
 
         public async Task<EnderecoClinica> DeleteEnderecoClinicaAsync(int id_EnderecoClinica)
@@ -106,6 +118,7 @@ namespace challengeFiap.Application.Service
             if (enderecoClinica == null)
             {
                 _logger.LogWarning("endereco clinica não encontrada para exclusão.");
+                _enderecoClinicaTaxaErro.Add(1);
                 throw new Exception("Nao foi inserido");
             }
             else
@@ -124,6 +137,7 @@ namespace challengeFiap.Application.Service
             if (endereco == null)
             {
                 _logger.LogWarning("Id não existe: {Id}", id_endereco_clinica);
+                _enderecoClinicaTaxaErro.Add(1);
                 throw new Exception("Id não foi encontrada");
             }
 

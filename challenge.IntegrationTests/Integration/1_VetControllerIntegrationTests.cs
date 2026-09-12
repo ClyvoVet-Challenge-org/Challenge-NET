@@ -26,27 +26,29 @@ namespace challenge.IntegrationTests.Integration
             var novoVeterinario = new
             {
                 Id_vet = id_vet,
-                Nm_vet = "lual",
-                Cpf_vet = "91745432111",
-                Crmv_vet = "919949-SP",
-                Email_vet = "lual49991@gmail.com",
-                Senha_vet = "21358"
+                Nm_vet = "le",
+                Cpf_vet = "12121",
+                Crmv_vet = "4545-SP",
+                Email_vet = "2149991@gmail.com",
+                Senha_vet = "1221"
             };
 
             // Act
             var response = await _client.PostAsJsonAsync("api/veterinarios/criar/veterinario",novoVeterinario);
 
             // Assert
-            var erro = await response.Content.ReadAsStringAsync();
-
-            Assert.True(response.IsSuccessStatusCode, $"Ocorrido da rejeicao: {erro}");
+            if (!response.IsSuccessStatusCode)
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                Assert.Fail($"Não foi criado por: {erro}");
+            }
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var veterinarioCriado = await response.Content.ReadFromJsonAsync<Veterinario>();
 
             Assert.NotNull(veterinarioCriado);
-            Assert.Equal("lual", veterinarioCriado.Nm_vet);
+            Assert.Equal(id_vet, veterinarioCriado.Id_vet);
         }
 
         [Fact]
@@ -60,8 +62,8 @@ namespace challenge.IntegrationTests.Integration
                 Id_vet = id_veterinario,
                 Nm_vet = "nome",
                 Cpf_vet = "123123123",
-                Crmv_vet = "12345556",
-                Email_vet = "sagafdf@gmail.com",
+                Crmv_vet = "1234556",
+                Email_vet = "safdf@gmail.com",
                 Senha_vet = "21358"
             };
 
@@ -69,9 +71,11 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.PutAsJsonAsync($"api/veterinarios/atualizar/veterinario/{id_veterinario}",veterinarioAtualizado);
 
             // Assert
-            var erro = await response.Content.ReadAsStringAsync();
-
-            Assert.True(response.IsSuccessStatusCode, $"Ocorrido da rejeicao: {erro}");
+            if (!response.IsSuccessStatusCode)
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                Assert.Fail($"Não foi atualizado por: {erro}");
+            }
 
             response.EnsureSuccessStatusCode();
 
@@ -89,12 +93,11 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.GetAsync($"api/veterinarios/relatorio/veterinario/{id_veterinario}");
 
             // Assert
-            if (response.StatusCode == HttpStatusCode.NotFound)
+            if (!response.IsSuccessStatusCode)
             {
-                Assert.Fail("Id nao encontrado");
+                var erro = await response.Content.ReadAsStringAsync();
+                Assert.Fail($"Não foi encontrado por: {erro}");
             }
-
-            response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -113,11 +116,15 @@ namespace challenge.IntegrationTests.Integration
             var response = await _client.GetAsync("api/veterinarios/relatorio/veterinario");
 
             //Assert
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                Assert.Fail($"Não foi obtido por: {erro}");
+            }
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            var vet = await response.Content.ReadFromJsonAsync<Veterinario>();
+            var vet = await response.Content.ReadFromJsonAsync<List<Veterinario>>();
 
             Assert.NotNull(vet);
         }
@@ -126,7 +133,7 @@ namespace challenge.IntegrationTests.Integration
         public async Task DeleteVet_dados_RetornaOk()
         {
             // Arrange
-            var id_veterinario = 1;
+            var id_veterinario = 43;
 
             // Act
             var response = await _client.DeleteAsync($"api/veterinarios/deleta/veterinario/{id_veterinario}");
@@ -136,10 +143,10 @@ namespace challenge.IntegrationTests.Integration
             {
                 var erroAchado = await response.Content.ReadAsStringAsync();
 
-                Assert.Fail($"Ocorrido encontrado: {erroAchado}");
+                Assert.Fail($"Não foi deletado pelo morivo: {erroAchado}");
             }
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
     }
 }

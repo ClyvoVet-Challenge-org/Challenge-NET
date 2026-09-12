@@ -20,9 +20,7 @@ namespace challengeFiap.Application.Service
 
         private static readonly ActivitySource ActivitySource = new(TelemetryConstants.ServiceName);
 
-        private readonly Counter<int> _vetClinicasCreateCounter;
-
-        private readonly List<VetClinica> _GetVetClinica = new();
+        private readonly Counter<int> _vetClinicasTaxaErro;
 
         private readonly AppDbContext _context;
 
@@ -30,50 +28,64 @@ namespace challengeFiap.Application.Service
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
-            _vetClinicasCreateCounter = meter.CreateCounter<int>("vetclinicas.create", description: "Total criado");
+            _vetClinicasTaxaErro = meter.CreateCounter<int>("vetclinicas.error");
             _context = context;
         }
 
         public async Task<VetClinica> CreateVetClinicaAsync(VetClinica VetClinica)
         {
-            using var activity = ActivitySource.StartActivity("CreateVetClinicaAsync");
-            activity?.SetTag("vetclinica.id", VetClinica.Id_clinica_vet);
-            activity?.SetTag("vetclinica.id_vet", VetClinica.Id_vet);
-            activity?.SetTag("vetclinica.id_clinica", VetClinica.Id_clinica);
-
-            await Task.Delay(100);
-
-            var createdVetClinica = new VetClinica
+            try
             {
-                Id_clinica_vet = VetClinica.Id_clinica_vet,
-                Id_vet = VetClinica.Id_vet,
-                Id_clinica = VetClinica.Id_clinica
-            };
+                using var activity = ActivitySource.StartActivity("CreateVetClinicaAsync");
+                activity?.SetTag("vetclinica.id", VetClinica.Id_clinica_vet);
+                activity?.SetTag("vetclinica.id_vet", VetClinica.Id_vet);
+                activity?.SetTag("vetclinica.id_clinica", VetClinica.Id_clinica);
 
-            _logger.LogInformation("Relação entre veterinário e clínica criada com sucesso: {VetClinicaId}", createdVetClinica.Id_clinica_vet);
+                await Task.Delay(100);
 
-            _vetClinicasCreateCounter.Add(1, new KeyValuePair<string, object?>("vetclinica.id", createdVetClinica.Id_clinica_vet), new KeyValuePair<string, object?>("vetclinica.id_vet", createdVetClinica.Id_vet), new KeyValuePair<string, object?>("vetclinica.id_clinica", createdVetClinica.Id_clinica));
+                var createdVetClinica = new VetClinica
+                {
+                    Id_clinica_vet = VetClinica.Id_clinica_vet,
+                    Id_vet = VetClinica.Id_vet,
+                    Id_clinica = VetClinica.Id_clinica
+                };
 
-            return createdVetClinica;
+                _logger.LogInformation("Relação entre veterinário e clínica criada com sucesso: {VetClinicaId}", createdVetClinica.Id_clinica_vet);
+
+                return createdVetClinica;
+            }
+            catch (Exception ex)
+            {
+                _vetClinicasTaxaErro.Add(1);
+                _logger.LogError("Erro ao criar vetclinica: {erro}", ex);
+                throw;
+            }
         }
 
         public async Task<VetClinica> UpdateVetClinicaAsync(int id_VetClinica, VetClinica VetClinica)
         {
-            using var activity = ActivitySource.StartActivity("UpdateVetClinicaAsync");
-            activity?.SetTag("vetclinica.id", id_VetClinica);
-
-            var updatedVetClinica = new VetClinica
+            try
             {
-                Id_clinica_vet = id_VetClinica,
-                Id_vet = VetClinica.Id_vet,
-                Id_clinica = VetClinica.Id_clinica
-            };
+                using var activity = ActivitySource.StartActivity("UpdateVetClinicaAsync");
+                activity?.SetTag("vetclinica.id", id_VetClinica);
 
-            _logger.LogInformation("Relação entre veterinário e clínica atualizada com sucesso: {VetClinicaId}", id_VetClinica);
+                var updatedVetClinica = new VetClinica
+                {
+                    Id_clinica_vet = id_VetClinica,
+                    Id_vet = VetClinica.Id_vet,
+                    Id_clinica = VetClinica.Id_clinica
+                };
 
-            _vetClinicasCreateCounter.Add(1, new KeyValuePair<string, object?>("vetclinica.id", updatedVetClinica.Id_clinica_vet), new KeyValuePair<string, object?>("vetclinica.id_vet", updatedVetClinica.Id_vet), new KeyValuePair<string, object?>("vetclinica.id_clinica", updatedVetClinica.Id_clinica));
+                _logger.LogInformation("Relação entre veterinário e clínica atualizada com sucesso: {VetClinicaId}", id_VetClinica);
 
-            return updatedVetClinica;
+                return updatedVetClinica;
+            }
+            catch (Exception ex)
+            {
+                _vetClinicasTaxaErro.Add(1);
+                _logger.LogError("Erro ao atualizar vetclinica: {erro}", ex);
+                throw;
+            }
         }
 
         public async Task<VetClinica> GetVetClinicaIdAsync(int id_VetClinica)
@@ -82,6 +94,7 @@ namespace challengeFiap.Application.Service
             if (vetClinica == null)
             {
                 _logger.LogWarning("Id não existe: {Id}", id_VetClinica);
+                _vetClinicasTaxaErro.Add(1);
                 throw new Exception("Id não foi encontrada");
             }
 
@@ -95,6 +108,7 @@ namespace challengeFiap.Application.Service
             if (vetClinica == null)
             {
                 _logger.LogWarning("vetclinica não encontrada para exclusão.");
+                _vetClinicasTaxaErro.Add(1);
                 throw new Exception("Nao foi inserido");
             }
             else

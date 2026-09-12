@@ -20,9 +20,7 @@ namespace challengeFiap.Application.Service
 
         private static readonly ActivitySource ActivitySource = new(TelemetryConstants.ServiceName);
 
-        private readonly Counter<int> _prescricaoCreateCounter;
-
-        private readonly List<Prescricao> _GetPrescricao = new();
+        private readonly Counter<int> _prescricaoTaxaErro;
 
         private readonly AppDbContext _context;
 
@@ -30,56 +28,70 @@ namespace challengeFiap.Application.Service
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
-            _prescricaoCreateCounter = meter.CreateCounter<int>("prescricao.create", description: "Total criado");
+            _prescricaoTaxaErro = meter.CreateCounter<int>("prescricao.error");
             _context = context;
         }
 
         public async Task<Prescricao> CreatePrescricaoAsync(Prescricao prescricao)
         {
-            using var activity = ActivitySource.StartActivity("CreatePrescricaoAsync");
-            activity?.SetTag("prescricao.id", prescricao.Id_prescricao);
-            activity?.SetTag("prescricao.dt_emissao", prescricao.Dt_emissao);
-            activity?.SetTag("prescricao.dt_expiracao", prescricao.Dt_expiracao);
-            activity?.SetTag("prescricao.id_consulta", prescricao.Id_consulta);
-            activity?.SetTag("prescricao.observacoes_gerais", prescricao.Observacoes_gerais);
-
-            await Task.Delay(100);
-
-            var createdPrescricao = new Prescricao
+            try
             {
-                Id_prescricao = prescricao.Id_prescricao,
-                Dt_emissao = prescricao.Dt_emissao,
-                Dt_expiracao = prescricao.Dt_expiracao,
-                Id_consulta = prescricao.Id_consulta,
-                Observacoes_gerais = prescricao.Observacoes_gerais
-            };
+                using var activity = ActivitySource.StartActivity("CreatePrescricaoAsync");
+                activity?.SetTag("prescricao.id", prescricao.Id_prescricao);
+                activity?.SetTag("prescricao.dt_emissao", prescricao.Dt_emissao);
+                activity?.SetTag("prescricao.dt_expiracao", prescricao.Dt_expiracao);
+                activity?.SetTag("prescricao.id_consulta", prescricao.Id_consulta);
+                activity?.SetTag("prescricao.observacoes_gerais", prescricao.Observacoes_gerais);
 
-            _logger.LogInformation("Prescrição criada com sucesso: {PrescricaoId}", createdPrescricao.Id_prescricao);
+                await Task.Delay(100);
 
-            _prescricaoCreateCounter.Add(1, new KeyValuePair<string, object?>("prescricao.id", createdPrescricao.Id_prescricao), new KeyValuePair<string, object?>("prescricao.id_consulta", createdPrescricao.Id_consulta));
+                var createdPrescricao = new Prescricao
+                {
+                    Id_prescricao = prescricao.Id_prescricao,
+                    Dt_emissao = prescricao.Dt_emissao,
+                    Dt_expiracao = prescricao.Dt_expiracao,
+                    Id_consulta = prescricao.Id_consulta,
+                    Observacoes_gerais = prescricao.Observacoes_gerais
+                };
 
-            return createdPrescricao;
+                _logger.LogInformation("Prescrição criada com sucesso: {PrescricaoId}", createdPrescricao.Id_prescricao);
+
+                return createdPrescricao;
+            }
+            catch (Exception ex)
+            {
+                _prescricaoTaxaErro.Add(1);
+                _logger.LogError("Erro ao criar prescricao: {erro}", ex);
+                throw;
+            }
         }
 
         public async Task<Prescricao> UpdatePrescricaoAsync(int id_prescricao, Prescricao prescricao)
         {
-            using var activity = ActivitySource.StartActivity("UpdatePrescricaoAsync");
-            activity?.SetTag("prescricao.id", id_prescricao);
-
-            var updatedPrescricao = new Prescricao
+            try
             {
-                Id_prescricao = id_prescricao,
-                Dt_emissao = prescricao.Dt_emissao,
-                Dt_expiracao = prescricao.Dt_expiracao,
-                Id_consulta = prescricao.Id_consulta,
-                Observacoes_gerais = prescricao.Observacoes_gerais
-            };
+                using var activity = ActivitySource.StartActivity("UpdatePrescricaoAsync");
+                activity?.SetTag("prescricao.id", id_prescricao);
 
-            _logger.LogInformation("Prescrição atualizada com sucesso: {PrescricaoId}", id_prescricao);
+                var updatedPrescricao = new Prescricao
+                {
+                    Id_prescricao = id_prescricao,
+                    Dt_emissao = prescricao.Dt_emissao,
+                    Dt_expiracao = prescricao.Dt_expiracao,
+                    Id_consulta = prescricao.Id_consulta,
+                    Observacoes_gerais = prescricao.Observacoes_gerais
+                };
 
-            _prescricaoCreateCounter.Add(1, new KeyValuePair<string, object?>("prescricao.id", updatedPrescricao.Id_prescricao), new KeyValuePair<string, object?>("prescricao.id_consulta", updatedPrescricao.Id_consulta));
+                _logger.LogInformation("Prescrição atualizada com sucesso: {PrescricaoId}", id_prescricao);
 
-            return updatedPrescricao;
+                return updatedPrescricao;
+            }
+            catch (Exception ex)
+            {
+                _prescricaoTaxaErro.Add(1);
+                _logger.LogError("Erro ao atualizar prescricao: {erro}", ex);
+                throw;
+            }
         }
 
         public async Task<Prescricao> DeletePrescricaoAsync(int id_Prescricao)

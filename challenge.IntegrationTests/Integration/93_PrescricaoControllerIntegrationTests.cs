@@ -29,7 +29,7 @@ namespace challenge.IntegrationTests.Integration
                 Id_prescricao = id_prescricao,
                 Dt_emissao = new DateTime(2026, 9, 2),
                 Dt_expiracao = new DateTime(2026, 9, 18),
-                Id_consulta = 2,
+                Id_consulta = 61,
                 Observacoes_gerais = "bom"
             };
 
@@ -52,15 +52,15 @@ namespace challenge.IntegrationTests.Integration
         public async Task AtualizarPrescricao_DadosValidos_RetornaOk()
         {
             // Arrange
-            var id_prescricao =1;
+            var id_prescricao =17;
 
             var prescricaoAtualizada = new
             {
                 Id_prescricao = id_prescricao,
                 Dt_emissao = new DateTime(2026, 9, 9),
-                Dt_expiracao = new DateTime(2026, 9, 10),
-                Id_consulta = 2,
-                Observacoes_gerais = "Paciente esta bem"
+                Dt_expiracao = new DateTime(2026, 9, 15),
+                Id_consulta = 61,
+                Observacoes_gerais = "Paciente esta mal"
             };
 
             // Act
@@ -68,12 +68,75 @@ namespace challenge.IntegrationTests.Integration
 
             // Assert
             var erro = await response.Content.ReadAsStringAsync();
-
-            Assert.True(response.IsSuccessStatusCode,$"Status: {response.StatusCode} - Erro: {erro}");
+            if (!response.IsSuccessStatusCode)
+            {
+                Assert.Fail($"Não foi atualizado por: {erro}");
+            }
 
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK,response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetPrescricao_dados_RetornaOk()
+        {
+            // Arrange
+            var id_prescricao = 17;
+
+            // Act
+            var response = await _client.GetAsync($"api/prescricaos/relatorio/prescricao/{id_prescricao}");
+
+            // Assert
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                Assert.Fail("Id nao encontrado");
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK,response.StatusCode);
+
+            var prescricao = await response.Content.ReadFromJsonAsync<Prescricao>();
+
+            Assert.NotNull(prescricao);
+            Assert.Equal(id_prescricao,prescricao.Id_prescricao);
+        }
+
+        [Fact]
+        public async Task GetAllPrescricao_dados_RetornarOk()
+        {
+            //Act
+            var response = await _client.GetAsync("api/prescricaos/relatorio/prescricao");
+
+            //Assert
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK,response.StatusCode);
+
+            var prescricoes = await response.Content.ReadFromJsonAsync<List<Prescricao>>();
+
+            Assert.NotNull(prescricoes);
+        }
+
+        [Fact]
+        public async Task DeletePrescricao_dados_RetornaOk()
+        {
+            // Arrange
+            var id_prescricao = 17;
+
+            // Act
+            var response = await _client.DeleteAsync($"api/prescricaos/deleta/prescricao/{id_prescricao}");
+
+            // Assert
+            if (!response.IsSuccessStatusCode)
+            {
+                var erroAchado = await response.Content.ReadAsStringAsync();
+
+                Assert.Fail($"Não foi deletado pelo morivo: {erroAchado}");
+            }
+
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
     }
 }
