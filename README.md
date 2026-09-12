@@ -214,6 +214,10 @@ Para testa eles deve seleciona aonde eles pelo botão direito e apos selecionar 
 
 Quando voce tiver la, vai esta na tela de processamento e se dar certo vai aparece em verde e se errado em vermelho.
 
+<img width="386" height="278" alt="testeinit" src="https://github.com/user-attachments/assets/264cd82c-6a3e-4d12-b7fe-6d907e52be7e" />
+
+<img width="433" height="293" alt="testeUnit" src="https://github.com/user-attachments/assets/87f96732-90cc-4f10-b499-5ce2572b9bed" />
+
 
 
 ---
