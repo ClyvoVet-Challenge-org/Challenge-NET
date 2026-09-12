@@ -248,6 +248,26 @@ Diferencia entre elas:
 ```
 <img width="424" height="217" alt="live" src="https://github.com/user-attachments/assets/76c5b7f3-9cf5-40b9-8eec-7eecaac60b6e" />
 
+<h4>As novas funcionalidades.</h4>
+
+<h5>Estruturas das pastas</h5>
+
+Para deixar o nosso codigo mais limpo foi feito alteração presente nas pasta para deixar organizando. Imagem a seguir. mostrar como ficou.
+
+<img width="363" height="247" alt="Pastass" src="https://github.com/user-attachments/assets/bc25c3e0-b9fd-4dd8-83ea-5cad9ea962ee" />
+
+<h5>Questão do log</h5>
+
+	Dentro do programa, especificamente dentro dos controllers principais, foram adicionados os logs conforme foi pedido. Quando rodar o programa, no terminal, essas frases do log irão aparecer no terminal quando estiver rodando ele ou executando uma aplicação, tanto get, get all, created, delete e update.
+	
+<h5>Service</h5>
+
+	Questão de service: em vez de fazer o processo todo dentro do controller, foi feita a separação entre aplicações realizadas para o get, get all, delete, create e update. Para deixar o código mais limpo, claro e fácil de organizar, presente.
+
+<h5>Enum</h5>
+
+	Dentro do banco de dados, há uma regra presente de que alguns status precisavam receber certas aplicações presentes para ficar organizado e claro, colocando um padrão presente.
+	Por causa disso, foi criado o enum para assim se organizar, e eles são: status de consulta para a tabela consulta e status de vacinação para a tabela de vacinação.
 
 ---
 *Desenvolvido com 💙 pela equipe CLYVO — FIAP 2026*
