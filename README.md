@@ -244,8 +244,12 @@ Diferencia entre elas:
 ```bash
 /health/live
 ```
+
 <img width="424" height="217" alt="live" src="https://github.com/user-attachments/assets/76c5b7f3-9cf5-40b9-8eec-7eecaac60b6e" />
 
+```
+/health/live
+```
 
 ---
 *Desenvolvido com 💙 pela equipe CLYVO — FIAP 2026*
