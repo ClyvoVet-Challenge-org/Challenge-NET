@@ -53,7 +53,7 @@ namespace challenge.IntegrationTests.Integration
         public async Task UpdateVeterinario_DadosValidos_RetornaSucesso()
         {
             // Arrange
-            var id_veterinario = 1;
+            var id_veterinario = 2;
 
             var veterinarioAtualizado = new
             {
@@ -77,6 +77,69 @@ namespace challenge.IntegrationTests.Integration
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
        
+        }
+
+        [Fact]
+        public async Task GetVet_dados_RetornaOk()
+        {
+            // Arrange
+            var id_veterinario = 2;
+
+            // Act
+            var response = await _client.GetAsync($"api/veterinarios/relatorio/veterinario/{id_veterinario}");
+
+            // Assert
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                Assert.Fail("Id nao encontrado");
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var vet = await response.Content.ReadFromJsonAsync<Veterinario>();
+
+            Assert.NotNull(vet);
+            Assert.Equal(id_veterinario, vet.Id_vet);
+        }
+
+        [Fact]
+        public async Task GetAll_dados_RetornarOk()
+        {
+            //Arrage
+
+            //Act
+            var response = await _client.GetAsync("api/veterinarios/relatorio/veterinario");
+
+            //Assert
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var vet = await response.Content.ReadFromJsonAsync<Veterinario>();
+
+            Assert.NotNull(vet);
+        }
+
+        [Fact]
+        public async Task DeleteVet_dados_RetornaOk()
+        {
+            // Arrange
+            var id_veterinario = 1;
+
+            // Act
+            var response = await _client.DeleteAsync($"api/veterinarios/deleta/veterinario/{id_veterinario}");
+
+            // Assert
+            if (!response.IsSuccessStatusCode)
+            {
+                var erroAchado = await response.Content.ReadAsStringAsync();
+
+                Assert.Fail($"Ocorrido encontrado: {erroAchado}");
+            }
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
     }
 }
