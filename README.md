@@ -228,9 +228,24 @@ Quando voce tiver la, vai esta na tela de processamento e se dar certo vai apare
 O Health Check tem sua função principal é ver se o seu codigo esta saudavel.
 
 <h5>Como saber se o codigo esta saudavel? </h5>
-```
+
+Dentro do programar temos duas opções, dentro delas é o ready e Live
+
+Diferencia entre elas:
+
+- ready: como o seu nome diz, ela já mostra que esta saudavel e tambem mostra suas outras informações presente dentro deles.
+- Live: esta sendo execultada so sai quando acontecer algo no programa
+
+```bash
 /health/ready
 ```
+<img width="1328" height="401" alt="healthReady" src="https://github.com/user-attachments/assets/aa33d36c-13b9-4c44-8b0c-911b8949f77b" />
+
+```bash
+/health/live
+```
+<img width="424" height="217" alt="live" src="https://github.com/user-attachments/assets/76c5b7f3-9cf5-40b9-8eec-7eecaac60b6e" />
+
 
 ---
 *Desenvolvido com 💙 pela equipe CLYVO — FIAP 2026*
