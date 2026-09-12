@@ -206,11 +206,16 @@ https://localhost:{PORTA}/swagger
 <h4> ✅ Informações sobres os testes e como fazer eles</ha4>
 
 - **Test unit**: esse aqui e o mais de boas de realizar, vai fazer um teste sem precisa do banco de dados
-- **Test int**: !!!ATENÇÃO!!! para o created e o update funcionar precisa colocad os dados correror porque esse esta conectado com o banco e sim precisa fazer prineiro o created e depois o update
+- **Test int**:
+	!!!ATENÇÃO!!!
+  	Para o created e o update funcionar precisa colocad os dados correror porque esse esta conectado com o banco e sim precisa fazer prineiro o created e depois o update
+	Porque como ele especificalmente ta conectado com o banco, precisa ver que id sao inseridos para fazer as outras opções.
 
 <h5>Como testar: </h5>
 
 Para testa eles deve seleciona aonde eles pelo botão direito e apos selecionar a opção de teste e assim vai começar o processamento.
+
+<img width="470" height="54" alt="AONDE" src="https://github.com/user-attachments/assets/1cf8b769-e8da-46bc-98b8-bd04bc9fc69d" />
 
 Quando voce tiver la, vai esta na tela de processamento e se dar certo vai aparece em verde e se errado em vermelho.
 
@@ -218,7 +223,14 @@ Quando voce tiver la, vai esta na tela de processamento e se dar certo vai apare
 
 <img width="433" height="293" alt="testeUnit" src="https://github.com/user-attachments/assets/87f96732-90cc-4f10-b499-5ce2572b9bed" />
 
+<H4>Health Check </H4>
 
+O Health Check tem sua função principal é ver se o seu codigo esta saudavel.
+
+<h5>Como saber se o codigo esta saudavel? </h5>
+```
+/health/ready
+```
 
 ---
 *Desenvolvido com 💙 pela equipe CLYVO — FIAP 2026*
