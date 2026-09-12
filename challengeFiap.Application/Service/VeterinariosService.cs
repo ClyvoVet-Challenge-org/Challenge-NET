@@ -7,6 +7,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
+using challengeFiap.Infrastruture.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace challengeFiap.Application.Service
 {
@@ -20,11 +24,15 @@ namespace challengeFiap.Application.Service
 
         private readonly List<Veterinario> _GetVeterinario = new();
 
-        public VeterinariosService(ILogger<VeterinariosService> logger, IMeterFactory meterFactory)
+
+        private readonly AppDbContext _context;
+
+        public VeterinariosService(ILogger<VeterinariosService> logger, IMeterFactory meterFactory, AppDbContext context)
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
             _veterinarioCreateCounter = meter.CreateCounter<int>("veterinario.create", description: "Total criado");
+            _context = context;
         }
 
         public async Task<Veterinario> CreateVeterinarioAsync(Veterinario veterinario)
@@ -77,8 +85,44 @@ namespace challengeFiap.Application.Service
 
             return updatedVeterinario;
         }
-    
 
+        public async Task<Veterinario> GetVeterinarioIdAsync(int id_veterinario)
+        {
+            var veterinario = await _context.Veterinarios.FindAsync(id_veterinario);
 
+            if (veterinario == null)
+            {
+                _logger.LogWarning("Id não existe: {Id}", id_veterinario);
+                throw new Exception("Id não foi encontrada");
+            }
+
+            return veterinario;
+        }
+
+        public async Task<Veterinario> DeleteVeterinarioAsync(int id_veterinario)
+        {
+            var veterinario = await _context.Veterinarios.FindAsync(id_veterinario);
+
+            if (veterinario == null)
+            {
+                _logger.LogWarning("veterinario não encontrada para exclusão.");
+                throw new Exception("Nao foi inserido");
+            }
+            else
+            {
+                _context.Veterinarios.Remove(veterinario);
+
+                _logger.LogInformation("Veterinario encontrado para exclusão");
+
+                return veterinario;
+            }
+        }
+
+        public async Task<IEnumerable<Veterinario>> GetAllVeterinarioAsync()
+        {
+            var veterinarios = await _context.Veterinarios.ToListAsync();
+
+            return veterinarios;
+        }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace challengeFiap.Domain.Interfaces
 {
@@ -9,5 +10,10 @@ namespace challengeFiap.Domain.Interfaces
     {
         Task<Animal> CreateAnimalAsync(Animal animal);
         Task<Animal> UpdateAnimalAsync(int id_animal, Animal animal);
+        Task<Animal> DeleteAnimalAsync(int id_animal);
+
+        Task<Animal> GetAnimalAsync(int id_animal);
+
+        Task<IEnumerable<Animal>> GetAllAnimalsAsync();
     }
 }

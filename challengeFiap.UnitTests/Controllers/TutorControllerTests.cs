@@ -91,6 +91,88 @@ namespace challengeFiap.UnitTests.Controllers
             Assert.Equal(Tutor.Nm_tutor, retornoTutor.Nm_tutor);
             Assert.Equal(Tutor.Nr_telefone_tutor, retornoTutor.Nr_telefone_tutor);
         }
-       
+
+        [Fact]
+        public async Task GetAll_Tutor_RetornandoOk()
+        {
+            // Arrange
+            var list = new List<Tutor>
+            {
+                new Tutor 
+                { 
+                    Id_tutor = 1,
+                    Cpf_tutor = "123456789",
+                    Nm_tutor = "Leticia",
+                    Nr_telefone_tutor = "11987562335"
+                }
+            };
+
+            _TutorServiceMock.Setup(s => s.GetAllTutorAsync())
+                .ReturnsAsync(list);
+
+            // Act
+            var resultado = await _controller.GetAllTutor();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedList = Assert.IsType<List<Tutor>>(okResult.Value);
+
+            Assert.NotNull(returnedList);
+            Assert.Single(returnedList);
+        }
+
+        [Fact]
+        public async Task GetId_Tutor_RetornandoOk()
+        {
+            // Arrange
+            var id_tutor = 1;
+
+            var tutor = new Tutor
+            {
+                Id_tutor = id_tutor,
+                Cpf_tutor = "123456789",
+                Nm_tutor = "Leticia",
+                Nr_telefone_tutor = "11987562335"
+            };
+
+            _TutorServiceMock.Setup(s => s.GetTutorIdAsync(id_tutor)).ReturnsAsync(tutor);
+
+            // Act
+            var resultado = await _controller.GetTutor(id_tutor);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedTutor = Assert.IsType<Tutor>(okResult.Value);
+
+            Assert.NotNull(returnedTutor);
+            Assert.Equal(id_tutor, returnedTutor.Id_tutor);
+        }
+
+        [Fact]
+        public async Task Deleta_Tutor()
+        {
+            // Arrange
+            var id_tutor = 1;
+
+            var tutor = new Tutor 
+            {
+                Id_tutor = id_tutor,
+                Cpf_tutor = "123456789",
+                Nm_tutor = "Leticia",
+                Nr_telefone_tutor = "11987562335"
+            };
+
+            _TutorServiceMock.Setup(s => s.DeleteTutorAsync(id_tutor)).ReturnsAsync(tutor);
+
+            _context.Tutor.Add(tutor);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var r = await _controller.DeleteTutor(id_tutor);
+
+            // Assert
+            Assert.IsType<NoContentResult>(r);
+        }
+
     }
 }

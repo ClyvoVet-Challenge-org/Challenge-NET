@@ -2,11 +2,15 @@
 using challengeFiap.Application.Diagnostics;
 using challengeFiap.Domain.Entities;
 using challengeFiap.Domain.Interfaces;
+using challengeFiap.Infrastruture.Data;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Text;
 
 namespace challengeFiap.Application.Service
@@ -21,12 +25,15 @@ namespace challengeFiap.Application.Service
 
         private readonly List<EnderecoTutor> _GetEnderecoTutor = new();
 
+        private readonly AppDbContext _context;
 
-        public EnderecoTutorService(ILogger<EnderecoTutorService> logger, IMeterFactory meterFactory)
+
+        public EnderecoTutorService(ILogger<EnderecoTutorService> logger, IMeterFactory meterFactory, AppDbContext context)
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
             _enderecoTutorCreateCounter = meter.CreateCounter<int>("endereco_tutor.create", description: "Total criado");
+            _context = context;
         }
 
         public async Task<EnderecoTutor> CreateEnderecoTutorAsync(EnderecoTutor enderecoTutor)
@@ -94,20 +101,38 @@ namespace challengeFiap.Application.Service
 
         public async Task<EnderecoTutor> DeleteEnderecoTutorAsync(int id_EnderecoTutor)
         {
-            var enderecoTutorDelete = _GetEnderecoTutor.FirstOrDefault(c => c.Id_endereco_tutor == id_EnderecoTutor);
-            if (enderecoTutorDelete != null)
-            {
-                _GetEnderecoTutor.Remove(enderecoTutorDelete);
-                _logger.LogInformation("Deletado");
+            var enderecoTutor = await _context.EnderecoTutors.FindAsync(id_EnderecoTutor);
 
-                return enderecoTutorDelete;
+            if (enderecoTutor == null)
+            {
+                _logger.LogWarning("endereco tutor não encontrada para exclusão.");
+                throw new Exception("Nao foi inserido");
             }
             else
             {
-                _logger.LogWarning("Id de endereco tutor não foi encontrado. ");
+                _context.EnderecoTutors.Remove(enderecoTutor);
+                _logger.LogInformation("EnderecoTutor encontrado para exclusão");
 
-                throw new Exception("Id não existente presente");
+                return enderecoTutor;
             }
+        }
+
+        public async Task<EnderecoTutor> GetEnderecoTutorIdAsync(int id_endereco)
+        {
+            var endereco = await _context.EnderecoTutors.FindAsync(id_endereco);
+            if (endereco == null)
+            {
+                _logger.LogWarning("Id não existe: {Id}", id_endereco);
+                throw new Exception("Id não foi encontrada");
+            }
+
+            return endereco;
+        }
+
+        public async Task<IEnumerable<EnderecoTutor>> GetAllEnderecoTutorAsync()
+        {
+            var enderecos = await _context.EnderecoTutors.ToListAsync();
+            return enderecos;
         }
     }
 }

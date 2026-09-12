@@ -1,11 +1,15 @@
 ﻿using challengeFiap.Application.Diagnostics;
 using challengeFiap.Domain.Entities;
 using challengeFiap.Domain.Interfaces;
+using challengeFiap.Infrastruture.Data;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Text;
 
 namespace challengeFiap.Application.Service
@@ -20,12 +24,15 @@ namespace challengeFiap.Application.Service
 
         private readonly List<EnderecoAnimal> _GetEnderecoAnimal = new();
 
+        private readonly AppDbContext _context;
 
-        public EnderecoAnimalService(ILogger<EnderecoAnimalService> logger, IMeterFactory meterFactory)
+
+        public EnderecoAnimalService(ILogger<EnderecoAnimalService> logger, IMeterFactory meterFactory, AppDbContext context)
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
             _enderecoAnimalCreateCounter = meter.CreateCounter<int>("endereco_animal.create", description: "Total criado");
+            _context = context;
         }
 
         public async Task<EnderecoAnimal> CreateEnderecoAnimalAsync(EnderecoAnimal enderecoAnimal)
@@ -98,23 +105,40 @@ namespace challengeFiap.Application.Service
             return updatedEnderecoAnimal;
         }
 
-        public Task<EnderecoAnimal> DeleteEnderecoAnimalAsync(int id_EnderecoAnimal)
+        public async Task<EnderecoAnimal> DeleteEnderecoAnimalAsync(int id_EnderecoAnimal)
         {
-            var enderecoAnimalDelete = _GetEnderecoAnimal.FirstOrDefault(c => c.Id_endereco_animal == id_EnderecoAnimal);
+            var enderecoAnimal = await _context.EnderecoAnimals.FindAsync(id_EnderecoAnimal);
 
-            if (enderecoAnimalDelete != null)
+            if (enderecoAnimal == null)
             {
-                _GetEnderecoAnimal.Remove(enderecoAnimalDelete);
-                _logger.LogInformation("Deletado");
-
-                return Task.FromResult(enderecoAnimalDelete);
+                _logger.LogWarning("endereco animal não encontrada para exclusão.");
+                throw new Exception("Nao foi inserido");
             }
             else
             {
-                _logger.LogWarning("Id de Endereco animal não foi encontrado. ");
+                _context.EnderecoAnimals.Remove(enderecoAnimal);
+                _logger.LogInformation("EnderecoAnimal encontrado para exclusão");
 
-                throw new Exception("Id não existente presente");
+                return enderecoAnimal;
             }
+        }
+
+        public async Task<EnderecoAnimal> GetEnderecoAnimalIdAsync(int id_endereco)
+        {
+            var endereco = await _context.EnderecoAnimals.FindAsync(id_endereco);
+            if (endereco == null)
+            {
+                _logger.LogWarning("Id não existe: {Id}", id_endereco);
+                throw new Exception("Id não foi encontrada");
+            }
+
+            return endereco;
+        }
+
+        public async Task<IEnumerable<EnderecoAnimal>> GetAllEnderecoAnimalAsync()
+        {
+            var enderecos = await _context.EnderecoAnimals.ToListAsync();
+            return enderecos;
         }
     }
 }

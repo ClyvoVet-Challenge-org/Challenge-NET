@@ -33,7 +33,7 @@ public class PrescricaosController : ControllerBase
 
         try
         {
-            var prescricaoRelatorio = await _context.Prescricaos.ToListAsync();
+            var prescricaoRelatorio = await _prescricaoService.GetAllPrescricaoAsync();
 
             _logger.LogInformation("Busca de prescrições concluída com sucesso");
             return Ok(prescricaoRelatorio);
@@ -62,10 +62,17 @@ public class PrescricaosController : ControllerBase
 
         try
         {
-            var prescricao = await _context.Prescricaos.FirstOrDefaultAsync(p => p.Id_prescricao == id_prescricao);
-
-            _logger.LogInformation("Prescrição encontrada com sucesso para o ID {IdPrescricao}", id_prescricao);
-            return Ok(prescricao);
+            try
+            {
+                var prescricao = await _prescricaoService.GetPrescricaoIdAsync(id_prescricao);
+                _logger.LogInformation("Prescricao foi encontrada com sucesso");
+                return Ok(prescricao);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "prescricao não encontrada para o ID");
+                return NotFound("Id de Prescricao não encontrado");
+            }
         }
         catch (Exception ex)
         {
@@ -194,12 +201,12 @@ public class PrescricaosController : ControllerBase
 
         try
         {
-            var prescricao = await _context.Prescricaos.FirstOrDefaultAsync(e => e.Id_prescricao == id_prescricao);
-            
+            var prescricao = await _prescricaoService.DeletePrescricaoAsync(id_prescricao);
+
             _context.Prescricaos.Remove(prescricao);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Prescrição com ID {IdPrescricao} excluída com sucesso", id_prescricao);
+            _logger.LogInformation("Prescricao foi excluída com sucesso");
             return NoContent();
         }
         catch (Exception ex)

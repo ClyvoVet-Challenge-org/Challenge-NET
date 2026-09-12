@@ -1,12 +1,14 @@
 ﻿using challengeFiap.Application.Diagnostics;
 using challengeFiap.Domain.Entities;
 using challengeFiap.Domain.Interfaces;
+using challengeFiap.Infrastruture.Data;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
-
-
+using System.Threading.Tasks;
 
 namespace challengeFiap.Application.Service
 {
@@ -18,16 +20,17 @@ namespace challengeFiap.Application.Service
 
         private readonly Counter<int> _animalCreateCounter;
         private readonly Counter<int> _animalUpdateCounter;
-        private readonly List<Animal> _AnimalGet= new();
+
+        private readonly AppDbContext _context;
 
 
-        public AnimalService(ILogger<AnimalService> logger, IMeterFactory meterFactory)
+        public AnimalService(ILogger<AnimalService> logger, IMeterFactory meterFactory, AppDbContext context)
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
             _animalCreateCounter = meter.CreateCounter<int>("animal.create", description: "Total criado");
             _animalUpdateCounter = meter.CreateCounter<int>("animal.update", description: "Total de animais atualizados");
-
+            _context = context;
         }
 
         public async Task<Animal> CreateAnimalAsync(Animal animal)
@@ -52,7 +55,6 @@ namespace challengeFiap.Application.Service
                 Raca_animal = animal.Raca_animal,
                 Id_tutor = animal.Id_tutor,
             };
-      
 
             _logger.LogInformation("Animal criado: id_animal -> {animal.id} nm_animal -> {animal.name}", createdAnimal.Id_animal, createdAnimal.Nm_animal);
 
@@ -83,8 +85,45 @@ namespace challengeFiap.Application.Service
 
             _logger.LogInformation("Animal atualizando com sucesso: {Animal} - {AnimalName}", updatedAnimal.Id_animal, updatedAnimal.Nm_animal);
 
-            _animalUpdateCounter.Add(1,new KeyValuePair<string, object?>("animal.id", updatedAnimal.Id_animal));
+            _animalUpdateCounter.Add(1, new KeyValuePair<string, object?>("animal.id", updatedAnimal.Id_animal));
             return updatedAnimal;
+        }
+
+        public async Task<Animal> DeleteAnimalAsync(int id_animal)
+        {
+            var animal = await _context.Animals.FindAsync(id_animal);
+
+            if (animal == null)
+            {
+                _logger.LogWarning("animal não encontrada para exclusão: {Id}", id_animal);
+                throw new Exception("Nao foi inserido");
+            }
+            else
+            {
+                _context.Animals.Remove(animal);
+                _logger.LogInformation("Animal encontrado para exclusão: {Id}", id_animal);
+                return animal;
+            }
+        }
+
+        public async Task<Animal> GetAnimalAsync(int id_animal)
+        {
+            var animal = await _context.Animals.FindAsync(id_animal);
+
+            if (animal == null)
+            {
+                _logger.LogWarning("Id não existe: {Id}", id_animal);
+                throw new Exception("Id não foi encontrada");
+            }
+
+            return animal;
+        }
+
+        public async Task<IEnumerable<Animal>> GetAllAnimalsAsync()
+        {
+            var animals = await _context.Animals.ToListAsync();
+
+            return animals;
         }
     }
 }

@@ -1,12 +1,16 @@
 ﻿using challengeFiap.Application.Diagnostics;
 using challengeFiap.Domain.Entities;
 using challengeFiap.Domain.Interfaces;
+using challengeFiap.Infrastruture.Data;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace challengeFiap.Application.Service
 {
@@ -20,11 +24,14 @@ namespace challengeFiap.Application.Service
 
         private readonly List<Tutor> _GetTutor = new();
 
-        public TutorService(ILogger<TutorService> logger, IMeterFactory meterFactory)
+        private readonly AppDbContext _context;
+
+        public TutorService(ILogger<TutorService> logger, IMeterFactory meterFactory, AppDbContext context)
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
             _tutorCreateCounter = meter.CreateCounter<int>("tutor.create", description: "Total criado");
+            _context = context;
         }
 
         public async Task<Tutor> CreateTutorAsync(Tutor tutor)
@@ -72,5 +79,42 @@ namespace challengeFiap.Application.Service
             return updatedTutor;
         }
 
+        public async Task<Tutor> GetTutorIdAsync(int id_tutor)
+        {
+            var tutor = await _context.Tutor.FindAsync(id_tutor);
+
+            if (tutor == null)
+            {
+                _logger.LogWarning("Id não existe: {Id}", id_tutor);
+                throw new Exception("Id não foi encontrada");
+            }
+
+            return tutor;
+        }
+
+        public async Task<Tutor> DeleteTutorAsync(int id_tutor)
+        {
+            var tutor = await _context.Tutor.FindAsync(id_tutor);
+
+            if (tutor == null)
+            {
+                _logger.LogWarning("tutor não encontrada para exclusão.");
+                throw new Exception("Nao foi inserido");
+            }
+            else
+            {
+                _context.Tutor.Remove(tutor);
+
+                _logger.LogInformation("Tutor encontrado para exclusão");
+
+                return tutor;
+            }
+        }
+
+        public async Task<IEnumerable<Tutor>> GetAllTutorAsync()
+        {
+            var tutors = await _context.Tutor.ToListAsync();
+            return tutors;
+        }
     }
 }

@@ -38,7 +38,7 @@ public class ClinicasController : ControllerBase
 
         try
         {
-            var relatorioClinica = await _context.Clinicas.ToListAsync();
+            var relatorioClinica = await _clinicaService.GetAllClinicaAsync();
 
             _logger.LogInformation("Busca de clinicas concluída com sucesso");
 
@@ -71,23 +71,22 @@ public class ClinicasController : ControllerBase
 
         try
         {
-            var clinica = await _context.Clinicas.FindAsync(id_clinica);
-
-            if(clinica == null)
+            try
             {
-                _logger.LogWarning("Id clinica não encontrado. ID: {IdClinica}",id_clinica);
+                var clinica = await _clinicaService.GetClinicaIdAsync(id_clinica);
+                _logger.LogInformation("Clinica foi encontrada com sucesso");
+                return Ok(clinica);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "clinica não encontrada para o ID");
                 return NotFound("Id clinica não encontrado");
             }
-            
-            _logger.LogInformation("Clinica encontrada com sucesso.");
-
-            return Ok(clinica);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex,"Erro no processamento da buscar}");
-
-            return BadRequest($"Erro em processar a buscar pela clinica: {ex.Message}");
+            return BadRequest($"Erro em buscar pelo id: {ex.Message}");
         }
     }
 
@@ -214,28 +213,19 @@ public class ClinicasController : ControllerBase
 
         try
         {
-            var clinica = await _context.Clinicas.FirstOrDefaultAsync(e => e.Id_clinica == id_clinica);
+            var clinica = await _clinicaService.DeleteClinicaAsync(id_clinica);
 
-            if (clinica == null)
-            {
-                _logger.LogWarning("Clinica {IdClinica}, não encontrada.",id_clinica);
-
-                return NotFound("Clinica não encontrada");
-            }
-            
             _context.Clinicas.Remove(clinica);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Clinica removida com sucesso");
+            _logger.LogInformation("Clinica foi excluída com sucesso");
 
             return NoContent();
         }
         catch (Exception ex)
         {
             _logger.LogError(ex,"Erro em deletar clinica.");
-
-            return BadRequest(
-                $"Erro em deletar: {ex.Message}");
+            return BadRequest($"Erro em deletar: {ex.Message}");
         }
     }
 }

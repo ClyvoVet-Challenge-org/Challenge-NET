@@ -1,12 +1,16 @@
 ﻿using challengeFiap.Application.Diagnostics;
 using challengeFiap.Domain.Entities;
 using challengeFiap.Domain.Interfaces;
+using challengeFiap.Infrastruture.Data;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace challengeFiap.Application.Service
 {
@@ -20,11 +24,14 @@ namespace challengeFiap.Application.Service
 
         private readonly List<VetClinica> _GetVetClinica = new();
 
-        public VetClinicasService(ILogger<VetClinicasService> logger, IMeterFactory meterFactory)
+        private readonly AppDbContext _context;
+
+        public VetClinicasService(ILogger<VetClinicasService> logger, IMeterFactory meterFactory, AppDbContext context)
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
             _vetClinicasCreateCounter = meter.CreateCounter<int>("vetclinicas.create", description: "Total criado");
+            _context = context;
         }
 
         public async Task<VetClinica> CreateVetClinicaAsync(VetClinica VetClinica)
@@ -69,6 +76,42 @@ namespace challengeFiap.Application.Service
             return updatedVetClinica;
         }
 
+        public async Task<VetClinica> GetVetClinicaIdAsync(int id_VetClinica)
+        {
+            var vetClinica = await _context.VetClinicas.FindAsync(id_VetClinica);
+            if (vetClinica == null)
+            {
+                _logger.LogWarning("Id não existe: {Id}", id_VetClinica);
+                throw new Exception("Id não foi encontrada");
+            }
+
+            return vetClinica;
+        }
+
+        public async Task<VetClinica> DeleteVetClinicaAsync(int id_VetClinica)
+        {
+            var vetClinica = await _context.VetClinicas.FindAsync(id_VetClinica);
+
+            if (vetClinica == null)
+            {
+                _logger.LogWarning("vetclinica não encontrada para exclusão.");
+                throw new Exception("Nao foi inserido");
+            }
+            else
+            {
+                _context.VetClinicas.Remove(vetClinica);
+
+                _logger.LogInformation("VetClinica encontrado para exclusão");
+
+                return vetClinica;
+            }
+        }
+
+        public async Task<IEnumerable<VetClinica>> GetAllVetClinicaAsync()
+        {
+            var vetClinicas = await _context.VetClinicas.ToListAsync();
+            return vetClinicas;
+        }
     }
 }
 

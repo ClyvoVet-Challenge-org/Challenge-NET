@@ -1,11 +1,15 @@
 ﻿using challengeFiap.Application.Diagnostics;
 using challengeFiap.Domain.Entities;
 using challengeFiap.Domain.Interfaces;
+using challengeFiap.Infrastruture.Data;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Text;
 
 namespace challengeFiap.Application.Service
@@ -20,12 +24,15 @@ namespace challengeFiap.Application.Service
 
         private readonly List<EnderecoClinica> _GetEndereco = new();
 
+        private readonly AppDbContext _context;
 
-        public EnderecoClinicaService(ILogger<EnderecoClinicaService> logger, IMeterFactory meterFactory)
+
+        public EnderecoClinicaService(ILogger<EnderecoClinicaService> logger, IMeterFactory meterFactory, AppDbContext context)
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
             _enderecoClinicaCreateCounter = meter.CreateCounter<int>("endereco_clinica.create", description: "Total criado");
+            _context = context;
         }
 
         public async Task<EnderecoClinica> CreateEnderecoClinicaAsync(EnderecoClinica enderecoClinica)
@@ -94,20 +101,39 @@ namespace challengeFiap.Application.Service
 
         public async Task<EnderecoClinica> DeleteEnderecoClinicaAsync(int id_EnderecoClinica)
         {
-            var enderecoClinicaDelete = _GetEndereco.FirstOrDefault(c => c.Id_endereco_clinica == id_EnderecoClinica);
-            if (enderecoClinicaDelete != null)
-            {
-                _GetEndereco.Remove(enderecoClinicaDelete);
-                _logger.LogInformation("Deletado");
+            var enderecoClinica = await _context.EnderecoClinicas.FindAsync(id_EnderecoClinica);
 
-                return enderecoClinicaDelete;
+            if (enderecoClinica == null)
+            {
+                _logger.LogWarning("endereco clinica não encontrada para exclusão.");
+                throw new Exception("Nao foi inserido");
             }
             else
             {
-                _logger.LogWarning("Id de endereco clinica não foi encontrado. ");
+                _context.EnderecoClinicas.Remove(enderecoClinica);
 
-                throw new Exception("Id não existente presente");
+                _logger.LogInformation("EnderecoClinica encontrado para exclusão");
+
+                return enderecoClinica;
             }
+        }
+
+        public async Task<EnderecoClinica> GetEnderecoClinicaIdAsync(int id_endereco_clinica)
+        {
+            var endereco = await _context.EnderecoClinicas.FindAsync(id_endereco_clinica);
+            if (endereco == null)
+            {
+                _logger.LogWarning("Id não existe: {Id}", id_endereco_clinica);
+                throw new Exception("Id não foi encontrada");
+            }
+
+            return endereco;
+        }
+
+        public async Task<IEnumerable<EnderecoClinica>> GetAllEnderecoClinicaAsync()
+        {
+            var enderecos = await _context.EnderecoClinicas.ToListAsync();
+            return enderecos;
         }
     }
 }

@@ -120,5 +120,104 @@ namespace challengeFiap.UnitTests.Controllers
 
         }
 
+        [Fact]
+        public async Task GetAll_EnderecoClinica_RetornandoOk()
+        {
+            // Arrange
+            var list = new List<EnderecoClinica>
+            {
+                new EnderecoClinica 
+                { 
+                    Id_endereco_clinica = 1,
+                    Pais = "brasil",
+                    Estado = "são paulo",
+                    Cidade = "são paulo",
+                    Bairro = "bairro roxo",
+                    Logradouro_rua = "1263",
+                    Nr_rua = "Dom Cachorro",
+                    Complemento = "1212",
+                    Cep = "123456",
+                    Id_clinica = 1
+                }
+
+            };
+
+            _enderecoClinicaServiceMock.Setup(s => s.GetAllEnderecoClinicaAsync()).ReturnsAsync(list);
+
+            // Act
+            var resultado = await _controller.GetAllEnderecoClinica();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedList = Assert.IsType<List<EnderecoClinica>>(okResult.Value);
+
+            Assert.NotNull(returnedList);
+            Assert.Single(returnedList);
+        }
+
+        [Fact]
+        public async Task GetId_EnderecoClinica_RetornandoOk()
+        {
+            // Arrange
+            var id_endereco_clinica = 1;
+
+            var endereco = new EnderecoClinica
+            {
+                Id_endereco_clinica = id_endereco_clinica,
+                Pais = "brasil",
+                Estado = "são paulo",
+                Cidade = "são paulo",
+                Bairro = "bairro roxo",
+                Logradouro_rua = "1263",
+                Nr_rua = "Dom Cachorro",
+                Complemento = "1212",
+                Cep = "123456",
+                Id_clinica = 1,
+            };
+
+            _enderecoClinicaServiceMock.Setup(s => s.GetEnderecoClinicaIdAsync(id_endereco_clinica)).ReturnsAsync(endereco);
+
+            // Act
+            var resultado = await _controller.GetEnderecoClinica(id_endereco_clinica);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedEndereco = Assert.IsType<EnderecoClinica>(okResult.Value);
+
+            Assert.NotNull(returnedEndereco);
+            Assert.Equal(id_endereco_clinica, returnedEndereco.Id_endereco_clinica);
+        }
+
+        [Fact]
+        public async Task Deleta_EnderecoClinica()
+        {
+            // Arrange
+            var id_endereco_clinica = 1;
+
+            var endereco = new EnderecoClinica 
+            { 
+                Id_endereco_clinica = id_endereco_clinica,
+                Pais = "brasil",
+                Estado = "são paulo",
+                Cidade = "são paulo",
+                Bairro = "bairro roxo",
+                Logradouro_rua = "1263",
+                Nr_rua = "Dom Cachorro",
+                Complemento = "1212",
+                Cep = "123456",
+                Id_clinica = 1,
+            };
+
+            _enderecoClinicaServiceMock.Setup(s => s.DeleteEnderecoClinicaAsync(id_endereco_clinica)).ReturnsAsync(endereco);
+
+            _context.EnderecoClinicas.Add(endereco);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var r = await _controller.DeleteEnderecoClinica(id_endereco_clinica);
+
+            // Assert
+            Assert.IsType<NoContentResult>(r);
+        }
     }
 }

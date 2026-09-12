@@ -1,11 +1,15 @@
 ﻿using challengeFiap.Application.Diagnostics;
 using challengeFiap.Domain.Entities;
 using challengeFiap.Domain.Interfaces;
+using challengeFiap.Infrastruture.Data;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Text;
 
 namespace challengeFiap.Application.Service
@@ -20,11 +24,14 @@ namespace challengeFiap.Application.Service
 
         private readonly List<Consulta> _GetConsulta = new();
 
-        public ConsultaService(ILogger<ConsultaService> logger, IMeterFactory meterFactory)
+        private readonly AppDbContext _context;
+
+        public ConsultaService(ILogger<ConsultaService> logger, IMeterFactory meterFactory, AppDbContext context)
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
             _consultaCreateCounter = meter.CreateCounter<int>("consulta.create", description: "Total criado");
+            _context = context;
         }
 
 
@@ -81,22 +88,39 @@ namespace challengeFiap.Application.Service
 
         public async Task<Consulta> DeleteConsultaAsync(int id_Consulta)
         {
-            var consultaDelete = _GetConsulta.FirstOrDefault(c => c.Id_consulta == id_Consulta);
-            if (consultaDelete != null)
-            {
-                _GetConsulta.Remove(consultaDelete);
-                _logger.LogInformation("Deletado");
+            var consulta = await _context.Consultas.FindAsync(id_Consulta);
 
-                return consultaDelete;
+            if (consulta == null)
+            {
+                _logger.LogWarning("consulta não encontrada para exclusão.");
+                throw new Exception("Nao foi inserido");
             }
             else
             {
-                _logger.LogWarning("Id de consulta não foi encontrado. ");
+                _context.Consultas.Remove(consulta);
 
-                throw new Exception("Id não existente presente");
+                _logger.LogInformation("Consulta encontrado para exclusão");
+
+                return consulta;
             }
         }
 
+        public async Task<Consulta> GetConsultaIdAsync(int id_consulta)
+        {
+            var consulta = await _context.Consultas.FindAsync(id_consulta);
+            if (consulta == null)
+            {
+                _logger.LogWarning("Id não existe: {Id}", id_consulta);
+                throw new Exception("Id não foi encontrada");
+            }
 
+            return consulta;
+        }
+
+        public async Task<IEnumerable<Consulta>> GetAllConsultaAsync()
+        {
+            var consultas = await _context.Consultas.ToListAsync();
+            return consultas;
+        }
     }
 }

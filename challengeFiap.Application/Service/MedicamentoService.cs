@@ -1,12 +1,16 @@
 ﻿using challengeFiap.Application.Diagnostics;
 using challengeFiap.Domain.Entities;
 using challengeFiap.Domain.Interfaces;
+using challengeFiap.Infrastruture.Data;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace challengeFiap.Application.Service
 {
@@ -21,12 +25,15 @@ namespace challengeFiap.Application.Service
 
         private readonly List<Medicamento> _GetMedicamento = new();
 
+        private readonly AppDbContext _context;
 
-        public MedicamentoService(ILogger<MedicamentoService> logger, IMeterFactory meterFactory)
+
+        public MedicamentoService(ILogger<MedicamentoService> logger, IMeterFactory meterFactory, AppDbContext context)
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
             _medicamentoCreateCounter = meter.CreateCounter<int>("medicamento.create", description: "Total criado");
+            _context = context;
         }
 
         public async Task<Medicamento> CreateMedicamentoAsync(Medicamento medicamento)
@@ -81,21 +88,38 @@ namespace challengeFiap.Application.Service
         }
         public async Task<Medicamento> DeleteMedicamentoAsync(int id_Medicamento)
         {
-            var medicamentoDelete = _GetMedicamento.FirstOrDefault(c => c.Id_medicamento == id_Medicamento);
-            if (medicamentoDelete != null)
-            {
-                _GetMedicamento.Remove(medicamentoDelete);
-                _logger.LogInformation("Deletado");
+            var medicamento = await _context.Medicamentos.FindAsync(id_Medicamento);
 
-                return medicamentoDelete;
+            if (medicamento == null)
+            {
+                _logger.LogWarning("medicamento não encontrada para exclusão.");
+                throw new Exception("Nao foi inserido");
             }
             else
             {
-                _logger.LogWarning("Id de Medicamento não foi encontrado. ");
+                _context.Medicamentos.Remove(medicamento);
+                _logger.LogInformation("Medicamento encontrado para exclusão");
 
-                throw new Exception("Id não existente presente");
+                return medicamento;
             }
         }
 
+        public async Task<Medicamento> GetMedicamentoIdAsync(int id_medicamento)
+        {
+            var medicamento = await _context.Medicamentos.FindAsync(id_medicamento);
+            if (medicamento == null)
+            {
+                _logger.LogWarning("Id não existe: {Id}", id_medicamento);
+                throw new Exception("Id não foi encontrada");
+            }
+
+            return medicamento;
+        }
+
+        public async Task<IEnumerable<Medicamento>> GetAllMedicamentoAsync()
+        {
+            var medicamentos = await _context.Medicamentos.ToListAsync();
+            return medicamentos;
+        }
     }
 }

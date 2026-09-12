@@ -73,8 +73,7 @@ namespace challengeFiap.UnitTests.Controllers
             _context.Clinicas.Add(Clinica);
             await _context.SaveChangesAsync();
 
-            _ClinicaServiceMock.Setup(service => service.UpdateClinicaAsync(id_Clinica, Clinica))
-                .ReturnsAsync(Clinica);
+            _ClinicaServiceMock.Setup(service => service.UpdateClinicaAsync(id_Clinica, Clinica)).ReturnsAsync(Clinica);
 
             //Act
             var atualizacaoRealizada = await _controller.PutClinica(id_Clinica, Clinica);
@@ -87,6 +86,59 @@ namespace challengeFiap.UnitTests.Controllers
             Assert.Equal(Clinica.Cnpj_clinica, retornoClinica.Cnpj_clinica);
             Assert.Equal(Clinica.Nm_clinica, retornoClinica.Nm_clinica);
 
+        }
+
+        [Fact]
+        public async Task GetAll_Clinica_RetornandoOk()
+        {
+            // Arrange
+            var clinicaList = new List<Clinica>
+            {
+                new Clinica 
+                { 
+                    Id_clinica = 1, 
+                    Cnpj_clinica = "123456789",
+                    Nm_clinica = "PetSoule" 
+                }
+            };
+
+            _ClinicaServiceMock.Setup(s => s.GetAllClinicaAsync()).ReturnsAsync(clinicaList);
+
+            // Act
+            var resultado = await _controller.GetAllClinica();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedList = Assert.IsType<List<Clinica>>(okResult.Value);
+
+            Assert.NotNull(returnedList);
+            Assert.Single(returnedList);
+        }
+
+        [Fact]
+        public async Task GetId_Clinica_RetornandoOk()
+        {
+            // Arrange
+            var id_clinica = 1;
+
+            var clinica = new Clinica
+            {
+                Id_clinica = id_clinica,
+                Cnpj_clinica = "123456789",
+                Nm_clinica = "PetSoule"
+            };
+
+            _ClinicaServiceMock.Setup(s => s.GetClinicaIdAsync(id_clinica)).ReturnsAsync(clinica);
+
+            // Act
+            var resultado = await _controller.GetClinica(id_clinica);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedClinica = Assert.IsType<Clinica>(okResult.Value);
+
+            Assert.NotNull(returnedClinica);
+            Assert.Equal(id_clinica, returnedClinica.Id_clinica);
         }
     }
 }

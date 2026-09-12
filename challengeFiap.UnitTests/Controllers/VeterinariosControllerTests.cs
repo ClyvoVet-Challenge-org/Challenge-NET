@@ -101,5 +101,92 @@ namespace challengeFiap.UnitTests.Controllers
             Assert.Equal(veterinario.Senha_vet, retornoveterinario.Senha_vet);
         }
 
+        [Fact]
+        public async Task GetAll_Veterinario_RetornandoOk()
+        {
+            // Arrange
+            var list = new List<Veterinario>
+            {
+                new Veterinario 
+                { 
+                    Id_vet = 1,
+                    Nm_vet = "lual",
+                    Cpf_vet = "123123123",
+                    Crmv_vet = "12345556",
+                    Email_vet = "sagafdf@gmail.com",
+                    Senha_vet = "21359"
+                }
+            };
+
+            _veterinarioServiceMock.Setup(s => s.GetAllVeterinarioAsync()).ReturnsAsync(list);
+
+            // Act
+            var resultado = await _controller.GetAllVeterinario();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedList = Assert.IsType<List<Veterinario>>(okResult.Value);
+
+            Assert.NotNull(returnedList);
+            Assert.Single(returnedList);
+        }
+
+        [Fact]
+        public async Task GetId_Veterinario_RetornandoOk()
+        {
+            // Arrange
+            var id_vet = 1;
+
+            var veterinario = new Veterinario
+            {
+                Id_vet = id_vet,
+                Nm_vet = "lual",
+                Cpf_vet = "123123123",
+                Crmv_vet = "12345556",
+                Email_vet = "sagafdf@gmail.com",
+                Senha_vet = "21359"
+            };
+
+            _veterinarioServiceMock.Setup(s => s.GetVeterinarioIdAsync(id_vet)).ReturnsAsync(veterinario);
+
+            // Act
+            var resultado = await _controller.GetVeterinario(id_vet);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedVeterinario = Assert.IsType<Veterinario>(okResult.Value);
+
+            Assert.NotNull(returnedVeterinario);
+            Assert.Equal(id_vet, returnedVeterinario.Id_vet);
+        }
+
+        [Fact]
+        public async Task Deleta_Veterinario()
+        {
+            // Arrange
+            var id_vet = 1;
+
+            var vet = new Veterinario 
+            { 
+                Id_vet = id_vet,
+                Nm_vet = "lual",
+                Cpf_vet = "123123123",
+                Crmv_vet = "12345556",
+                Email_vet = "sagafdf@gmail.com",
+                Senha_vet = "21359"
+            };
+
+            _veterinarioServiceMock.Setup(s => s.DeleteVeterinarioAsync(id_vet)).ReturnsAsync(vet);
+
+            _context.Veterinarios.Add(vet);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var r = await _controller.DeleteVeterinario(id_vet);
+
+            // Assert
+            Assert.IsType<NoContentResult>(r);
+        }
+
     }
 }

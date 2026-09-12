@@ -113,5 +113,92 @@ namespace challengeFiap.UnitTests.Controllers
             Assert.Equal(CarteiraVacinal.Id_animal, retornoCarteiraVacinal.Id_animal);
         }
 
+        [Fact]
+        public async Task GetAll_CarteiraVacinal_RetornandoOk()
+        {
+            // Arrange
+            var list = new List<CarteiraVacinal>
+            {
+                new CarteiraVacinal 
+                { 
+                    Id_carteiraVacinal = 1,
+                    Nm_vacina = "raiva",
+                    Dt_vacina_efetuada = DateTime.Now,
+                    Dt_vacina_prevista = new DateTime(2026,9,9),
+                    St_vacina = Domain.Enums.StatusVacinacao.EFETUADA,
+                    Id_animal= 1,
+                }
+            };
+
+            _CarteiraVacinalServiceMock.Setup(s => s.GetAllCarteiraVacinalAsync()).ReturnsAsync(list);
+
+            // Act
+            var resultado = await _controller.GetAllCarteiraVacinal();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedList = Assert.IsType<List<CarteiraVacinal>>(okResult.Value);
+
+            Assert.NotNull(returnedList);
+            Assert.Single(returnedList);
+        }
+
+        [Fact]
+        public async Task GetId_CarteiraVacinal_RetornandoOk()
+        {
+            // Arrange
+            var id_carteira = 1;
+
+            var carteira = new CarteiraVacinal
+            {
+                Id_carteiraVacinal = id_carteira,
+                Nm_vacina = "raiva",
+                Dt_vacina_efetuada = DateTime.Now,
+                Dt_vacina_prevista = new DateTime(2026, 9, 9),
+                St_vacina = Domain.Enums.StatusVacinacao.EFETUADA,
+                Id_animal = 1,
+            };
+
+            _CarteiraVacinalServiceMock.Setup(s => s.GetCarteiraVacinalIdAsync(id_carteira)).ReturnsAsync(carteira);
+
+            // Act
+            var resultado = await _controller.GetCarteiraVacinal(id_carteira);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedCarteira = Assert.IsType<CarteiraVacinal>(okResult.Value);
+
+            Assert.NotNull(returnedCarteira);
+            Assert.Equal(id_carteira, returnedCarteira.Id_carteiraVacinal);
+        }
+
+        [Fact]
+        public async Task Deleta_CarteiraVacinal()
+        {
+            // Arrange
+            var id_carteira = 1;
+
+            var carteira = new CarteiraVacinal
+            {
+                Id_carteiraVacinal = id_carteira,
+                Nm_vacina = "raiva",
+                Dt_vacina_efetuada = DateTime.Now,
+                Dt_vacina_prevista = new DateTime(2026, 9, 9),
+                St_vacina = Domain.Enums.StatusVacinacao.EFETUADA,
+                Id_animal = 1,
+            };
+
+            _CarteiraVacinalServiceMock.Setup(s => s.DeleteCarteiraVacinalAsync(id_carteira)).ReturnsAsync(carteira);
+
+            _context.CarteiraVacinals.Add(carteira);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var r = await _controller.DeleteCarteiraVacinal(id_carteira);
+
+            // Assert
+            Assert.IsType<NoContentResult>(r);
+        }
+
     }
 }

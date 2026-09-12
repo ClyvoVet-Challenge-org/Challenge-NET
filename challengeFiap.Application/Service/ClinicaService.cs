@@ -1,13 +1,15 @@
 ﻿using challengeFiap.Application.Diagnostics;
 using challengeFiap.Domain.Entities;
 using challengeFiap.Domain.Interfaces;
-
+using challengeFiap.Infrastruture.Data;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace challengeFiap.Application.Service
 {
@@ -21,12 +23,15 @@ namespace challengeFiap.Application.Service
 
         private readonly List<Clinica> _GetClinica = new();
 
+        private readonly AppDbContext _context;
 
-        public ClinicaService(ILogger<ClinicaService> logger, IMeterFactory meterFactory)
+
+        public ClinicaService(ILogger<ClinicaService> logger, IMeterFactory meterFactory, AppDbContext context)
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
             _clinicaCreateCounter = meter.CreateCounter<int>("clinica.create", description: "Total criado");
+            _context = context;
         }
 
         public async Task<Clinica> CreateadAsync(Clinica clinica)
@@ -43,7 +48,7 @@ namespace challengeFiap.Application.Service
                 Cnpj_clinica = clinica.Cnpj_clinica,
                 Nm_clinica = clinica.Nm_clinica
             };
-            
+
             _clinicaCreateCounter.Add(1, new KeyValuePair<string, object?>("clinica.id", createdClinica.Id_clinica), new KeyValuePair<string, object?>("clinica.nome", createdClinica.Nm_clinica));
 
             return createdClinica;
@@ -64,27 +69,45 @@ namespace challengeFiap.Application.Service
             _logger.LogInformation("Clínica atualizada com sucesso: {ClinicaId}", id_clinica);
 
             _clinicaCreateCounter.Add(1, new KeyValuePair<string, object?>("clinica.id", updatedClinica.Id_clinica), new KeyValuePair<string, object?>("clinica.nome", updatedClinica.Nm_clinica));
-        
+
             return updatedClinica;
         }
 
         public async Task<Clinica> DeleteClinicaAsync(int id_Clinica)
         {
-            var clinicaDelete = _GetClinica.FirstOrDefault(c => c.Id_clinica == id_Clinica);
-            if (clinicaDelete != null)
-            {
-                _GetClinica.Remove(clinicaDelete);
-                _logger.LogInformation("Deletado");
+            var clinica = await _context.Clinicas.FindAsync(id_Clinica);
 
-                return clinicaDelete;
+            if (clinica == null)
+            {
+                _logger.LogWarning("clinica não encontrada para exclusão.");
+                throw new Exception("Nao foi inserido");
             }
             else
             {
-                _logger.LogWarning("Id de clinica não foi encontrado. ");
+                _context.Clinicas.Remove(clinica);
 
-                throw new Exception("Id não existente presente");
+                _logger.LogInformation("Clinica encontrado para exclusão");
+
+                return clinica;
             }
         }
 
+        public async Task<Clinica> GetClinicaIdAsync(int id_Clinica)
+        {
+            var clinica = await _context.Clinicas.FindAsync(id_Clinica);
+            if (clinica == null)
+            {
+                _logger.LogWarning("Id não existe: {Id}", id_Clinica);
+                throw new Exception("Id não foi encontrada");
+            }
+
+            return clinica;
+        }
+
+        public async Task<IEnumerable<Clinica>> GetAllClinicaAsync()
+        {
+            var clinicas = await _context.Clinicas.ToListAsync();
+            return clinicas;
+        }
     }
 }

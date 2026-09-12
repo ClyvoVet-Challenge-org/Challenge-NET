@@ -34,7 +34,7 @@ public class EnderecoClinicasController : ControllerBase
 
         try
         {
-            var relatorioEnClinica = await _context.EnderecoClinicas.ToListAsync();
+            var relatorioEnClinica = await _enderecoClinicaService.GetAllEnderecoClinicaAsync();
 
             _logger.LogInformation("Busca de endereço clinica concluída com sucesso");
             return Ok(relatorioEnClinica);
@@ -63,23 +63,22 @@ public class EnderecoClinicasController : ControllerBase
 
         try
         {
-            var enderecoclinica = await _context.EnderecoClinicas.FindAsync(id_endereco_clinica);
-
-            if
+            try
             {
-                _logger.LogWarning("Endereço CLINICA não encontrado ");
+                var enderecoclinica = await _enderecoClinicaService.GetEnderecoClinicaIdAsync(id_endereco_clinica);
+                _logger.LogInformation("Endereço clinica foi encontrado com sucesso");
+                return Ok(enderecoclinica);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "endereco clinica não encontrada para o ID");
                 return NotFound("Id não encontrado");
             }
-
-            _logger.LogInformation("Endereço clinica encontrado com sucesso.");
-
-            return Ok(enderecoclinica);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Erro achado ao buscar endereço clinica. ID: {IdEnderecoClinica}", id_endereco_clinica);
-
-            return BadRequest($"Erro achado: {ex.Message}");
+            return BadRequest($"Erro em buscar pelo id: {ex.Message}");
         }
 
     }
@@ -210,25 +209,18 @@ public class EnderecoClinicasController : ControllerBase
 
         try
         {
-            var enderecoclinica = await _context.EnderecoClinicas.FindAsync(id_endereco_clinica);
+            var enderecoclinica = await _enderecoClinicaService.DeleteEnderecoClinicaAsync(id_endereco_clinica);
 
-            if (enderecoclinica == null)
-            {
-                _logger.LogWarning("Endereço CLINICA não encontrado para exclusão");
-                return NotFound("Id não encontrado");
-            }
-            
             _context.EnderecoClinicas.Remove(enderecoclinica);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Endereço clinica removido com sucesso. ID: {IdEnderecoClinica}", id_endereco_clinica);
+            _logger.LogInformation("EnderecoClinica foi excluído com sucesso");
 
             return NoContent();
         }
         catch(Exception ex)
         {
             _logger.LogError(ex, "Erro em deletar endereço clinica. ID: {IdEnderecoClinica}", id_endereco_clinica);
-
             return BadRequest($"Erro em deletar: {ex.Message}");
         }
 

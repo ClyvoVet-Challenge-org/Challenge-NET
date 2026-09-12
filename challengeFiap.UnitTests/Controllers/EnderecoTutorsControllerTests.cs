@@ -119,5 +119,107 @@ namespace challengeFiap.UnitTests.Controllers
 
         }
 
+        [Fact]
+        public async Task GetAll_EnderecoResponsavel_RetornandoOk()
+        {
+            // Arrange
+            var list = new List<EnderecoTutor>
+            {
+                new EnderecoTutor 
+                { 
+                    Id_endereco_tutor = 1,
+                    Pais = "brasil",
+                    Estado = "são paulo",
+                    Cidade = "são paulo",
+                    Bairro = "bairro roxo",
+                    Logradouro_rua = "1263",
+                    Nr_rua = "Dom Cachorro",
+                    Complemento = "1212",
+                    Cep = "123456",
+                    Id_tutor = 1
+                }
+            };
+
+            _enderecoTutorServiceMock.Setup(s => s.GetAllEnderecoTutorAsync())
+                .ReturnsAsync(list);
+
+            // Act
+            var resultado = await _controller.GetAllEnderecoResponsavel();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedList = Assert.IsType<List<EnderecoTutor>>(okResult.Value);
+
+            Assert.NotNull(returnedList);
+            Assert.Single(returnedList);
+        }
+
+        [Fact]
+        public async Task GetId_EnderecoResponsavel_RetornandoOk()
+        {
+            // Arrange
+            var id_endereco_responsavel = 1;
+
+            var endereco = new EnderecoTutor
+            {
+                Id_endereco_tutor = id_endereco_responsavel,
+                Pais = "brasil",
+                Estado = "são paulo",
+                Cidade = "são paulo",
+                Bairro = "bairro roxo",
+                Logradouro_rua = "1263",
+                Nr_rua = "Dom Cachorro",
+                Complemento = "1212",
+                Cep = "123456",
+                Id_tutor = 1
+            };
+
+            _enderecoTutorServiceMock
+                .Setup(s => s.GetEnderecoTutorIdAsync(id_endereco_responsavel))
+                .ReturnsAsync(endereco);
+
+            // Act
+            var resultado = await _controller.GetEnderecoResponsavel(id_endereco_responsavel);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedEndereco = Assert.IsType<EnderecoTutor>(okResult.Value);
+
+            Assert.NotNull(returnedEndereco);
+            Assert.Equal(id_endereco_responsavel, returnedEndereco.Id_endereco_tutor);
+        }
+
+        [Fact]
+        public async Task Deleta_EnderecoResponsavel()
+        {
+            // Arrange
+            var id_endereco_responsavel = 1;
+
+            var endereco = new EnderecoTutor 
+            { 
+                Id_endereco_tutor = id_endereco_responsavel,
+                Pais = "brasil",
+                Estado = "são paulo",
+                Cidade = "são paulo",
+                Bairro = "bairro roxo",
+                Logradouro_rua = "1263",
+                Nr_rua = "Dom Cachorro",
+                Complemento = "1212",
+                Cep = "123456",
+                Id_tutor = 1
+            };
+
+            _enderecoTutorServiceMock.Setup(s => s.DeleteEnderecoTutorAsync(id_endereco_responsavel)).ReturnsAsync(endereco);
+
+            _context.EnderecoTutors.Add(endereco);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var r = await _controller.DeleteEnderecoResponsavel(id_endereco_responsavel);
+
+            // Assert
+            Assert.IsType<NoContentResult>(r);
+        }
+
     }
 }

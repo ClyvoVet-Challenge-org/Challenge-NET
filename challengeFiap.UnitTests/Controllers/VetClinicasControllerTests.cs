@@ -118,8 +118,7 @@ namespace challengeFiap.UnitTests.Controllers
             _context.VetClinicas.Add(VetClinica);
             await _context.SaveChangesAsync();
 
-            _VetClinicaServiceMock.Setup(service => service.UpdateVetClinicaAsync(id_VetClinica, VetClinica))
-                .ReturnsAsync(VetClinica);
+            _VetClinicaServiceMock.Setup(service => service.UpdateVetClinicaAsync(id_VetClinica, VetClinica)).ReturnsAsync(VetClinica);
 
             //Act
             var atualizacaoRealizada = await _controller.PutVetClinica(id_VetClinica, VetClinica);
@@ -131,6 +130,84 @@ namespace challengeFiap.UnitTests.Controllers
             Assert.Equal(VetClinica.Id_clinica_vet, retornoVetClinica.Id_clinica_vet);
             Assert.Equal(VetClinica.Id_vet, retornoVetClinica.Id_vet);
             Assert.Equal(VetClinica.Id_clinica, retornoVetClinica.Id_clinica);
+        }
+
+        [Fact]
+        public async Task GetAll_VetClinica_RetornandoOk()
+        {
+            // Arrange
+            var list = new List<VetClinica>
+            {
+                new VetClinica 
+                { 
+                    Id_clinica_vet = 1, 
+                    Id_vet = 1, 
+                    Id_clinica = 1 
+                }
+            };
+
+            _VetClinicaServiceMock.Setup(s => s.GetAllVetClinicaAsync()).ReturnsAsync(list);
+
+            // Act
+            var resultado = await _controller.GetAllVetClinica();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedList = Assert.IsType<List<VetClinica>>(okResult.Value);
+
+            Assert.NotNull(returnedList);
+            Assert.Single(returnedList);
+        }
+
+        [Fact]
+        public async Task GetId_VetClinica_RetornandoOk()
+        {
+            // Arrange
+            var id_clinica_vet = 1;
+
+            var vetclinica = new VetClinica
+            {
+                Id_clinica_vet = id_clinica_vet,
+                Id_vet = 1,
+                Id_clinica = 1
+            };
+
+            _VetClinicaServiceMock.Setup(s => s.GetVetClinicaIdAsync(id_clinica_vet)).ReturnsAsync(vetclinica);
+
+            // Act
+            var resultado = await _controller.GetVetClinica(id_clinica_vet);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedVetClinica = Assert.IsType<VetClinica>(okResult.Value);
+
+            Assert.NotNull(returnedVetClinica);
+            Assert.Equal(id_clinica_vet, returnedVetClinica.Id_clinica_vet);
+        }
+
+        [Fact]
+        public async Task Deleta_VetClinica()
+        {
+            // Arrange
+            var id_clinica_vet = 1;
+
+            var vetclinica = new VetClinica 
+            { 
+                Id_clinica_vet = id_clinica_vet, 
+                Id_vet = 1, 
+                Id_clinica = 1 
+            };
+
+            _VetClinicaServiceMock.Setup(s => s.DeleteVetClinicaAsync(id_clinica_vet)).ReturnsAsync(vetclinica);
+
+            _context.VetClinicas.Add(vetclinica);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var r = await _controller.DeleteVetClinica(id_clinica_vet);
+
+            // Assert
+            Assert.IsType<NoContentResult>(r);
         }
         
     }

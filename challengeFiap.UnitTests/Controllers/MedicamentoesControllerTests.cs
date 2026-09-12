@@ -108,6 +108,94 @@ namespace challengeFiap.UnitTests.Controllers
             Assert.Equal(Medicamento.Qtd_dias, retornoMedicamento.Qtd_dias);
 
         }
-        
+
+        [Fact]
+        public async Task GetAll_Medicamento_RetornandoOk()
+        {
+            // Arrange
+            var list = new List<Medicamento>
+            {
+                new Medicamento 
+                { 
+                    Id_medicamento = 1,
+                    Id_prescricao = 1,
+                    Nm_medicamento = "AJUDA",
+                    Dosagem_medicamento = "GOTA",
+                    Frequencia = "2 vezes",
+                    Qtd_dias = 1
+                }
+            };
+
+            _MedicamentoServiceMock.Setup(s => s.GetAllMedicamentoAsync())
+                .ReturnsAsync(list);
+
+            // Act
+            var resultado = await _controller.GetAllMedicamento();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedList = Assert.IsType<List<Medicamento>>(okResult.Value);
+
+            Assert.NotNull(returnedList);
+            Assert.Single(returnedList);
+        }
+
+        [Fact]
+        public async Task GetId_Medicamento_RetornandoOk()
+        {
+            // Arrange
+            var id_medicamento = 1;
+
+            var medicamento = new Medicamento
+            {
+                Id_medicamento = id_medicamento,
+                Id_prescricao = 1,
+                Nm_medicamento = "AJUDA",
+                Dosagem_medicamento = "GOTA",
+                Frequencia = "2 vezes",
+                Qtd_dias = 1
+            };
+
+            _MedicamentoServiceMock.Setup(s => s.GetMedicamentoIdAsync(id_medicamento)).ReturnsAsync(medicamento);
+
+            // Act
+            var resultado = await _controller.GetMedicamento(id_medicamento);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedMedicamento = Assert.IsType<Medicamento>(okResult.Value);
+
+            Assert.NotNull(returnedMedicamento);
+            Assert.Equal(id_medicamento, returnedMedicamento.Id_medicamento);
+        }
+
+        [Fact]
+        public async Task Deleta_Medicamento()
+        {
+            // Arrange
+            var id_medicamento = 1;
+
+            var medicamento = new Medicamento 
+            { 
+                Id_medicamento = id_medicamento,
+                Id_prescricao = 1,
+                Nm_medicamento = "AJUDA",
+                Dosagem_medicamento = "GOTA",
+                Frequencia = "2 vezes",
+                Qtd_dias = 1
+            };
+
+            _MedicamentoServiceMock.Setup(s => s.DeleteMedicamentoAsync(id_medicamento)).ReturnsAsync(medicamento);
+
+            _context.Medicamentos.Add(medicamento);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var r = await _controller.DeleteMedicamento(id_medicamento);
+
+            // Assert
+            Assert.IsType<NoContentResult>(r);
+        }
+
     }
 }

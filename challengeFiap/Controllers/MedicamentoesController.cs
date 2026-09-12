@@ -34,7 +34,7 @@ public class MedicamentoesController : ControllerBase
 
         try
         {
-            var relatorioMedicamento = await _context.Medicamentos.ToArrayAsync();
+            var relatorioMedicamento = await _medicamentoService.GetAllMedicamentoAsync();
 
             _logger.LogInformation("Busca de medicamentos concluída com sucesso");
             return Ok(relatorioMedicamento);
@@ -63,16 +63,17 @@ public class MedicamentoesController : ControllerBase
 
         try
         {
-            var medicamento = await _context.Medicamentos.FindAsync(id_medicamento);
-
-            if (medicamento == null)
+            try
             {
-                _logger.LogWarning("Medicamento não encontrada para o ID");
+                var medicamento = await _medicamentoService.GetMedicamentoIdAsync(id_medicamento);
+                _logger.LogInformation("Medicamento foi encontrado com sucesso");
+                return Ok(medicamento);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "medicamento não encontrado para o ID");
                 return NotFound("Id de medicamento não encontrado");
             }
-
-            _logger.LogInformation("Medicamento encontrado com sucesso para o ID {IdMedicamento}", id_medicamento);
-            return Ok(medicamento);
         }
         catch (Exception ex)
         {
@@ -199,18 +200,12 @@ public class MedicamentoesController : ControllerBase
 
         try
         {
-            var medicamento = await _context.Medicamentos.FindAsync(id_medicamento);
+            var medicamento = await _medicamentoService.DeleteMedicamentoAsync(id_medicamento);
 
-            if (medicamento == null)
-            {
-                _logger.LogWarning("Medicamento não encontrada para exclusão.");
-                return NotFound("Id medicamento não encontrado");
-            }
-            
             _context.Medicamentos.Remove(medicamento);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Medicamento com ID {IdMedicamento} excluído com sucesso", id_medicamento);
+            _logger.LogInformation("Medicamento foi excluído com sucesso");
             return NoContent();
         }
         catch (Exception ex)

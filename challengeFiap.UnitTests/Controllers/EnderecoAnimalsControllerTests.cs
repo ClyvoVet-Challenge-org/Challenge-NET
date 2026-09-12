@@ -122,5 +122,104 @@ namespace challengeFiap.UnitTests.Controllers
             Assert.Equal(enderecoAnimal.Id_animal, retornoenderecoAnimal.Id_animal);
 
         }
+        [Fact]
+        public async Task GetAll_EnderecoAnimal_RetornandoOk()
+        {
+            // Arrange
+            var list = new List<EnderecoAnimal>
+            {
+                new EnderecoAnimal 
+                { 
+                    Id_endereco_animal = 1,
+                    Pais = "brasil",
+                    Estado = "são paulo",
+                    Cidade = "são paulo",
+                    Bairro = "bairro roxo",
+                    Logradouro_rua = "1263",
+                    Nr_rua = "Dom Cachorro",
+                    Complemento = "1212",
+                    Cep = "123456",
+                    Id_animal = 1,
+                }
+            };
+
+            _enderecoAnimalServiceMock.Setup(s => s.GetAllEnderecoAnimalAsync())
+                .ReturnsAsync(list);
+
+            // Act
+            var resultado = await _controller.GetAllEnderecoAnimal();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedList = Assert.IsType<List<EnderecoAnimal>>(okResult.Value);
+
+            Assert.NotNull(returnedList);
+            Assert.Single(returnedList);
+        }
+
+        [Fact]
+        public async Task GetId_EnderecoAnimal_RetornandoOk()
+        {
+            // Arrange
+            var id_endereco_animal = 1;
+
+            var endereco = new EnderecoAnimal
+            {
+                Id_endereco_animal = id_endereco_animal,
+                Pais = "brasil",
+                Estado = "são paulo",
+                Cidade = "são paulo",
+                Bairro = "bairro roxo",
+                Logradouro_rua = "1263",
+                Nr_rua = "Dom Cachorro",
+                Complemento = "1212",
+                Cep = "123456",
+                Id_animal = 1,
+            };
+
+            _enderecoAnimalServiceMock.Setup(s => s.GetEnderecoAnimalIdAsync(id_endereco_animal)).ReturnsAsync(endereco);
+
+            // Act
+            var resultado = await _controller.GetEnderecoAnimal(id_endereco_animal);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedEndereco = Assert.IsType<EnderecoAnimal>(okResult.Value);
+
+            Assert.NotNull(returnedEndereco);
+            Assert.Equal(id_endereco_animal, returnedEndereco.Id_endereco_animal);
+        }
+
+        [Fact]
+        public async Task Deleta_EnderecoAnimal()
+        {
+            // Arrange
+            var id_endereco_animal = 1;
+
+            var endereco = new EnderecoAnimal 
+            { 
+                Id_endereco_animal = id_endereco_animal,
+                Pais = "brasil",
+                Estado = "são paulo",
+                Cidade = "são paulo",
+                Bairro = "bairro roxo",
+                Logradouro_rua = "1263",
+                Nr_rua = "Dom Cachorro",
+                Complemento = "1212",
+                Cep = "123456",
+                Id_animal = 1,
+            };
+
+            _enderecoAnimalServiceMock.Setup(s => s.DeleteEnderecoAnimalAsync(id_endereco_animal)).ReturnsAsync(endereco);
+
+            _context.EnderecoAnimals.Add(endereco);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var r = await _controller.DeleteEnderecoAnimal(id_endereco_animal);
+
+            // Assert
+            Assert.IsType<NoContentResult>(r);
+        }
     }
 }

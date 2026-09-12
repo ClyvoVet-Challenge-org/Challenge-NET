@@ -34,7 +34,7 @@ public class VeterinariosController : ControllerBase
 
         try
         {
-            var relatorioVeterinario = await _context.Veterinarios.ToListAsync();
+            var relatorioVeterinario = await _veterinarioService.GetAllVeterinarioAsync();
 
             _logger.LogInformation("Busca de veterinarios concluída com sucesso");
             return Ok(relatorioVeterinario);
@@ -59,18 +59,25 @@ public class VeterinariosController : ControllerBase
     [Route("relatorio/veterinario/{id_vet:int}")]
     public async Task<ActionResult<Veterinario>> GetVeterinario(int id_vet)
     {
-        _logger.LogInformation("Iniciando a busca do veterinario com ID {IdVet}", id_vet);
+        _logger.LogInformation("Iniciando a busca do veterinario");
 
         try
         {
-            var veterinario = await _context.Veterinarios.FirstOrDefaultAsync(v => v.Id_vet == id_vet);
-            
-            _logger.LogInformation("Veterinario com ID {IdVet} encontrado com sucesso", id_vet);
-            return Ok(veterinario);
+            try
+            {
+                var veterinario = await _veterinarioService.GetVeterinarioIdAsync(id_vet);
+                _logger.LogInformation("Veterinario foi encontrado com sucesso");
+                return Ok(veterinario);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "veterinario não encontrada para o ID");
+                return NotFound("Id de veterinario não encontrado");
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao buscar o veterinario com ID {IdVet}", id_vet);
+            _logger.LogError(ex, "Erro ao buscar o veterinario");
             return BadRequest($"Erro em buscar pelo id: {ex.Message}");
         }
     }
@@ -87,11 +94,11 @@ public class VeterinariosController : ControllerBase
     [Route("atualizar/veterinario/{id_vet:int}")]
     public async Task<IActionResult> PutVeterinario(int id_vet, Veterinario veterinario)
     {
-        _logger.LogInformation("Iniciando a atualização do veterinario com ID {IdVet}", id_vet);
+        _logger.LogInformation("Iniciando a atualização do veterinario");
 
         if (id_vet != veterinario.Id_vet)
         {
-            _logger.LogWarning("ID do veterinario incorreto. ID da rota: {IdVet}, ID do objeto: {IdVeterinario}", id_vet, veterinario.Id_vet);
+            _logger.LogWarning("ID do veterinario incorreto");
             return BadRequest("Id veterianario esta incorreto.");
         }
 
@@ -103,7 +110,7 @@ public class VeterinariosController : ControllerBase
 
             if (cpfVet != null || crmvVet != null || email != null)
             {
-                _logger.LogWarning("Não foi possível atualizar o veterinario com ID {IdVet}: CPF, CRMV ou email já estão sendo utilizados", id_vet);
+                _logger.LogWarning("Precisa informar o email crmv e cpf");
                 return BadRequest("Não foi possivel de cadastras: cpf, crmv ou email ja estão sento utilizando");
             }
 
@@ -113,21 +120,21 @@ public class VeterinariosController : ControllerBase
 
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Veterinario com ID {IdVet} atualizado com sucesso", id_vet);
+            _logger.LogInformation("Veterinario foi atualizado com sucesso");
             return Ok(veterinarioAtualizado);
         }
         catch (DbUpdateConcurrencyException)
         {
             if (!VeterinarioExists(id_vet))
             {
-                _logger.LogWarning("Veterinario com ID {IdVet} não encontrado durante a atualização", id_vet);
+                _logger.LogWarning("Veterinario informado não encontrado durante a atualização");
                 return NotFound("Id verterinario não encontrado");
             }
             throw;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao atualizar o veterinario com ID {IdVet}", id_vet);
+            _logger.LogError(ex, "Erro ao atualizar o veterinario");
             return BadRequest($"Erro em atualizar: {ex.Message}");
         }
 
@@ -151,7 +158,7 @@ public class VeterinariosController : ControllerBase
     [Route("criar/veterinario")]
     public async Task<ActionResult<Veterinario>> PostVeterinario(Veterinario veterinario)
     {
-        _logger.LogInformation("Iniciando o cadastro de um novo veterinario com CPF {CpfVet}", veterinario.Cpf_vet);
+        _logger.LogInformation("Iniciando o cadastro de um novo veterinario");
 
         try
         {
@@ -172,7 +179,7 @@ public class VeterinariosController : ControllerBase
 
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation("Veterinario criado com sucesso. ID {IdVet}", veterinario.Id_vet);
+                _logger.LogInformation("Veterinario criado com sucesso.");
                 return Ok(veterinarioCriado);
             }
         }
@@ -196,21 +203,23 @@ public class VeterinariosController : ControllerBase
     [Route("deleta/veterinario/{id_vet:int}")]
     public async Task<IActionResult> DeleteVeterinario(int id_vet)
     {
-        _logger.LogInformation("Iniciando a exclusão do veterinario com ID {IdVet}", id_vet);
+        _logger.LogInformation("Iniciando a exclusão do veterinario");
 
         try
         {
-            var veterinario = await _context.Veterinarios.FirstOrDefaultAsync(e => e.Id_vet == id_vet);
+            var veterinario = await _veterinarioService.DeleteVeterinarioAsync(id_vet);
+
             _context.Veterinarios.Remove(veterinario);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Veterinario com ID {IdVet} excluído com sucesso", id_vet);
+            _logger.LogInformation("Veterinario foi excluído com sucesso");
+
             return NoContent();
 
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao deletar o veterinario com ID {IdVet}", id_vet);
+            _logger.LogError(ex, "Erro ao deletar o veterinario");
             return BadRequest($"Erro em deletar: {ex.Message}");
         }
     }

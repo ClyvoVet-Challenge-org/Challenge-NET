@@ -37,7 +37,7 @@ public class EnderecoAnimalsController : ControllerBase
 
         try
         {
-            var relatorioEnAnimal = await _context.EnderecoAnimals.ToListAsync();
+            var relatorioEnAnimal = await _enderecoAnimalService.GetAllEnderecoAnimalAsync();
 
             _logger.LogInformation("Busca de endereço animal concluída com sucesso");
 
@@ -68,18 +68,17 @@ public class EnderecoAnimalsController : ControllerBase
 
         try
         {
-             var enderecoanimal = await _context.EnderecoAnimals.FindAsync(id_endereco_animal);
-
-            if (enderecoanimal == null)
+            try
             {
-                _logger.LogWarning("Endereço animal não encontrou o id esta vazio");
-
+                var enderecoanimal = await _enderecoAnimalService.GetEnderecoAnimalIdAsync(id_endereco_animal);
+                _logger.LogInformation("Endereço animal foi encontrado com sucesso");
+                return Ok(enderecoanimal);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "endereco animal não encontrado para o ID");
                 return NotFound("Endereço animal não encontrado.");
             }
-            
-            _logger.LogInformation("Endereço animal encontrado com sucesso.");
-
-            return Ok(enderecoanimal);
         }
         catch(Exception ex)
         {
@@ -213,18 +212,12 @@ public class EnderecoAnimalsController : ControllerBase
 
         try
         {
-            var enderecoanimal = await _context.EnderecoAnimals.FindAsync(id_endereco_animal);
+            var enderecoanimal = await _enderecoAnimalService.DeleteEnderecoAnimalAsync(id_endereco_animal);
 
-            if (enderecoanimal == null)
-            {
-                _logger.LogWarning("Id oferecido esta diferente ao id presente principal.");
-
-                return NotFound("Id não encontrado");
-            }
-
+            _context.EnderecoAnimals.Remove(enderecoanimal);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Endereço animal removido com sucesso.");
+            _logger.LogInformation("EnderecoAnimal foi excluído com sucesso");
 
             return NoContent();
         }catch(Exception ex)

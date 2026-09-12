@@ -37,9 +37,9 @@ public class AnimalsController : ControllerBase
         _logger.LogInformation("Começando o relatorio dos animais.");
         try
         {
-            var relatorioAnimal = await _context.Animals.ToListAsync();
+            var relatorioAnimal = await _animalService.GetAllAnimalsAsync();
 
-            _logger.LogInformation("Relatorio geral de animal realizado com sucesso - total presente: {Count}", relatorioAnimal.Count);
+            _logger.LogInformation("Relatorio geral de animal realizado com sucesso - total presente: {Count}", relatorioAnimal?.Count() ?? 0);
 
             return Ok(relatorioAnimal);
         }
@@ -67,22 +67,21 @@ public class AnimalsController : ControllerBase
         _logger.LogInformation($"Começando a buscar pelo animal por seu id: {id_animal}");
         try
         {
-            var animal = await _context.Animals.FindAsync(id_animal);
-
-            if (animal == null)
+            try
             {
-                _logger.LogWarning("Id não inseridor");
-
-                return NotFound("Id Animal não encontrada");
+                var animal = await _animalService.GetAnimalAsync(id_animal);
+                _logger.LogInformation("Animal foi encontrado com sucesso");
+                return Ok(animal);
             }
-            _logger.LogInformation("Busca do animal com id_animal -> {IdAnimal} realizada com sucesso", id_animal);
-
-            return Ok(animal);
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "animal não encontrada para o ID");
+                return NotFound("Id de animal não encontrado");
+            }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Erro ao buscar o animal com ID: {IdAnimal}", id_animal);
-
             return BadRequest($"Erro em processar a buscar: {ex.Message}");
         }
     }
@@ -207,12 +206,12 @@ public class AnimalsController : ControllerBase
         _logger.LogInformation("Processo de deletar do animal");
         try
         {
-            var animalExistente = await _context.Animals.FirstOrDefaultAsync(e => e.Id_animal == id_animal);
-            
-            _context.Animals.Remove(animalExistente);
+            var animal = await _animalService.DeleteAnimalAsync(id_animal);
+
+            _context.Animals.Remove(animal);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Foi deletado");
+            _logger.LogInformation("Animal foi excluído com sucesso");
 
             return NoContent();
         }

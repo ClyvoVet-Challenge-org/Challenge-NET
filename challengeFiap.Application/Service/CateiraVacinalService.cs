@@ -1,11 +1,15 @@
 ﻿using challengeFiap.Application.Diagnostics;
 using challengeFiap.Domain.Entities;
 using challengeFiap.Domain.Interfaces;
+using challengeFiap.Infrastruture.Data;
 using Microsoft.Extensions.Logging;
-
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
-using System.Net.Http.Headers;
+using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System;
 
 namespace challengeFiap.Application.Service
 {
@@ -20,12 +24,15 @@ namespace challengeFiap.Application.Service
 
         private readonly List<CarteiraVacinal> _GetCarteiraVacinal = new();
 
+        private readonly AppDbContext _context;
 
-        public CateiraVacinalService(ILogger<CateiraVacinalService> logger, IMeterFactory meterFactory)
+
+        public CateiraVacinalService(ILogger<CateiraVacinalService> logger, IMeterFactory meterFactory, AppDbContext context)
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
             _CarteiraVacinalCreateCounter = meter.CreateCounter<int>("carteira_vacinal.create");
+            _context = context;
 
         }
         public async Task<CarteiraVacinal> CreateCarteiraVacinalAsync(CarteiraVacinal carteiraVacinal)
@@ -81,23 +88,40 @@ namespace challengeFiap.Application.Service
         }
         public async Task<CarteiraVacinal> DeleteCarteiraVacinalAsync(int id_CarteiraVacinal)
         {
-            var carteiraVacinalDelete = _GetCarteiraVacinal.FirstOrDefault(c=> c.Id_carteiraVacinal==id_CarteiraVacinal);
-            if(carteiraVacinalDelete != null)
-            {
-                _GetCarteiraVacinal.Remove(carteiraVacinalDelete);
-                _logger.LogInformation("Deletado");
+            var carteiraVacinal = await _context.CarteiraVacinals.FindAsync(id_CarteiraVacinal);
 
-                return carteiraVacinalDelete;
+            if (carteiraVacinal == null)
+            {
+                _logger.LogWarning("carteira vacinal não encontrada para exclusão.");
+                throw new Exception("Nao foi inserido");
             }
             else
             {
-                _logger.LogWarning("Id de carteira vacinal não foi encontrado. ");
+                _context.CarteiraVacinals.Remove(carteiraVacinal);
 
-                throw new Exception("Id não existente presente");
+                _logger.LogInformation("CarteiraVacinal encontrado para exclusão");
+
+                return carteiraVacinal;
             }
         }
 
+        public async Task<CarteiraVacinal> GetCarteiraVacinalIdAsync(int id_CarteiraVacinal)
+        {
+            var carteira = await _context.CarteiraVacinals.FindAsync(id_CarteiraVacinal);
+            if (carteira == null)
+            {
+                _logger.LogWarning("Id não existe: {Id}", id_CarteiraVacinal);
+                throw new Exception("Id não foi encontrada");
+            }
 
+            return carteira;
+        }
+
+        public async Task<IEnumerable<CarteiraVacinal>> GetAllCarteiraVacinalAsync()
+        {
+            var carteiras = await _context.CarteiraVacinals.ToListAsync();
+            return carteiras;
+        }
     }
 }
 

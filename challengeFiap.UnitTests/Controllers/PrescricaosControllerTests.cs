@@ -35,6 +35,7 @@ namespace challengeFiap.UnitTests.Controllers
             _controller = new PrescricaosController(_context, _logger, _PrescricaosServiceMock.Object);
         }
 
+       
         //Criação
         [Fact]
         public async Task Create_Prescricaos_RetornaOK()
@@ -105,6 +106,91 @@ namespace challengeFiap.UnitTests.Controllers
             Assert.Equal(Prescricaos.Id_consulta, retornoPrescricaos.Id_consulta);
             Assert.Equal(Prescricaos.Observacoes_gerais, retornoPrescricaos.Observacoes_gerais);
         }
-    
+
+        [Fact]
+        public async Task GetAll_Prescricao_RetornandoOk()
+        {
+            // Arrange
+            var list = new List<Prescricao>
+            {
+                new Prescricao 
+                { 
+                    Id_prescricao = 1,
+                    Dt_emissao = DateTime.Now,
+                    Dt_expiracao = new DateTime(2026,09,10),
+                    Id_consulta = 1,
+                    Observacoes_gerais="Paciente esta bem"
+                }
+            };
+
+            _PrescricaosServiceMock.Setup(s => s.GetAllPrescricaoAsync())
+                .ReturnsAsync(list);
+
+            // Act
+            var resultado = await _controller.GetAllPrescricao();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedList = Assert.IsType<List<Prescricao>>(okResult.Value);
+
+            Assert.NotNull(returnedList);
+            Assert.Single(returnedList);
+        }
+
+        [Fact]
+        public async Task GetId_Prescricao_RetornandoOk()
+        {
+            // Arrange
+            var id_prescricao = 1;
+
+            var prescricao = new Prescricao
+            {
+                Id_prescricao = id_prescricao,
+                Dt_emissao = DateTime.Now,
+                Dt_expiracao = new DateTime(2026, 09, 10),
+                Id_consulta = 1,
+                Observacoes_gerais = "Paciente esta bem"
+            };
+
+            _PrescricaosServiceMock.Setup(s => s.GetPrescricaoIdAsync(id_prescricao)).ReturnsAsync(prescricao);
+
+            // Act
+            var resultado = await _controller.GetPrescricao(id_prescricao);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedPrescricao = Assert.IsType<Prescricao>(okResult.Value);
+
+            Assert.NotNull(returnedPrescricao);
+            Assert.Equal(id_prescricao, returnedPrescricao.Id_prescricao);
+        }
+
+        [Fact]
+        public async Task Deleta_Prescricao()
+        {
+            // Arrange
+            var id_prescricao = 1;
+
+            var prescricao = new Prescricao { 
+                Id_prescricao = id_prescricao,
+                Dt_emissao = DateTime.Now,
+                Dt_expiracao = new DateTime(2026, 09, 10),
+                Id_consulta = 1,
+                Observacoes_gerais = "Paciente esta bem"
+            };
+
+            _PrescricaosServiceMock.Setup(s => s.DeletePrescricaoAsync(id_prescricao)).ReturnsAsync(prescricao);
+
+            _context.Prescricaos.Add(prescricao);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var r = await _controller.DeletePrescricao(id_prescricao);
+
+            // Assert
+            Assert.IsType<NoContentResult>(r);
+        }
+
+
     }
 }

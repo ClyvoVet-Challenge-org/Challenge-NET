@@ -34,7 +34,7 @@ public class TutorController : ControllerBase
 
         try
         {
-            var TutorRelatorio = await _context.Tutor.ToListAsync();
+            var TutorRelatorio = await _tutorService.GetAllTutorAsync();
 
             _logger.LogInformation("Busca de tutores concluída com sucesso");
             return Ok(TutorRelatorio);
@@ -63,10 +63,17 @@ public class TutorController : ControllerBase
 
         try
         {
-            var Tutor = await _context.Tutor.FirstOrDefaultAsync(t => t.Id_tutor == id_Tutor);
-
-            _logger.LogInformation("Tutor encontrado com sucesso para o ID {IdTutor}", id_Tutor);
-            return Ok(Tutor);
+            try
+            {
+                var Tutor = await _tutorService.GetTutorIdAsync(id_Tutor);
+                _logger.LogInformation("Tutor foi encontrado com sucesso");
+                return Ok(Tutor);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "tutor não encontrado para o ID");
+                return NotFound("Id de tutor não encontrado");
+            }
         }
         catch (Exception ex)
         {
@@ -204,17 +211,17 @@ public class TutorController : ControllerBase
 
         try
         {
-            var Tutor = await _context.Tutor.FirstOrDefaultAsync(e => e.Id_tutor == id_Tutor);
-            
+            var Tutor = await _tutorService.DeleteTutorAsync(id_Tutor);
+
             _context.Tutor.Remove(Tutor);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Tutor com ID {IdTutor} excluído com sucesso", id_Tutor);
+            _logger.LogInformation("Tutor foi excluído com sucesso");
             return NoContent();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao deletar tutor com ID {IdTutor}", id_Tutor);
+            _logger.LogError(ex, "Erro ao deletar ID tutor com {IdTutor}", id_Tutor);
             return BadRequest($"Erro em deletar: {ex.Message}");
         }
     }

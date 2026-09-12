@@ -124,5 +124,91 @@ namespace challengeFiap.UnitTests.Controllers
             Assert.Equal(consulta.Id_animal, retornoconsulta.Id_animal);
         }
 
+        [Fact]
+        public async Task GetAll_Consulta_RetornandoOk()
+        {
+            // Arrange
+            var list = new List<Consulta>
+            {
+                new Consulta 
+                { 
+                    Id_consulta = 1, 
+                    Historico_consulta = "OK", 
+                    Id_vet = 1, 
+                    Id_animal = 1 
+                }
+            };
+
+            _ConsultaserviceMock.Setup(s => s.GetAllConsultaAsync())
+                .ReturnsAsync(list);
+
+            // Act
+            var resultado = await _controller.GetAllConsulta();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedList = Assert.IsType<List<Consulta>>(okResult.Value);
+
+            Assert.NotNull(returnedList);
+            Assert.Single(returnedList);
+        }
+
+        [Fact]
+        public async Task GetId_Consulta_RetornandoOk()
+        {
+            // Arrange
+            var id_consulta = 1;
+
+            var consulta = new Consulta
+            {
+                Id_consulta = id_consulta,
+                Historico_consulta = "Foi bom o resultado",
+                St_consulta = Domain.Enums.StatusConsulta.passada,
+                Dt_consulta = DateTime.Now,
+                Id_vet = 1,
+                Id_animal = 1,
+            };
+
+            _ConsultaserviceMock.Setup(s => s.GetConsultaIdAsync(id_consulta)).ReturnsAsync(consulta);
+
+            // Act
+            var resultado = await _controller.GetConsulta(id_consulta);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado.Result);
+            var returnedConsulta = Assert.IsType<Consulta>(okResult.Value);
+
+            Assert.NotNull(returnedConsulta);
+            Assert.Equal(id_consulta, returnedConsulta.Id_consulta);
+        }
+
+        [Fact]
+        public async Task Deleta_Consulta()
+        {
+            // Arrange
+            var id_consulta = 1;
+
+            var consulta = new Consulta 
+            { 
+                Id_consulta = id_consulta,
+                Historico_consulta = "Foi bom o resultado",
+                St_consulta = Domain.Enums.StatusConsulta.passada,
+                Dt_consulta = DateTime.Now,
+                Id_vet = 1,
+                Id_animal = 1,
+            };
+
+            _ConsultaserviceMock.Setup(s => s.DeleteConsultaAsync(id_consulta)).ReturnsAsync(consulta);
+
+            _context.Consultas.Add(consulta);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var r = await _controller.DeleteConsulta(id_consulta);
+
+            // Assert
+            Assert.IsType<NoContentResult>(r);
+        }
+
     }
 }

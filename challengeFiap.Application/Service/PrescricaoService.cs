@@ -1,12 +1,16 @@
 ﻿using challengeFiap.Application.Diagnostics;
 using challengeFiap.Domain.Entities;
 using challengeFiap.Domain.Interfaces;
+using challengeFiap.Infrastruture.Data;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace challengeFiap.Application.Service
 {
@@ -20,11 +24,14 @@ namespace challengeFiap.Application.Service
 
         private readonly List<Prescricao> _GetPrescricao = new();
 
-        public PrescricaoService(ILogger<PrescricaoService> logger, IMeterFactory meterFactory)
+        private readonly AppDbContext _context;
+
+        public PrescricaoService(ILogger<PrescricaoService> logger, IMeterFactory meterFactory, AppDbContext context)
         {
             _logger = logger;
             var meter = meterFactory.Create(TelemetryConstants.MeterName);
             _prescricaoCreateCounter = meter.CreateCounter<int>("prescricao.create", description: "Total criado");
+            _context = context;
         }
 
         public async Task<Prescricao> CreatePrescricaoAsync(Prescricao prescricao)
@@ -77,21 +84,38 @@ namespace challengeFiap.Application.Service
 
         public async Task<Prescricao> DeletePrescricaoAsync(int id_Prescricao)
         {
-            var prescricaoDelete = _GetPrescricao.FirstOrDefault(c => c.Id_prescricao == id_Prescricao);
-            if (prescricaoDelete != null)
-            {
-                _GetPrescricao.Remove(prescricaoDelete);
-                _logger.LogInformation("Deletado");
+            var prescricao = await _context.Prescricaos.FindAsync(id_Prescricao);
 
-                return prescricaoDelete;
+            if (prescricao == null)
+            {
+                _logger.LogWarning("prescricao não encontrada para exclusão.");
+                throw new Exception("Nao foi inserido");
             }
             else
             {
-                _logger.LogWarning("Id de Prescricao não foi encontrado. ");
+                _context.Prescricaos.Remove(prescricao);
+                _logger.LogInformation("Prescricao encontrado para exclusão");
 
-                throw new Exception("Id não existente presente");
+                return prescricao;
             }
         }
 
+        public async Task<Prescricao> GetPrescricaoIdAsync(int id_prescricao)
+        {
+            var prescricao = await _context.Prescricaos.FindAsync(id_prescricao);
+            if (prescricao == null)
+            {
+                _logger.LogWarning("Id não existe: {Id}", id_prescricao);
+                throw new Exception("Id não foi encontrada");
+            }
+
+            return prescricao;
+        }
+
+        public async Task<IEnumerable<Prescricao>> GetAllPrescricaoAsync()
+        {
+            var prescricoes = await _context.Prescricaos.ToListAsync();
+            return prescricoes;
+        }
     }
 }

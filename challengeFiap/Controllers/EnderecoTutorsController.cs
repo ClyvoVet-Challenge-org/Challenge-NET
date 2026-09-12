@@ -33,7 +33,7 @@ public class EnderecoTutorsController : ControllerBase
 
         try
         {
-            var relatorioEnResponsavel = await _context.EnderecoTutors.ToListAsync();
+            var relatorioEnResponsavel = await _enderecoTutorService.GetAllEnderecoTutorAsync();
 
             _logger.LogInformation("Busca de endereço responsavel concluída com sucesso");
             return Ok(relatorioEnResponsavel);
@@ -62,16 +62,17 @@ public class EnderecoTutorsController : ControllerBase
 
         try
         {
-            var enderecoresponsavel = await _context.EnderecoTutors.FindAsync(id_endereco_responsavel);
-
-            if (enderecoresponsavel == null)
+            try
             {
-                _logger.LogWarning("Endereço responsavel não encontrado para o ID {IdEnderecoResponsavel}", id_endereco_responsavel);
+                var enderecoresponsavel = await _enderecoTutorService.GetEnderecoTutorIdAsync(id_endereco_responsavel);
+                _logger.LogInformation("Endereço responsavel foi encontrado com sucesso");
+                return Ok(enderecoresponsavel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "endereco tutor não encontrado para o ID");
                 return NotFound("Id não encontrado");
             }
-
-            _logger.LogInformation("Endereço responsavel encontrado com sucesso para o ID {IdEnderecoResponsavel}", id_endereco_responsavel);
-            return Ok(enderecoresponsavel);
         }
         catch (Exception ex)
         {
@@ -198,18 +199,12 @@ public class EnderecoTutorsController : ControllerBase
 
         try
         {
-             var enderecoresponsavel = await _context.EnderecoTutors.FindAsync(id_endereco_responsavel);
+            var enderecoresponsavel = await _enderecoTutorService.DeleteEnderecoTutorAsync(id_endereco_responsavel);
 
-            if (enderecoresponsavel == null)
-            {
-                _logger.LogWarning("Endereço tutor não encontrado para deletar.");
-                return NotFound("Id não encontrado");
-            }
-            
             _context.EnderecoTutors.Remove(enderecoresponsavel);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Endereço responsavel selecionando foi deletado com sucesso");
+            _logger.LogInformation("EnderecoTutor foi excluído com sucesso");
             return NoContent();
         }
         catch (Exception ex)
